@@ -1,0 +1,42 @@
+{
+	"Games": [{
+		"Name": "Warhammer 40k 8th Edition",
+		"Factions": [{
+			"Name": "Space Marines",
+			"Units": [{
+				"Name": "Captain in Gravis Armour",
+				"NumberOfModels":1,
+				"Cost": 98,
+				"Abilities": [1,2,3],
+				"AddOns": [],
+				"Gear": [5, 9]
+			},
+			{
+				"Name": "Primaris Lieutenants",
+				"NumberOfModels":1,
+				"Cost": 60,
+				"Abilities": [1,3],
+				"AddOns": [1,2],
+				"Gear": [2, 3, 6, 7]
+			}]
+			},
+			{
+			"Name": "Death Guards",
+			"Units": [{
+				"Name": "Bloat Drone",
+				"NumberOfModels": 1,
+				"Cost": -1,
+				"Ability": "When Bloat Drone enters play you win",
+				"AddOns": [{
+					"Name": "My AddOn",
+					"Cost": 0,
+					"Text": "Add an extra Bloat Drone",
+					"IsSelected": false
+				}],
+				"Gear": [{
+					"Name": "Frag Grenade",
+					"Cost": 0
+				}]
+			}]
+		}]
+}]}

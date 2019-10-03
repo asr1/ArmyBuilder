@@ -1,0 +1,91 @@
+<html>
+    <head>
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" crossorigin="anonymous">
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" crossorigin="anonymous">
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css">
+		<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:400,600,300,700" type="text/css">
+		
+		<link href="css/ArmyBuilder.css" rel="stylesheet" type="text/css">
+		<link rel="stylesheet" href="https://unpkg.com/purecss@1.0.1/build/pure-min.css" crossorigin="anonymous">
+		<title>Army Builder</title>
+	</head>
+    
+	<body style="margin-left:40px; background-color:#c8c8c8" ng-app="armyBuilder" ng-controller="builderCtrl">
+		<h1>Army Builder</h1>
+		<span>
+			Select a game: <select ng-model="selectedGame" ng-options="game.Name for game in games"></select>
+		</span>
+		<!-- TODO: New, Save, Load buttons-->
+		<div ng-if="selectedGame">
+			You selected {{selectedGame.Name}}
+		</div>
+		
+			<select 
+				ng-model="selFac"
+				ng-change="processUnits()"
+				ng-options="x as x.Name for x in selectedGame.Factions"
+				multiple>
+			</select>
+
+			<!--<span ng-if="selFac">Unit &nbsp Cost</span>-->
+			<select 
+				ng-show="selFac"
+				ng-model="selUnit"
+				ng-options="x as x.Name + addSpaces(x.Name) + x.Cost for x in availUnits"
+				 multiple>
+			</select>
+			
+			<button ng-click="addUnit()" type="button" class="btn btn-default btn-sm">
+				Add<span class="glyphicon glyphicon-plus-sign"></span>
+			</button>
+			<br><br>
+			
+			<span><h3>Total Cost: {{calculateArmyCost()}}</h3></span>
+			<span></span><span><h4>Name</h4></span><span><h4>Number</h4></span>
+			<div ng-repeat="unit in myArmyArray">
+			{{unit}}
+				<span class="glyphicon glyphicon-remove" ng-click="removeFromArmy(unit)"></span><span>{{unit.Name}}</span></span><span>{{unit.NumberOfModels}}</span><span><input type="number" ng-init="num=1" ng-model="num"></input></span><span>{{unit.Cost}}</span><span><b>{{calculateUnitCost(num, unit)}}</b></span>
+				<br>
+				<div ng-repeat="addon in unit.AddOns">
+					<span ng-show="getAddon(addon).Level == 'Unit'"><span><input ng-model="checked" ng-click="setAddOnCost(checked, unit, getAddon(addon))" type="checkbox"></input></span><span>{{getAddon(addon).Text}}</span><span>{{calculateAddOnCost(getAddon(addon), unit)}}</span></span>
+				</div>
+				<div ng-repeat="i in [].constructor(unit.NumberOfModels) track by $index">
+					<div ng-repeat="item in unit.Gear">
+						<span>{{getGear(item).Name}}</span><span>{{getGear(item).Cost}}</span>
+					</div>
+					<div ng-repeat="ability in unit.Abilities">
+						<span>{{getAbility(ability).Name}}</span><span>{{getAbility(ability).Text}}</span>
+					</div>
+					<div ng-repeat="addon in unit.AddOns">
+						<span ng-show="getAddon(addon).Level =='Model'"><span><input ng-model="checked" ng-click="setAddOnCost(checked, unit, getAddon(addon))" type="checkbox"></input></span><span>{{getAddon(addon).Text}}</span><span>{{calculateAddOnCost(getAddon(addon), unit)}}</span></span>
+					</div>
+				</div>
+				
+			</div>
+			
+			
+<br><br><!--
+		<select ng-if="selFac" >
+		 <optgroup label="Unit    &nbsp &nbsp  Cost">
+		  <option ng-repeat="x in availUnits" ng-value="x">{{x.Name + x.Cost}}</option>
+		 </optgroup>
+		</select>
+		
+		<p ng-if="selUnit">{{selUnit.Ability}}</p>
+		
+		
+		
+		
+		
+		 <br><br>
+
+		Pig <br><br>{{selFac}}Llama <br><br>
+		<!--Load JS files-->
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.4/angular.js"></script>
+		<script src="js/Models.js"></script>
+		<script src="js/ngComponents.js"></script>
+		<script src="//cdnjs.cloudflare.com/ajax/libs/angular-filter/0.5.15/angular-filter.min.js"></script>
+	</body>
+</html>

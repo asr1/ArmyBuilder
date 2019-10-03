@@ -1,0 +1,18 @@
+{
+	"Abilities":
+	[{
+		"id" : 1,
+		"Name": "And They Shall Know No Fear",
+		"Text": "This unit can re-roll failed Morale Tests"
+	},
+	{
+		"id" : 2,
+		"Name": "Iron halo",
+		"Text": "+4 invulnerable save"
+	},
+	{
+		"id" : 3,
+		"Name": "Rites of Battle",
+		"Text": "You can re-roll all hit rolls of 1 made for one friendly <chapter> units that are within 6\" of this unit."
+	}]
+}

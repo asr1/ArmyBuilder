@@ -1,0 +1,28 @@
+td{
+	border: 1px, solid #ddd;
+	padding: 4px;
+}
+
+tr:nth-child(even){
+	background-color: #d3d3d3;
+}
+
+table, th, td {
+   border: 1px solid black;
+   margin-left: 50px;
+}
+th  {
+	cursor:pointer;
+	padding-top: 5px;
+	padding-right: 10px;
+	padding-bottom: 5px;
+	padding-left: 10px;
+}
+
+td {
+	text-align : center;
+}
+a {
+	cursor:pointer;
+}
+		

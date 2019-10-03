@@ -1,0 +1,20 @@
+{
+	"Addons":
+	[{
+		"id" : 1,
+		"Text": "Trade auto bolt rifle for power sword",
+		"Cost": 0,
+		"Type": "ReplaceItem",
+		"Remove": 2,
+		"Add": 10,
+		"Level": "Model"
+	},
+	{
+		"id" : 2,
+		"Text": "Add a second Primaris Lietanant",
+		"Cost": 0,
+		"Type": "IncreaseModelNum",
+		"Amount": 1,
+		"Level": "Unit"
+	}]
+}

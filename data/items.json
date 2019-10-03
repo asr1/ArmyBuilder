@@ -1,0 +1,74 @@
+{
+"gear":
+	[{
+		"id": 1,
+		"Name": "Assault bolter",
+		"Cost": 7,
+		"Ability": "",
+		"Keywords": ""
+	},
+	{
+		"id": 2,
+		"Name": "Auto bolt rifle",
+		"Cost": 0,
+		"Ability": "",
+		"Keywords": ""
+	},
+	{
+		"id": 3,
+		"Name": "Bolt pistol",
+		"Cost": 0,
+		"Ability": "",
+		"Keywords": ""
+	},
+	{
+		"id": 4,
+		"Name": "Bolt rifle",
+		"Cost": 0,
+		"Ability": "",
+		"Keywords": ""
+	},
+	{
+		"id": 5,
+		"Name": "Boltstorm guantlet",
+		"Cost": 33,
+		"Ability": "If a model is making a close combat attack with a boltstorm guantlet, you must subtract 1 from the hit roll.",
+		"Keywords": "Melee, pistol 3",
+		"Range": "Melee/ranged"
+	},
+	{
+		"id": 6,
+		"Name": "Frag grenade",
+		"Cost": 0,
+		"Ability": "",
+		"Keywords": ""
+	},
+	{
+		"id": 7,
+		"Name": "Krak grenade",
+		"Cost": 0,
+		"Ability": "",
+		"Keywords": ""
+	},
+	{
+		"id": 8,
+		"Name": "Plasma incinerator",
+		"Cost": 17,
+		"Ability": "",
+		"Keywords": ""
+	},
+	{
+		"id": 9,
+		"Name": "Master-crafted power sword",
+		"Cost": 17,
+		"Ability": "",
+		"Keywords": "Melee"
+	},
+	{
+		"id": 10,
+		"Name": "Power sword",
+		"Cost": 4,
+		"Ability": "",
+		"Keywords": "Melee"
+	}]
+}
