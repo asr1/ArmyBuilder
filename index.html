@@ -27,7 +27,6 @@
 				multiple>
 			</select>
 
-			<!--<span ng-if="selFac">Unit &nbsp Cost</span>-->
 			<select 
 				ng-show="selFac"
 				ng-model="selUnit"
@@ -41,27 +40,36 @@
 			<br><br>
 			
 			<span><h3>Total Cost: {{calculateArmyCost()}}</h3></span>
-			<span></span><span><h4>Name</h4></span><span><h4>Number</h4></span>
-			<div ng-repeat="unit in myArmyArray">
-			{{unit}}
-				<span class="glyphicon glyphicon-remove" ng-click="removeFromArmy(unit)"></span><span>{{unit.Name}}</span></span><span>{{unit.NumberOfModels}}</span>{{unit.Cost}}</span><span><b>{{calculateUnitCost(unit)}}</b></span>
-				<br>
-				<div ng-repeat="addon in unit.AddOns">
-					<span ng-show="getAddon(addon).Level == 'Unit'"><span><input ng-model="checked" ng-click="setAddOnCost(checked, unit, getAddon(addon))" type="checkbox"></input></span><span>{{getAddon(addon).Text}}</span><span>{{calculateAddOnCost(getAddon(addon), unit)}}</span></span>
+			<div class="section">
+				<div class="unit" ng-repeat="unit in myArmyArray">
+					<div class="unitHeader">
+						<span class="glyphicon glyphicon-remove" ng-click="removeFromArmy(unit)"> </span><span>{{unit.Name}}</span><span><b> {{calculateUnitCost(unit)}}</b></span>
+					</div>
+					<div class="unitBody">
+						<h5 ng-show="unit.AddOns" class="Subheading">Unit Add Ons</h5>
+						<div ng-repeat="addon in unit.AddOns">
+							<span ng-show="getAddon(addon).Level == 'Unit'"><span><input ng-model="checked" ng-click="setAddOnCost(checked, unit, getAddon(addon))" type="checkbox"></input></span><span>{{getAddon(addon).Text}}</span><span>{{calculateAddOnCost(getAddon(addon), unit)}}</span></span>
+						</div>
+						<h5 class="Subheading">Models: ({{unit.NumberOfModels}})</h5>
+						<div ng-repeat="model in models[unit.Name] track by $index">
+							<b>{{model.Name}}</b>
+							<div class="modelBody">
+								<h6 class="Subheading">Gear</h6>
+								<div ng-repeat="item in model.Gear">
+									<span>{{getGear(item).Name}}</span><span> Cost: {{getGear(item).Cost}}</span>
+								</div>
+								<h6 ng-show="unit.Abilities" class="Subheading">Abilities</h6>
+								<div ng-repeat="ability in unit.Abilities">
+									<span><b>{{getAbility(ability).Name}}: </b></span><span>{{getAbility(ability).Text}}</span>
+								</div>
+								<h6 ng-show="unit.AddOns" class="Subheading">Model Add Ons</h6>
+								<div ng-repeat="addon in model.AddOns">
+									<span ng-show="getAddon(addon).Level =='Model'"><span><input ng-model="checked" ng-click="setAddOnCost(checked, unit, getAddon(addon), model)" type="checkbox"></input></span><span>{{getAddon(addon).Text}}</span><span> Cost: {{calculateAddOnCost(getAddon(addon), unit)}}</span></span>
+								</div>
+							</div>
+						</div>
+					</div>
 				</div>
-				<div ng-repeat="model in models[unit.Name] track by $index">
-					<b>{{model.Name}}</b>
-					<div ng-repeat="item in model.Gear">
-						<span>{{getGear(item).Name}}</span><span>{{getGear(item).Cost}}</span>
-					</div>
-					<div ng-repeat="ability in unit.Abilities">
-						<span>{{getAbility(ability).Name}}</span><span>{{getAbility(ability).Text}}</span>
-					</div>
-					<div ng-repeat="addon in model.AddOns">
-						<span ng-show="getAddon(addon).Level =='Model'"><span><input ng-model="checked" ng-click="setAddOnCost(checked, unit, getAddon(addon), model)" type="checkbox"></input></span><span>{{getAddon(addon).Text}}</span><span>{{calculateAddOnCost(getAddon(addon), unit)}}</span></span>
-					</div>
-				</div>
-				
 			</div>
 			
 			
