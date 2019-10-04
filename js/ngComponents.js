@@ -83,11 +83,12 @@ app.controller('builderCtrl', function($scope, $http){
 		$scope.myArmyArray = Array.from($scope.myArmy); 
 		$scope.models[unit.Name] = [];
 		updateEnabledUnits();
+		deregisterAddOnStatus(unit.Name)
 	}
 	
 	$scope.addUnit = function(){
 		// Add to array if not present in O(selUnit) instead of O(myArmy)
-		$scope.selUnit.reduce((set, elem) => set.add(elem), $scope.myArmy);
+		$scope.selUnit.reduce((set, elem) => set.add(cloneUnit(elem)), $scope.myArmy);
 		$scope.myArmyArray = Array.from($scope.myArmy); 
 		
 		$scope.selUnit.forEach( (unit) => {
@@ -243,6 +244,10 @@ app.controller('builderCtrl', function($scope, $http){
 			$scope.enabledAddOns[unitName] = [];
 		}
 		$scope.enabledAddOns[unitName][id] = isEnabled;
+	}
+	
+	function deregisterAddOnStatus(unitName) {
+		$scope.enabledAddOns[unitName] = [];
 	}
 	
 	$scope.setAddOnCost = function(isChecked, unit, id, model) {
