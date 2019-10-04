@@ -79,7 +79,7 @@ app.controller('builderCtrl', function($scope, $http){
 				$scope.models[unit.Name] = [];
 			}
 			for(let i = 0; i < unit.NumberOfModels; i++) {
-				var model = cloneUnit(unit)//Object.assign({}, unit); //Clone
+				var model = cloneUnit(unit);
 				model.Name += '' + $scope.models[unit.Name].length;
 				$scope.models[unit.Name].push(model)
 			}
@@ -128,6 +128,9 @@ app.controller('builderCtrl', function($scope, $http){
 	}
 	
 	$scope.replaceItem = function(model, oldItem, newItem, unit) {
+		console.log(unit.Name);
+		console.log($scope.models);
+		console.log("");
 		$scope.models[unit.Name].forEach((soldier) => {
 			if(soldier.Name == model.Name) {// Find the right guy
 				var toRemove = -1;

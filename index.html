@@ -44,7 +44,7 @@
 			<span></span><span><h4>Name</h4></span><span><h4>Number</h4></span>
 			<div ng-repeat="unit in myArmyArray">
 			{{unit}}
-				<span class="glyphicon glyphicon-remove" ng-click="removeFromArmy(unit)"></span><span>{{unit.Name}}</span></span><span>{{unit.NumberOfModels}}</span><span><input type="number" ng-init="num=1" ng-model="num"></input></span><span>{{unit.Cost}}</span><span><b>{{calculateUnitCost(unit)}}</b></span>
+				<span class="glyphicon glyphicon-remove" ng-click="removeFromArmy(unit)"></span><span>{{unit.Name}}</span></span><span>{{unit.NumberOfModels}}</span>{{unit.Cost}}</span><span><b>{{calculateUnitCost(unit)}}</b></span>
 				<br>
 				<div ng-repeat="addon in unit.AddOns">
 					<span ng-show="getAddon(addon).Level == 'Unit'"><span><input ng-model="checked" ng-click="setAddOnCost(checked, unit, getAddon(addon))" type="checkbox"></input></span><span>{{getAddon(addon).Text}}</span><span>{{calculateAddOnCost(getAddon(addon), unit)}}</span></span>
@@ -58,7 +58,7 @@
 						<span>{{getAbility(ability).Name}}</span><span>{{getAbility(ability).Text}}</span>
 					</div>
 					<div ng-repeat="addon in model.AddOns">
-						<span ng-show="getAddon(addon).Level =='Model'"><span><input ng-model="checked" ng-click="setAddOnCost(checked, model, getAddon(addon), model)" type="checkbox"></input></span><span>{{getAddon(addon).Text}}</span><span>{{calculateAddOnCost(getAddon(addon), unit)}}</span></span>
+						<span ng-show="getAddon(addon).Level =='Model'"><span><input ng-model="checked" ng-click="setAddOnCost(checked, unit, getAddon(addon), model)" type="checkbox"></input></span><span>{{getAddon(addon).Text}}</span><span>{{calculateAddOnCost(getAddon(addon), unit)}}</span></span>
 					</div>
 				</div>
 				
