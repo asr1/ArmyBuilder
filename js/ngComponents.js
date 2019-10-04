@@ -23,6 +23,7 @@ app.controller('builderCtrl', function($scope, $http){
 	$scope.armyCost = 0; // alternatively could have a calculate ArmyCost function
 
 	$scope.addOnCosts = {};
+	$scope.models = {};
 
 	$scope.processUnits = function() {
 			$scope.availUnits = [];
@@ -53,16 +54,16 @@ app.controller('builderCtrl', function($scope, $http){
 	$scope.removeFromArmy = function(unit){
 		$scope.myArmy.delete(unit);
 		$scope.myArmyArray = Array.from($scope.myArmy); 
+		$scope.models[unit.Name] = [];
 	}
 	
 	$scope.calculateArmyCost = function(){
 		var cost = 0;
-		//TODO 1 below is wrong
-		$scope.myArmyArray.forEach((unit) => cost += $scope.calculateUnitCost(1, unit));
+		$scope.myArmyArray.forEach((unit) => cost += $scope.calculateUnitCost(unit));
 		return cost;
 	}
 	
-	$scope.calculateGearCost = function(gearIndexes) {
+	$scope.calculateModelGearCost = function(gearIndexes) {
 		var total = 0;
 		gearIndexes.forEach((idx) => total += $scope.getGear(idx).Cost);
 		return total;
@@ -72,8 +73,39 @@ app.controller('builderCtrl', function($scope, $http){
 		// Add to array if not present in O(selUnit) instead of O(myArmy)
 		$scope.selUnit.reduce((set, elem) => set.add(elem), $scope.myArmy);
 		$scope.myArmyArray = Array.from($scope.myArmy); 
+		
+		$scope.selUnit.forEach( (unit) => {
+			if($scope.models[unit.Name] == undefined) {
+				$scope.models[unit.Name] = [];
+			}
+			for(let i = 0; i < unit.NumberOfModels; i++) {
+				var model = cloneUnit(unit)//Object.assign({}, unit); //Clone
+				model.Name += '' + $scope.models[unit.Name].length;
+				$scope.models[unit.Name].push(model)
+			}
+		});
+		console.log("Sel unit: ");
+		console.log($scope.selUnit);
+		console.log("army arrmy:");
+		console.log($scope.myArmyArray);
+		console.log("Army set:");
+		console.log($scope.myArmy);
+		console.log("Models: ");
+		console.log($scope.models);
+		console.log("");
 	}
 	
+	function cloneUnit(unit) {
+		var copy = {};
+		copy.Name = unit.Name
+		copy.NumberOfModels = unit.NumberOfModels
+		copy.Cost = unit.Cost
+		copy.Abilities = unit.Abilities.slice(0);
+		copy.AddOns = unit.AddOns.slice(0);
+		copy.Gear = unit.Gear.slice(0);
+		return copy;
+	}
+
 	$scope.getAddOnCost =function(unit){
 		if($scope.addOnCosts[unit] == undefined) {
 			$scope.addOnCosts[unit] = 0;
@@ -87,26 +119,25 @@ app.controller('builderCtrl', function($scope, $http){
 				return addOn.Cost
 			break;
 			case "ReplaceItem":
-			
 				return $scope.getGear(addOn.Add).Cost - $scope.getGear(addOn.Remove).Cost;
 			break;
 			case "IncreaseModelNum":
-				return $scope.calculateUnitCost(1, unit);
+				return $scope.calculateUnitCost(unit);
 			break;
 		}
 	}
 	
-	$scope.replaceItem = function(unit, oldItem, newItem) {
-		$scope.myArmyArray.forEach((elem) => {
-			if(elem.Name == unit.Name) {// Find the right unit
+	$scope.replaceItem = function(model, oldItem, newItem, unit) {
+		$scope.models[unit.Name].forEach((soldier) => {
+			if(soldier.Name == model.Name) {// Find the right guy
 				var toRemove = -1;
-				elem.Gear.forEach((item, idx) => {
+				soldier.Gear.forEach((item, idx) => {
 					if(item === oldItem) {
 						toRemove = idx;
 					}
 				});
-				elem.Gear.splice(toRemove, 1);
-				elem.Gear.push(newItem);
+				soldier.Gear.splice(toRemove, 1);
+				soldier.Gear.push(newItem);
 			}
 		});
 	}
@@ -117,9 +148,19 @@ app.controller('builderCtrl', function($scope, $http){
 				elem.NumberOfModels += amount;
 			}
 		});
+		if(amount > 0){
+			var model = cloneUnit(unit);
+			model.Name += '' + $scope.models[unit.Name].length;
+			$scope.models[unit.Name].push(model);
+		}
+		else {
+			amount *= -1;
+			for(let i = 0; i < amount; i++);
+			$scope.models[unit.Name].pop();
+		}
 	}
 	
-	$scope.setAddOnCost = function(isChecked, unit, addOn) {
+	$scope.setAddOnCost = function(isChecked, unit, addOn, model) {
 		switch(addOn.Type) {
 			case "Direct": 
 				isChecked ?
@@ -129,10 +170,10 @@ app.controller('builderCtrl', function($scope, $http){
 			break;
 			case "ReplaceItem":
 				if(isChecked) {
-					$scope.replaceItem(unit, addOn.Remove, addOn.Add);
+					$scope.replaceItem(model, addOn.Remove, addOn.Add, unit);
 				}                            
 				else {                       
-					$scope.replaceItem(unit, addOn.Add, addOn.Remove);
+					$scope.replaceItem(model, addOn.Add, addOn.Remove, unit);
 				}
 			break;
 			case "IncreaseModelNum":
@@ -146,8 +187,17 @@ app.controller('builderCtrl', function($scope, $http){
 		}
 	}
 	
-	$scope.calculateUnitCost = function(num, unit) {
-		return unit.NumberOfModels * num * (unit.Cost + $scope.calculateGearCost(unit.Gear)) + $scope.getAddOnCost(unit);
+	$scope.calculateUnitCost = function(unit) {
+		return unit.NumberOfModels * unit.Cost + $scope.calculateUnitGearCost(unit) + $scope.getAddOnCost(unit);
+	}
+	
+	$scope.calculateUnitGearCost = function(unit) {
+		if($scope.models[unit.Name] == undefined) { return 0; }
+		var total = 0;
+		$scope.models[unit.Name].forEach( (model) => {
+			total += $scope.calculateModelGearCost(model.Gear)
+		});
+		return total;
 	}
 	
 	$scope.addSpaces= function(input){

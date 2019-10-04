@@ -44,20 +44,21 @@
 			<span></span><span><h4>Name</h4></span><span><h4>Number</h4></span>
 			<div ng-repeat="unit in myArmyArray">
 			{{unit}}
-				<span class="glyphicon glyphicon-remove" ng-click="removeFromArmy(unit)"></span><span>{{unit.Name}}</span></span><span>{{unit.NumberOfModels}}</span><span><input type="number" ng-init="num=1" ng-model="num"></input></span><span>{{unit.Cost}}</span><span><b>{{calculateUnitCost(num, unit)}}</b></span>
+				<span class="glyphicon glyphicon-remove" ng-click="removeFromArmy(unit)"></span><span>{{unit.Name}}</span></span><span>{{unit.NumberOfModels}}</span><span><input type="number" ng-init="num=1" ng-model="num"></input></span><span>{{unit.Cost}}</span><span><b>{{calculateUnitCost(unit)}}</b></span>
 				<br>
 				<div ng-repeat="addon in unit.AddOns">
 					<span ng-show="getAddon(addon).Level == 'Unit'"><span><input ng-model="checked" ng-click="setAddOnCost(checked, unit, getAddon(addon))" type="checkbox"></input></span><span>{{getAddon(addon).Text}}</span><span>{{calculateAddOnCost(getAddon(addon), unit)}}</span></span>
 				</div>
-				<div ng-repeat="i in [].constructor(unit.NumberOfModels) track by $index">
-					<div ng-repeat="item in unit.Gear">
+				<div ng-repeat="model in models[unit.Name] track by $index">
+					<b>{{model.Name}}</b>
+					<div ng-repeat="item in model.Gear">
 						<span>{{getGear(item).Name}}</span><span>{{getGear(item).Cost}}</span>
 					</div>
 					<div ng-repeat="ability in unit.Abilities">
 						<span>{{getAbility(ability).Name}}</span><span>{{getAbility(ability).Text}}</span>
 					</div>
-					<div ng-repeat="addon in unit.AddOns">
-						<span ng-show="getAddon(addon).Level =='Model'"><span><input ng-model="checked" ng-click="setAddOnCost(checked, unit, getAddon(addon))" type="checkbox"></input></span><span>{{getAddon(addon).Text}}</span><span>{{calculateAddOnCost(getAddon(addon), unit)}}</span></span>
+					<div ng-repeat="addon in model.AddOns">
+						<span ng-show="getAddon(addon).Level =='Model'"><span><input ng-model="checked" ng-click="setAddOnCost(checked, model, getAddon(addon), model)" type="checkbox"></input></span><span>{{getAddon(addon).Text}}</span><span>{{calculateAddOnCost(getAddon(addon), unit)}}</span></span>
 					</div>
 				</div>
 				
