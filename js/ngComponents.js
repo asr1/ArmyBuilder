@@ -147,7 +147,7 @@ app.controller('builderCtrl', function($scope, $http){
 				return $scope.getGear(addOn.Add).Cost - $scope.getGear(addOn.Remove).Cost;
 			break;
 			case "IncreaseModelNum":
-				return $scope.calculateUnitCost(unit);
+				return (unit.Cost + $scope.calculateModelGearCost(unit.Gear)) * addOn.Amount;
 			break;
 		}
 	}
