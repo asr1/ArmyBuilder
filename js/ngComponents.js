@@ -126,6 +126,8 @@ app.controller('builderCtrl', function($scope, $http){
 		copy.Name = unit.Name
 		copy.NumberOfModels = unit.NumberOfModels
 		copy.Cost = unit.Cost
+		copy.SeparateGear = unit.SeparateGear;
+		copy.Powers = unit.Powers;
 		copy.Abilities = unit.Abilities.slice(0);
 		copy.AddOns = unit.AddOns.slice(0);
 		copy.Gear = unit.Gear.slice(0);
