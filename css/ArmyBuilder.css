@@ -62,6 +62,13 @@ div.modelBody {
 	margin-left: 2em;
 }
 
+div.subtext {
+	font-size: .95em;
+	font-style: italic;
+	margin-left: 1.5em;
+	margin-top: -1.5em;
+}
+
 .section > div:nth-of-type(2n+1){
   background-color:#dcdcdc;
 }

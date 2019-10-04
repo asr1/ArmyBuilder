@@ -18,25 +18,98 @@
 				"Abilities": [1,3],
 				"AddOns": [1,2],
 				"Gear": [2, 3, 6, 7]
+			},
+			{
+				"Name": "Primaris Ancient",
+				"NumberOfModels":1,
+				"Cost": 63,
+				"Abilities": [1,4],
+				"AddOns": [],
+				"Gear": [3, 4, 6, 7]
+			},
+			{
+				"Name": "Intercessor Squad",
+				"NumberOfModels":5,
+				"Cost": 24,
+				"Abilities": [1],
+				"AddOns": [],
+				"Gear": [3, 4, 6, 7]
+			},
+			{
+				"Name": "Inceptor Squad",
+				"NumberOfModels":3,
+				"Cost": 39,
+				"Abilities": [1, 5, 6],
+				"AddOns": [],
+				"Gear": [1, 1]
+			},
+			{
+				"Name": "Hellblaster Squad",
+				"NumberOfModels":5,
+				"Cost": 23,
+				"Abilities": [1],
+				"AddOns": [],
+				"Gear": [3, 6, 7, 8]
 			}]
 			},
 			{
-			"Name": "Death Guards",
+			"Name": "Death Guard",
 			"Units": [{
-				"Name": "Bloat Drone",
+				"Name": "Foetid Bloat-Drone",
 				"NumberOfModels": 1,
-				"Cost": -1,
-				"Ability": "When Bloat Drone enters play you win",
-				"AddOns": [{
-					"Name": "My AddOn",
-					"Cost": 0,
-					"Text": "Add an extra Bloat Drone",
-					"IsSelected": false
-				}],
-				"Gear": [{
-					"Name": "Frag Grenade",
-					"Cost": 0
-				}]
+				"Cost": 143,
+				"Abilities": [7, 8, 9],
+				"AddOns": [],
+				"Gear": [11, 12]
+			},
+			{
+				"Name": "Lord of Contagion",
+				"NumberOfModels": 1,
+				"Cost": 139,
+				"Abilities": [7, 10, 11, 12],
+				"AddOns": [],
+				"Gear": [13]
+			},
+			{
+				"Name": "Malignant Plaguecaster",
+				"NumberOfModels": 1,
+				"Cost": 95,
+				"Abilities": [7, 13],
+				"AddOns": [],
+				"Gear": [3, 7, 14, 15],
+				"Powers": {
+					"Known": [1],
+					"Optoins": [
+						{
+							"Amount": 2,
+							"From": [2,3,4]
+						}
+					]
+				}
+			},
+			{
+				"Name": "Noxious Blightbringer",
+				"NumberOfModels": 1,
+				"Cost": 64,
+				"Abilities": [7, 14],
+				"AddOns": [],
+				"Gear": [7, 15, 16, 17]
+			},
+			{
+				"Name": "Plague Marines TODO",
+				"NumberOfModels": 5,
+				"Cost": 21,
+				"Abilities": [7],
+				"AddOns": [4,5],
+				"Gear": []
+			},
+			{
+				"Name": "Poxwalkers",
+				"NumberOfModels": 10,
+				"Cost": 6,
+				"Abilities": [7, 15, 16,17],
+				"AddOns": [3],
+				"Gear": []
 			}]
 		}]
 }]}

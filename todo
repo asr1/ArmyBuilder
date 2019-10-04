@@ -1,7 +1,13 @@
 TODO:
-\#1. CSS formatting
-4. Add the rest of the data
 17. More CSS Formatting
+18. Add support for psykers and their abilities (including has and has x from: [so I can say has #1, has 2 from #5, 6, 7]).
+19. Need support for model-level abilities and unit-level
+\#20. Need some way of mut-exing add-ons (plague marines)
+23. Plague marines don't have gear (see 21)
+21. Need a way for different models to have different gear at creation (Plague Marines)
+22. Save/load favorite armies?
+\#4. Add the rest of the data
+\#1. CSS formatting
 \#16. Adding a unit that has been already added adds a new model to that unit. Should instead do nothing. 
 \#3. Display multiple troops if I have more than 1 (maybe remove the # dropdown and change the behavior where if they're already in the array, append a 2 to the name? this would also allow two troops with different loadouts). Do this, and track NumToAppend by the id.
 \#2. Get total cost of army -- IN PROGRESS (done except for #3, below). Right now # is hardcoded to 1.

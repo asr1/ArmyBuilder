@@ -54,7 +54,7 @@
 		"id": 8,
 		"Name": "Plasma incinerator",
 		"Cost": 17,
-		"Ability": "",
+		"Ability": "Each time a model fires a plasma incinerator, it can supercharge the weapon before firing. If it does so, increase the Strength and Damage of the weapon by 1 this turn. If you roll any hit rolls of 1 when firing a supercharged plasma incinerator, the firing model is slain as the weapon explodes.",
 		"Keywords": ""
 	},
 	{
@@ -68,6 +68,62 @@
 		"id": 10,
 		"Name": "Power sword",
 		"Cost": 4,
+		"Ability": "",
+		"Keywords": "Melee"
+	},
+	{
+		"id": 11,
+		"Name": "Plaguespitter",
+		"Cost": 17,
+		"Ability": "You can re-roll any wound rolls of 1 when attacking with a plague weapon. In addition, a plaguespitter automatically hits its target - there is no need to make hit rolls.",
+		"Keywords": "Ranged"
+	},
+	{
+		"id": 12,
+		"Name": "Plague probe",
+		"Cost": 29,
+		"Ability": "You can re-roll any wound rolls of 1 when attacking with a plague weapon.",
+		"Keywords": "Melee"
+	},
+	{
+		"id": 13,
+		"Name": "Plaguereaper",
+		"Cost": 45,
+		"Ability": "You can re-roll any wound rolls of 1 when attacking with a plague weapon.",
+		"Keywords": "Melee"
+	},
+	{
+		"id": 14,
+		"Name": "Corrupted Staff",
+		"Cost": 19,
+		"Ability": "",
+		"Keywords": "Melee"
+	},
+	{
+		"id": 15,
+		"Name": "Blight Grenade",
+		"Cost": 0,
+		"Ability": "You can re-roll any wound rolls of 1 when attacking with a plague weapon.",
+		"Keywords": "Grenade"
+	},
+	{
+		"id": 16,
+		"Name": "Plasma Pistol",
+		"Cost": 7,
+		"Ability": "Each time a model fires a plasma pistol, it can supercharge the weapon before firing. If it does so, increase the Strength and Damage of the weapon by 1 this turn. If you roll any hit rolls of 1 when firing a supercharged plasma pistol, the firing model is slain as the weapon explodes.",
+		"Keywords": "Ranged"
+	},
+	{
+		"id": 17,
+		"Name": "Cursed plague Bell",
+		"Cost": 9,
+		"Ability": "You can re-roll any wound rolls of 1 when attacking with a plague weapon.",
+		"Keywords": "Melee"
+	},
+	{
+		"id": 18,
+		"Name": "Improvised weapon",
+		"Cost": 0,
 		"Ability": "",
 		"Keywords": "Melee"
 	}]

@@ -14,6 +14,9 @@ app.controller('builderCtrl', function($scope, $http){
 	$http.get('data/addons.json').then(function(res){
 		$scope.addons = res.data[Object.keys(res.data)[0]];
 	});
+	$http.get('data/powers.json').then(function(res){
+		$scope.powers = res.data[Object.keys(res.data)[0]];
+	});
 	$scope.selFac = null;
 	$scope.availUnits = null;
 	$scope.longestUnitNameLength = 0;
@@ -24,6 +27,7 @@ app.controller('builderCtrl', function($scope, $http){
 
 	$scope.addOnCosts = {};
 	$scope.models = {};
+	$scope.enabledAddOns = {}
 
 	$scope.processUnits = function() {
 			$scope.availUnits = [];
@@ -41,6 +45,29 @@ app.controller('builderCtrl', function($scope, $http){
 	
 	$scope.getGear = function(id) {
 		return $scope.gear[id -1];
+	}
+
+	$scope.getPowers = function(discipline) { //TODO redo this
+
+		if($scope.powers){
+			$scope.powers.forEach( (power) => {
+				if(power.Discipline === discipline) {
+					return power.Powers;
+				}
+			});
+		}
+	}
+	
+	$scope.itemAbilityExists = function(item) {
+		return $scope.getGear(item).Ability != "";
+	} 
+
+	$scope.unitAbilityExists = function(unit) {
+		return unit.Abilities.length > 0;
+	}
+
+	$scope.unitAddonExists = function(unit) {
+		return unit.AddOns.length > 0;
 	}
 	
 	$scope.getAbility = function(id) {
@@ -80,23 +107,11 @@ app.controller('builderCtrl', function($scope, $http){
 				$scope.models[unit.Name] = [];
 			}
 			for(let i = 0; i < unit.NumberOfModels; i++) {
-				var model = cloneUnit(unit);
-				model.Name += '' + $scope.models[unit.Name].length;
-				$scope.models[unit.Name].push(model)
+				addModel(unit);
 			}
 		});
 		
 		updateEnabledUnits();
-		
-		console.log("Sel unit: ");
-		console.log($scope.selUnit);
-		console.log("army arrmy:");
-		console.log($scope.myArmyArray);
-		console.log("Army set:");
-		console.log($scope.myArmy);
-		console.log("Models: ");
-		console.log($scope.models);
-		console.log("");
 	}
 	
 	function updateEnabledUnits() {
@@ -138,9 +153,6 @@ app.controller('builderCtrl', function($scope, $http){
 	}
 	
 	$scope.replaceItem = function(model, oldItem, newItem, unit) {
-		console.log(unit.Name);
-		console.log($scope.models);
-		console.log("");
 		$scope.models[unit.Name].forEach((soldier) => {
 			if(soldier.Name == model.Name) {// Find the right guy
 				var toRemove = -1;
@@ -155,6 +167,29 @@ app.controller('builderCtrl', function($scope, $http){
 		});
 	}
 	
+	$scope.shouldDisableUnitAddOn = function(unit, id) {		
+		if(!$scope.enabledAddOns[unit.Name]) {return false;}
+		const addOn = $scope.getAddon(id);
+		if(!addOn.Mutex) {
+			return false;
+		}
+		var shouldDisable = false;
+	
+		addOn.Mutex.forEach( (conflictId) => {
+			if($scope.enabledAddOns[unit.Name][conflictId]) {
+				shouldDisable = true;
+			}
+		});
+
+		return shouldDisable;
+	}
+
+	function addModel(unit) {
+		var model = cloneUnit(unit);
+		model.Name += ' ' + ($scope.models[unit.Name].length + 1);
+		$scope.models[unit.Name].push(model);
+	}
+
 	$scope.increaseNumberOfModels = function(unit, amount) {
 		$scope.myArmyArray.forEach((elem) => {
 			if(elem.Name == unit.Name) {
@@ -162,9 +197,7 @@ app.controller('builderCtrl', function($scope, $http){
 			}
 		});
 		if(amount > 0){
-			var model = cloneUnit(unit);
-			model.Name += '' + $scope.models[unit.Name].length;
-			$scope.models[unit.Name].push(model);
+			addModel(unit);
 		}
 		else {
 			amount *= -1;
@@ -172,8 +205,17 @@ app.controller('builderCtrl', function($scope, $http){
 			$scope.models[unit.Name].pop();
 		}
 	}
+
+	function registerAddOnStatus(id, isEnabled, unitName){
+		if(!$scope.enabledAddOns[unitName]){
+			$scope.enabledAddOns[unitName] = [];
+		}
+		$scope.enabledAddOns[unitName][id] = isEnabled;
+	}
 	
-	$scope.setAddOnCost = function(isChecked, unit, addOn, model) {
+	$scope.setAddOnCost = function(isChecked, unit, id, model) {
+		registerAddOnStatus(id, isChecked, unit.Name);
+		const addOn = $scope.getAddon(id);
 		switch(addOn.Type) {
 			case "Direct": 
 				isChecked ?
