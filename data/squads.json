@@ -101,7 +101,24 @@
 				"Cost": 21,
 				"Abilities": [7],
 				"AddOns": [4,5],
-				"Gear": []
+				"Gear": [7, 15],
+				"SeparateGear": [
+					{
+						"Number": 1,
+						"Loadout": [3, 19, 20],
+						"Default": false
+					},
+					{
+						"Number": 1,
+						"Loadout": [21, 22],
+						"Default": false
+					},
+					{
+						"Number": 1,
+						"Loadout": [22, 23],
+						"Default": true
+					}
+				]
 			},
 			{
 				"Name": "Poxwalkers",

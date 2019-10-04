@@ -2,10 +2,13 @@ TODO:
 17. More CSS Formatting
 18. Add support for psykers and their abilities (including has and has x from: [so I can say has #1, has 2 from #5, 6, 7]).
 19. Need support for model-level abilities and unit-level
-\#20. Need some way of mut-exing add-ons (plague marines)
 23. Plague marines don't have gear (see 21)
-21. Need a way for different models to have different gear at creation (Plague Marines)
 22. Save/load favorite armies?
+25. Bug where adding a unit, adding troops to it, then removing it and adding again modifies the default value. Need to store original or reload?
+\#21. Need a way for different models to have different gear at creation (Plague Marines)
+\#24. Gear is broken for many people (try lord of contagion)
+\#23 When adding a new unit, if Separate Gear, give DefaultGear
+\#20. Need some way of mut-exing add-ons (plague marines)
 \#4. Add the rest of the data
 \#1. CSS formatting
 \#16. Adding a unit that has been already added adds a new model to that unit. Should instead do nothing. 

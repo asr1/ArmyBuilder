@@ -85,18 +85,6 @@ app.controller('builderCtrl', function($scope, $http){
 		updateEnabledUnits();
 	}
 	
-	$scope.calculateArmyCost = function(){
-		var cost = 0;
-		$scope.myArmyArray.forEach((unit) => cost += $scope.calculateUnitCost(unit));
-		return cost;
-	}
-	
-	$scope.calculateModelGearCost = function(gearIndexes) {
-		var total = 0;
-		gearIndexes.forEach((idx) => total += $scope.getGear(idx).Cost);
-		return total;
-	}
-	
 	$scope.addUnit = function(){
 		// Add to array if not present in O(selUnit) instead of O(myArmy)
 		$scope.selUnit.reduce((set, elem) => set.add(elem), $scope.myArmy);
@@ -112,6 +100,18 @@ app.controller('builderCtrl', function($scope, $http){
 		});
 		
 		updateEnabledUnits();
+	}
+	
+	$scope.calculateArmyCost = function(){
+		var cost = 0;
+		$scope.myArmyArray.forEach((unit) => cost += $scope.calculateUnitCost(unit));
+		return cost;
+	}
+	
+	$scope.calculateModelGearCost = function(gearIndexes) {
+		var total = 0;
+		gearIndexes.forEach((idx) => total += $scope.getGear(idx).Cost);
+		return total;
 	}
 	
 	function updateEnabledUnits() {
@@ -187,7 +187,39 @@ app.controller('builderCtrl', function($scope, $http){
 	function addModel(unit) {
 		var model = cloneUnit(unit);
 		model.Name += ' ' + ($scope.models[unit.Name].length + 1);
+		processGear(unit, model);
 		$scope.models[unit.Name].push(model);
+	}
+	
+	function processGear(unit, model) {
+		if(!unit.SeparateGear) {
+			return;
+		}
+		let defaultLoadout = [];
+		var numProcessed = $scope.models[unit.Name].length
+		var processed = false;
+		var count = 0;
+
+		for(let i = 0; i < unit.SeparateGear.length; i++) {
+			count += unit.SeparateGear[i].Number;
+			if(unit.SeparateGear[i].Default) {
+				
+				defaultLoadout = unit.SeparateGear[i].Loadout;
+			}
+			if(count <= numProcessed) {
+				continue;
+			}
+			else {
+				model.Gear = model.Gear.concat(unit.SeparateGear[i].Loadout);
+				processed = true;
+				break;
+			}
+		}
+		
+		if(!processed) {
+			model.Gear = model.Gear.concat(defaultLoadout);
+		}
+		return model;
 	}
 
 	$scope.increaseNumberOfModels = function(unit, amount) {
