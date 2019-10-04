@@ -30,7 +30,7 @@
 			<select 
 				ng-show="selFac"
 				ng-model="selUnit"
-				ng-options="x as x.Name + addSpaces(x.Name) + x.Cost for x in availUnits"
+				ng-options="x as x.Name + addSpaces(x.Name) + x.Cost disable when x.disabled for x in availUnits"
 				 multiple>
 			</select>
 			

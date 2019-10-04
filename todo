@@ -1,0 +1,25 @@
+TODO:
+\#1. CSS formatting
+4. Add the rest of the data
+17. More CSS Formatting
+\#16. Adding a unit that has been already added adds a new model to that unit. Should instead do nothing. 
+\#3. Display multiple troops if I have more than 1 (maybe remove the # dropdown and change the behavior where if they're already in the array, append a 2 to the name? this would also allow two troops with different loadouts). Do this, and track NumToAppend by the id.
+\#2. Get total cost of army -- IN PROGRESS (done except for #3, below). Right now # is hardcoded to 1.
+\#3.5 Related to 3, add support for multiple troops within a unit -- I think we actually need to have gear, addons on a *unit* level, repeated for each infantry in the unit. 
+\#3.75 related, fix bug where adding replace item applies to the whole unit. Should only apply to one model.
+\#	Possibly can track with $index?
+\#		Especially if we have a function to calculate, we can do caching like we do.
+\#11. Unit cost needs to take into consideration model gear.
+\#12. IncreaseModelNUm() doesn't work correctly
+\#13. related to 11, calculateUnitCost doesn't work correctly 
+\#14. TotalCost is NAN
+\#8. Pull out replace gear function
+\#9. Lieutenant -> do I make the choice for weapons per model or per unit? -- Per model
+\#10. Change to calculate addon Cost -- instead of hardcoding, if it's remove, have the cost be add - remove. Replace the {{cost}} with CalculateCost() that has a switch like ApplyAddon
+\#5. Connect addOns to the cost of a troop
+\#6. we can give the addons a type!
+\#Direct: just add the points, it's text
+\#ReplaceItem: also takes a Remove and an Add paramter. If checked, replace. If unchecked, inverse.
+\#Increase ModelNum: by amount.
+\#and DON'T increase the cost if not direct
+\#7. Unitcount is not multiplying by modelcount

@@ -55,6 +55,7 @@ app.controller('builderCtrl', function($scope, $http){
 		$scope.myArmy.delete(unit);
 		$scope.myArmyArray = Array.from($scope.myArmy); 
 		$scope.models[unit.Name] = [];
+		updateEnabledUnits();
 	}
 	
 	$scope.calculateArmyCost = function(){
@@ -84,6 +85,9 @@ app.controller('builderCtrl', function($scope, $http){
 				$scope.models[unit.Name].push(model)
 			}
 		});
+		
+		updateEnabledUnits();
+		
 		console.log("Sel unit: ");
 		console.log($scope.selUnit);
 		console.log("army arrmy:");
@@ -93,6 +97,12 @@ app.controller('builderCtrl', function($scope, $http){
 		console.log("Models: ");
 		console.log($scope.models);
 		console.log("");
+	}
+	
+	function updateEnabledUnits() {
+		$scope.availUnits.forEach((unit) => {
+			unit.disabled = $scope.models[unit.Name] != undefined && $scope.models[unit.Name].length > 0;
+		});
 	}
 	
 	function cloneUnit(unit) {
