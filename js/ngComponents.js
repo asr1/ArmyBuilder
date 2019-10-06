@@ -67,27 +67,31 @@ app.controller('builderCtrl', function($scope, $http){
 	}
 
 	$scope.unitAddonExists = function(unit) {
+		var ret = false;	
 		if (unit.AddOns.length === 0) {
-			return false;
+			ret = false;
 		}
-		unit.AddOns.forEach( (addon) => {
+		unit.AddOns.forEach( (id) => {
+			var addon = $scope.getAddon(id);
 			if(addon.Level === "Unit") {
-				return true;
+				ret = true;
 			}
 		});
-		return false;
+		return ret;
 	}
 
 	$scope.modelAddonExists = function(unit) {
+		var ret = false;
 		if (unit.AddOns.length === 0) {
 			return false;
 		}
-		unit.AddOns.forEach( (addon) => {
+		unit.AddOns.forEach( (id) => {
+			var addon = $scope.getAddon(id);
 			if(addon.Level === "Model") {
-				return true;
+				ret = true;
 			}
 		});
-		return false;
+		return ret;
 	}
 	
 	$scope.getAbility = function(id) {

@@ -29,7 +29,7 @@ a {
 h6.Subheading {
   display: block;
   font-size: 1.125em;
-  margin-top: 0.67em;
+  margin-top: 0.267em;
   margin-bottom: 0.1167em;
   margin-left: 0;
   margin-right: 0;
@@ -39,8 +39,8 @@ h6.Subheading {
 h5.Subheading {
   display: block;
   font-size: 1.15em;
-  margin-top: 0.67em;
-  margin-bottom: 0.67em;
+  margin-top: 0.267em;
+  margin-bottom: 0.1167em;
   margin-left: 0;
   margin-right: 0;
   font-weight: bold;
@@ -54,11 +54,23 @@ div.unitBody {
 	margin-left: 1em;
 }
 
+div.gearItem {
+	margin-left: 1em;
+}
+
+div.addOnItem {
+	margin-left: 1em;
+}
+
 div.modelHeader {
 	margin-left: 1.5em;
 }
 
 div.modelBody {
+	margin-left: 2em;
+}
+
+div.abilityBody {
 	margin-left: 2em;
 }
 
@@ -73,6 +85,14 @@ span.abilityName {
 	font-size: 1.015em;
 	font-style: bold;
 	font-weight: bold;
+}
+
+p.modelName {
+	font-style: bold;
+	font-weight: bold;
+	margin-bottom: 0.1167em;
+	font-size: 1.18em;
+	margin-left: 1em;
 }
 
 .section > div:nth-of-type(2n+1){

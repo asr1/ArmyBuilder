@@ -1,9 +1,8 @@
 TODO:
-17. More CSS Formatting
 18. Add support for psykers and their abilities (including has and has x from: [so I can say has #1, has 2 from #5, 6, 7]).
-19. Need support for model-level abilities and unit-level
-	maybe all at unit level?
 22. Save/load favorite armies?
+\#19. Need support for model-level abilities and unit-level -- solved by making all at unit level
+\#17. More CSS Formatting
 \#30. Make the unit selector box taller
 \#28. Models named different than unit names.
 \#29. Verify no bug when remove unit w/ addon
