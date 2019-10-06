@@ -116,6 +116,7 @@ app.controller('builderCtrl', function($scope, $http){
 		$scope.myArmy.delete(unit);
 		$scope.myArmyArray = Array.from($scope.myArmy); 
 		$scope.models[unit.Name] = [];
+		$scope.chosenPowers[unit.Name] = [];
 		updateEnabledUnits();
 		deregisterAddOnStatus(unit.Name)
 	}
