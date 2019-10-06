@@ -79,7 +79,7 @@
 				"Gear": [3, 7, 14, 15],
 				"Powers": {
 					"Known": [1],
-					"Optoins": [
+					"Options": [
 						{
 							"Amount": 2,
 							"From": [2,3,4]

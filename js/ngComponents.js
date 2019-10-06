@@ -28,6 +28,7 @@ app.controller('builderCtrl', function($scope, $http){
 	$scope.addOnCosts = {};
 	$scope.models = {};
 	$scope.enabledAddOns = {}
+	$scope.chosenPowers = {};
 
 	$scope.processUnits = function() {
 			$scope.availUnits = [];
@@ -58,6 +59,7 @@ app.controller('builderCtrl', function($scope, $http){
 		}
 	}
 	
+
 	$scope.itemAbilityExists = function(item) {
 		return $scope.getGear(item).Ability != "";
 	} 
@@ -80,6 +82,10 @@ app.controller('builderCtrl', function($scope, $http){
 		return ret;
 	}
 
+	$scope.powerExists = function(unit) {
+		return unit.Powers != undefined;
+	}
+
 	$scope.modelAddonExists = function(unit) {
 		var ret = false;
 		if (unit.AddOns.length === 0) {
@@ -97,6 +103,10 @@ app.controller('builderCtrl', function($scope, $http){
 	$scope.getAbility = function(id) {
 		return $scope.abilities[id -1];
 	}
+
+	$scope.getPower = function(id) {
+		return $scope.powers[id -1];
+	}
 	
 	$scope.getAddon = function(id) {
 		return $scope.addons[id -1];
@@ -112,8 +122,6 @@ app.controller('builderCtrl', function($scope, $http){
 	
 	$scope.addUnit = function(){
 		if (!$scope.selUnit || $scope.selUnit.length == 0) {return;}
-		console.log("")
-		console.log("addUnit")
 		// Add to array if not present in O(selUnit) instead of O(myArmy)
 		$scope.selUnit.reduce((set, elem) => set.add(cloneUnit(elem)), $scope.myArmy);
 		$scope.myArmyArray = Array.from($scope.myArmy); 
@@ -122,14 +130,10 @@ app.controller('builderCtrl', function($scope, $http){
 			if($scope.models[unit.Name] == undefined) {
 				$scope.models[unit.Name] = [];
 			}
-			console.log("Unit name: " + unit.Name);
-			console.log("Number we're adding: " + unit.NumberOfModels);
 			for(let i = 0; i < unit.NumberOfModels; i++) {
 				addModel(unit);
-				console.log("added");
 			}
 		});
-		console.log("");
 		updateEnabledUnits();
 	}
 	
@@ -138,23 +142,17 @@ app.controller('builderCtrl', function($scope, $http){
 		model.Name = getModelName(model, unit);
 		processGear(unit, model);
 		$scope.models[unit.Name].push(model);
-		console.log("We added: " + model.Name);
-
 	}
 	
 	function getModelName(model, unit) {
 		const numModelsInSquad = $scope.models[unit.Name].length;
 		const numSquadNames = unit.SquadNames ? unit.SquadNames.length : 0;
 		if (unit.SquadNames == undefined || numSquadNames <= numModelsInSquad) {
-			console.log("Default name")
 			var ret = model.Name + ' ' + ($scope.models[unit.Name].length + 1 - numSquadNames);
-			console.log(ret)
 			return ret;
 		}
 		else {
-			console.log("Custom name")
 			var ret = unit.SquadNames[numModelsInSquad];
-			console.log(ret);
 			return ret;
 		}
 	}
@@ -169,6 +167,25 @@ app.controller('builderCtrl', function($scope, $http){
 		var total = 0;
 		gearIndexes.forEach((idx) => total += $scope.getGear(idx).Cost);
 		return total;
+	}
+
+	$scope.setChosenPower = function(isChecked, unit, power, model, powerOptionIndex) {
+		initializeChosenPowers(unit, model, powerOptionIndex);
+		var amountToAdd = isChecked ? 1 : -1
+		$scope.chosenPowers[unit.Name][model.Name][powerOptionIndex] += amountToAdd;
+	}
+
+	function initializeChosenPowers(unit, model, powerOptionIndex) {
+		if($scope.chosenPowers[unit.Name] == undefined) { $scope.chosenPowers[unit.Name] = []; }
+		if($scope.chosenPowers[unit.Name][model.Name] == undefined) { $scope.chosenPowers[unit.Name][model.Name] = []; }
+		if($scope.chosenPowers[unit.Name][model.Name][powerOptionIndex] == undefined) { $scope.chosenPowers[unit.Name][model.Name][powerOptionIndex] = 0; }
+	}
+
+	$scope.ShouldDisablePower = function(unit, power, model, powerOptionIndex, amountAllowed, checked) {
+		if(checked) { return false; }
+		initializeChosenPowers(unit, model, powerOptionIndex);
+		var result = $scope.chosenPowers[unit.Name][model.Name][powerOptionIndex] >= amountAllowed;
+		return result;
 	}
 	
 	function updateEnabledUnits() {

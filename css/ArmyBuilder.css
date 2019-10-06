@@ -7,6 +7,12 @@ tr:nth-child(even){
 	background-color: #d3d3d3;
 }
 
+body {
+	margin-left:40px;
+	background-color:#c8c8c8;
+	margin-right:40px;
+}
+
 table, th, td {
    border: 1px solid black;
    margin-left: 50px;
@@ -62,6 +68,10 @@ div.addOnItem {
 	margin-left: 1em;
 }
 
+div.level2Item {
+	margin-left: 1em;
+}
+
 div.modelHeader {
 	margin-left: 1.5em;
 }
@@ -71,7 +81,7 @@ div.modelBody {
 }
 
 div.abilityBody {
-	margin-left: 2em;
+	margin-left: 1em;
 }
 
 div.subtext {
@@ -83,6 +93,12 @@ div.subtext {
 
 span.abilityName {
 	font-size: 1.015em;
+	font-style: bold;
+	font-weight: bold;
+}
+
+span.skillName {
+	font-size: 1.0015em;
 	font-style: bold;
 	font-weight: bold;
 }
@@ -100,4 +116,14 @@ p.modelName {
 }
 .section > div:nth-of-type(2n){
   background-color:#f0eded;
+}
+
+.remove {
+	color:red;
+	cursor:pointer;
+}
+
+.instructions{
+	font-style: bold;
+	font-weight: bold;
 }

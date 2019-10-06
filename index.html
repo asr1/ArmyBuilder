@@ -5,12 +5,12 @@
 		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css">
 		<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:400,600,300,700" type="text/css">
 		
-		<link href="css/ArmyBuilder.css" rel="stylesheet" type="text/css">
 		<link rel="stylesheet" href="https://unpkg.com/purecss@1.0.1/build/pure-min.css" crossorigin="anonymous">
+		<link href="css/ArmyBuilder.css" rel="stylesheet" type="text/css">
 		<title>Army Builder</title>
 	</head>
     
-	<body style="margin-left:40px; background-color:#c8c8c8" ng-app="armyBuilder" ng-controller="builderCtrl">
+	<body  ng-app="armyBuilder" ng-controller="builderCtrl">
 		<h1>Army Builder</h1>
 		<span>
 			Select a game: <select ng-model="selectedGame" ng-options="game.Name for game in games"></select>
@@ -37,14 +37,14 @@
 			</select>
 			
 			<button ng-click="addUnit()" type="button" class="btn btn-default btn-sm">
-				Add<span class="glyphicon glyphicon-plus-sign"></span>
+			Add   <span class="glyphicon glyphicon-plus-sign"></span>
 			</button>
 			<br><br>			
 			<span><h3>Total Army Cost: {{calculateArmyCost()}}</h3></span>
 			<div class="section">
 				<div class="unit" ng-repeat="unit in myArmyArray">
 					<div class="unitHeader">
-						<span class="glyphicon glyphicon-remove" ng-click="removeFromArmy(unit)"> </span><span>{{unit.Name}}</span><span><b> {{calculateUnitCost(unit)}}</b></span>
+						<span class="glyphicon glyphicon-remove remove" title="Remove" ng-click="removeFromArmy(unit)">  </span><span>  {{unit.Name}}</span><span><b> {{calculateUnitCost(unit)}}</b></span>
 					</div>
 					<div class="unitBody">
 						<h6 ng-show="unitAbilityExists(unit)" class="Subheading">Abilities</h6>
@@ -67,6 +67,22 @@
 								<h6 ng-show="modelAddonExists(unit)" class="Subheading">Model Add Ons</h6>
 								<div class="addOnItem" ng-repeat="addon in model.AddOns">
 									<span ng-show="getAddon(addon).Level =='Model'"><span><input ng-model="checked" ng-click="setAddOnCost(checked, unit, addon, model)" type="checkbox"></input> </span><span>{{getAddon(addon).Text}}</span><span> Cost: {{calculateAddOnCost(getAddon(addon), unit)}}</span></span>
+								</div>
+								<h6 ng-show="powerExists(unit)" class="Subheading">Psychic Powers</h6>
+								<div class="level2Item" ng-repeat="power in model.Powers.Known">
+									<span>
+										<span class="skillName">{{getPower(power).Name}}: </span>
+										<span>{{getPower(power).Text}}</span></span>
+								</div>
+								<div class="level2Item" ng-repeat="option in model.Powers.Options track by $index">
+									<span class="level2Item instructions">Choose {{option.Amount}}:<br></span>
+									<div class="level2Item" ng-repeat="power in option.From">
+										<span>
+											<input ng-model="checked" ng-click="setChosenPower(checked, unit, power, model, $parent.$index)" ng-disabled="ShouldDisablePower(unit, power, model, $parent.$index, option.Amount, checked)" type="checkbox"></input>
+											<span class="skillName">{{getPower(power).Name}}: </span>
+											<span>{{getPower(power).Text}}</span></span>
+										 </span>
+									</div>
 								</div>
 							</div>
 						</div>

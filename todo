@@ -1,6 +1,6 @@
 TODO:
-18. Add support for psykers and their abilities (including has and has x from: [so I can say has #1, has 2 from #5, 6, 7]).
 22. Save/load favorite armies?
+\#18. Add support for psykers and their abilities (including has and has x from: [so I can say has #1, has 2 from #5, 6, 7]).
 \#19. Need support for model-level abilities and unit-level -- solved by making all at unit level
 \#17. More CSS Formatting
 \#30. Make the unit selector box taller
