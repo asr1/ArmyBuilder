@@ -67,7 +67,27 @@ app.controller('builderCtrl', function($scope, $http){
 	}
 
 	$scope.unitAddonExists = function(unit) {
-		return unit.AddOns.length > 0;
+		if (unit.AddOns.length === 0) {
+			return false;
+		}
+		unit.AddOns.forEach( (addon) => {
+			if(addon.Level === "Unit") {
+				return true;
+			}
+		});
+		return false;
+	}
+
+	$scope.modelAddonExists = function(unit) {
+		if (unit.AddOns.length === 0) {
+			return false;
+		}
+		unit.AddOns.forEach( (addon) => {
+			if(addon.Level === "Model") {
+				return true;
+			}
+		});
+		return false;
 	}
 	
 	$scope.getAbility = function(id) {
@@ -87,6 +107,9 @@ app.controller('builderCtrl', function($scope, $http){
 	}
 	
 	$scope.addUnit = function(){
+		if (!$scope.selUnit || $scope.selUnit.length == 0) {return;}
+		console.log("")
+		console.log("addUnit")
 		// Add to array if not present in O(selUnit) instead of O(myArmy)
 		$scope.selUnit.reduce((set, elem) => set.add(cloneUnit(elem)), $scope.myArmy);
 		$scope.myArmyArray = Array.from($scope.myArmy); 
@@ -95,12 +118,41 @@ app.controller('builderCtrl', function($scope, $http){
 			if($scope.models[unit.Name] == undefined) {
 				$scope.models[unit.Name] = [];
 			}
+			console.log("Unit name: " + unit.Name);
+			console.log("Number we're adding: " + unit.NumberOfModels);
 			for(let i = 0; i < unit.NumberOfModels; i++) {
 				addModel(unit);
+				console.log("added");
 			}
 		});
-		
+		console.log("");
 		updateEnabledUnits();
+	}
+	
+	function addModel(unit) {
+		var model = cloneUnit(unit);
+		model.Name = getModelName(model, unit);
+		processGear(unit, model);
+		$scope.models[unit.Name].push(model);
+		console.log("We added: " + model.Name);
+
+	}
+	
+	function getModelName(model, unit) {
+		const numModelsInSquad = $scope.models[unit.Name].length;
+		const numSquadNames = unit.SquadNames ? unit.SquadNames.length : 0;
+		if (unit.SquadNames == undefined || numSquadNames <= numModelsInSquad) {
+			console.log("Default name")
+			var ret = model.Name + ' ' + ($scope.models[unit.Name].length + 1 - numSquadNames);
+			console.log(ret)
+			return ret;
+		}
+		else {
+			console.log("Custom name")
+			var ret = unit.SquadNames[numModelsInSquad];
+			console.log(ret);
+			return ret;
+		}
 	}
 	
 	$scope.calculateArmyCost = function(){
@@ -185,13 +237,6 @@ app.controller('builderCtrl', function($scope, $http){
 		});
 
 		return shouldDisable;
-	}
-
-	function addModel(unit) {
-		var model = cloneUnit(unit);
-		model.Name += ' ' + ($scope.models[unit.Name].length + 1);
-		processGear(unit, model);
-		$scope.models[unit.Name].push(model);
 	}
 	
 	function processGear(unit, model) {

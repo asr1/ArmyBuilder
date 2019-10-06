@@ -97,6 +97,7 @@
 			},
 			{
 				"Name": "Plague Marines",
+				"SquadNames": ["Plague Champion"],
 				"NumberOfModels": 5,
 				"Cost": 21,
 				"Abilities": [7],
