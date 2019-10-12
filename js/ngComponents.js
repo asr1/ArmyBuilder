@@ -23,49 +23,38 @@ app.controller('builderCtrl', function($scope, $http){
 	$scope.buffer = 5; //Padding for addSpaces
 	$scope.myArmy = new Set();
 	$scope.myArmyArray = [];
-	$scope.armyCost = 0; // alternatively could have a calculate ArmyCost function
 
 	$scope.addOnCosts = {};
 	$scope.models = {};
 	$scope.enabledAddOns = {}
 	$scope.chosenPowers = {};
-
-	$scope.processUnits = function() {
-			$scope.availUnits = [];
-			if(Array.isArray($scope.selFac)) {
-				for(let i = 0; i < $scope.selFac.length; i++) {
-					$scope.availUnits = $scope.availUnits.concat($scope.selFac[i].Units);
-				}
-			}
-			$scope.availUnits.forEach((unit) => {
-				if(unit.Name.length > $scope.longestUnitNameLength) {
-					$scope.longestUnitNameLength = unit.Name.length;
-				}
-			});
-	}
 	
 	$scope.getGear = function(id) {
 		return $scope.gear[id -1];
 	}
 
-	$scope.getPowers = function(discipline) { //TODO redo this
+	$scope.getAbility = function(id) {
+		return $scope.abilities[id -1];
+	}
 
-		if($scope.powers){
-			$scope.powers.forEach( (power) => {
-				if(power.Discipline === discipline) {
-					return power.Powers;
-				}
-			});
-		}
+	$scope.getPower = function(id) {
+		return $scope.powers[id -1];
 	}
 	
-
+	$scope.getAddon = function(id) {
+		return $scope.addons[id -1];
+	}
+	
 	$scope.itemAbilityExists = function(item) {
 		return $scope.getGear(item).Ability != "";
 	} 
 
 	$scope.unitAbilityExists = function(unit) {
 		return unit.Abilities.length > 0;
+	}
+
+	$scope.powerExists = function(unit) {
+		return unit.Powers != undefined;
 	}
 
 	$scope.unitAddonExists = function(unit) {
@@ -82,10 +71,6 @@ app.controller('builderCtrl', function($scope, $http){
 		return ret;
 	}
 
-	$scope.powerExists = function(unit) {
-		return unit.Powers != undefined;
-	}
-
 	$scope.modelAddonExists = function(unit) {
 		var ret = false;
 		if (unit.AddOns.length === 0) {
@@ -100,18 +85,20 @@ app.controller('builderCtrl', function($scope, $http){
 		return ret;
 	}
 	
-	$scope.getAbility = function(id) {
-		return $scope.abilities[id -1];
-	}
+	$scope.processUnits = function() {
+			$scope.availUnits = [];
+			if(Array.isArray($scope.selFac)) {
+				for(let i = 0; i < $scope.selFac.length; i++) {
+					$scope.availUnits = $scope.availUnits.concat($scope.selFac[i].Units);
+				}
+			}
+			$scope.availUnits.forEach((unit) => {
+				if(unit.Name.length > $scope.longestUnitNameLength) {
+					$scope.longestUnitNameLength = unit.Name.length;
+				}
+			});
+	}	
 
-	$scope.getPower = function(id) {
-		return $scope.powers[id -1];
-	}
-	
-	$scope.getAddon = function(id) {
-		return $scope.addons[id -1];
-	}
-	
 	$scope.removeFromArmy = function(unit){
 		$scope.myArmy.delete(unit);
 		$scope.myArmyArray = Array.from($scope.myArmy); 
@@ -138,36 +125,10 @@ app.controller('builderCtrl', function($scope, $http){
 		updateEnabledUnits();
 	}
 	
-	function addModel(unit) {
-		var model = cloneUnit(unit);
-		model.Name = getModelName(model, unit);
-		processGear(unit, model);
-		$scope.models[unit.Name].push(model);
-	}
-	
-	function getModelName(model, unit) {
-		const numModelsInSquad = $scope.models[unit.Name].length;
-		const numSquadNames = unit.SquadNames ? unit.SquadNames.length : 0;
-		if (unit.SquadNames == undefined || numSquadNames <= numModelsInSquad) {
-			var ret = model.Name + ' ' + ($scope.models[unit.Name].length + 1 - numSquadNames);
-			return ret;
-		}
-		else {
-			var ret = unit.SquadNames[numModelsInSquad];
-			return ret;
-		}
-	}
-	
 	$scope.calculateArmyCost = function(){
 		var cost = 0;
 		$scope.myArmyArray.forEach((unit) => cost += $scope.calculateUnitCost(unit));
 		return cost;
-	}
-	
-	$scope.calculateModelGearCost = function(gearIndexes) {
-		var total = 0;
-		gearIndexes.forEach((idx) => total += $scope.getGear(idx).Cost);
-		return total;
 	}
 
 	$scope.setChosenPower = function(isChecked, unit, power, model, powerOptionIndex) {
@@ -176,72 +137,11 @@ app.controller('builderCtrl', function($scope, $http){
 		$scope.chosenPowers[unit.Name][model.Name][powerOptionIndex] += amountToAdd;
 	}
 
-	function initializeChosenPowers(unit, model, powerOptionIndex) {
-		if($scope.chosenPowers[unit.Name] == undefined) { $scope.chosenPowers[unit.Name] = []; }
-		if($scope.chosenPowers[unit.Name][model.Name] == undefined) { $scope.chosenPowers[unit.Name][model.Name] = []; }
-		if($scope.chosenPowers[unit.Name][model.Name][powerOptionIndex] == undefined) { $scope.chosenPowers[unit.Name][model.Name][powerOptionIndex] = 0; }
-	}
-
 	$scope.ShouldDisablePower = function(unit, power, model, powerOptionIndex, amountAllowed, checked) {
 		if(checked) { return false; }
 		initializeChosenPowers(unit, model, powerOptionIndex);
 		var result = $scope.chosenPowers[unit.Name][model.Name][powerOptionIndex] >= amountAllowed;
 		return result;
-	}
-	
-	function updateEnabledUnits() {
-		$scope.availUnits.forEach((unit) => {
-			unit.disabled = $scope.models[unit.Name] != undefined && $scope.models[unit.Name].length > 0;
-		});
-	}
-	
-	function cloneUnit(unit) {
-		var copy = {};
-		copy.Name = unit.Name
-		copy.NumberOfModels = unit.NumberOfModels
-		copy.Cost = unit.Cost
-		copy.SeparateGear = unit.SeparateGear;
-		copy.Powers = unit.Powers;
-		copy.Abilities = unit.Abilities.slice(0);
-		copy.AddOns = unit.AddOns.slice(0);
-		copy.Gear = unit.Gear.slice(0);
-		return copy;
-	}
-
-	$scope.getAddOnCost =function(unit){
-		if($scope.addOnCosts[unit] == undefined) {
-			$scope.addOnCosts[unit] = 0;
-		}
-		return $scope.addOnCosts[unit];
-	}
-	
-	$scope.calculateAddOnCost = function(addOn, unit) {
-		switch(addOn.Type) {
-			case "Direct": 
-				return addOn.Cost
-			break;
-			case "ReplaceItem":
-				return $scope.getGear(addOn.Add).Cost - $scope.getGear(addOn.Remove).Cost;
-			break;
-			case "IncreaseModelNum":
-				return (unit.Cost + $scope.calculateModelGearCost(unit.Gear)) * addOn.Amount;
-			break;
-		}
-	}
-	
-	$scope.replaceItem = function(model, oldItem, newItem, unit) {
-		$scope.models[unit.Name].forEach((soldier) => {
-			if(soldier.Name == model.Name) {// Find the right guy
-				var toRemove = -1;
-				soldier.Gear.forEach((item, idx) => {
-					if(item === oldItem) {
-						toRemove = idx;
-					}
-				});
-				soldier.Gear.splice(toRemove, 1);
-				soldier.Gear.push(newItem);
-			}
-		});
 	}
 	
 	$scope.shouldDisableUnitAddOn = function(unit, id) {		
@@ -261,6 +161,142 @@ app.controller('builderCtrl', function($scope, $http){
 		return shouldDisable;
 	}
 	
+	$scope.calculateUnitCost = function(unit) {
+		return unit.NumberOfModels * unit.Cost + calculateUnitGearCost(unit) + getAddOnCost(unit);
+	}
+	
+	$scope.calculateAddOnCost = function(addOn, unit) {
+		switch(addOn.Type) {
+			case "Direct": 
+				return addOn.Cost
+			break;
+			case "ReplaceItem":
+				return $scope.getGear(addOn.Add).Cost - $scope.getGear(addOn.Remove).Cost;
+			break;
+			case "IncreaseModelNum":
+				return (unit.Cost + calculateModelGearCost(unit.Gear)) * addOn.Amount;
+			break;
+		}
+	}
+	
+	$scope.setAddOnCost = function(isChecked, unit, id, model) {
+		registerAddOnStatus(id, isChecked, unit.Name);
+		const addOn = $scope.getAddon(id);
+		switch(addOn.Type) {
+			case "Direct": 
+				isChecked ?
+					$scope.addOnCosts[unit] += addOn.Cost
+					:
+					$scope.addOnCosts[unit] -= addOn.Cost;
+			break;
+			case "ReplaceItem":
+				if(isChecked) {
+					replaceItem(model, addOn.Remove, addOn.Add, unit);
+				}                            
+				else {                       
+					replaceItem(model, addOn.Add, addOn.Remove, unit);
+				}
+			break;
+			case "IncreaseModelNum":
+				if(isChecked) {
+					increaseNumberOfModels(unit, addOn.Amount);
+				}
+				else {
+					increaseNumberOfModels(unit, -addOn.Amount);
+				}
+			break;
+		}
+	}
+	
+	$scope.addSpaces= function(input){
+		var count = 2*($scope.longestUnitNameLength - input.length) + $scope.buffer; 
+		var result = "";
+		for(var i = 0; i < count; i++){
+			result += String.fromCharCode(160);
+		}
+		return result;
+	};
+	
+	//"Private" functions not exposed to HTML
+	
+	function increaseNumberOfModels(unit, amount) {
+		$scope.myArmyArray.forEach((elem) => {
+			if(elem.Name == unit.Name) {
+				elem.NumberOfModels += amount;
+			}
+		});
+		if(amount > 0){
+			addModel(unit);
+		}
+		else {
+			amount *= -1;
+			for(let i = 0; i < amount; i++);
+			$scope.models[unit.Name].pop();
+		}
+	}
+	
+	function replaceItem(model, oldItem, newItem, unit) {
+		$scope.models[unit.Name].forEach((soldier) => {
+			if(soldier.Name == model.Name) {// Find the right guy
+				var toRemove = -1;
+				soldier.Gear.forEach((item, idx) => {
+					if(item === oldItem) {
+						toRemove = idx;
+					}
+				});
+				soldier.Gear.splice(toRemove, 1);
+				soldier.Gear.push(newItem);
+			}
+		});
+	}
+	
+	 function getAddOnCost(unit) {
+		if($scope.addOnCosts[unit] == undefined) {
+			$scope.addOnCosts[unit] = 0;
+		}
+		return $scope.addOnCosts[unit];
+	}
+	
+	function calculateModelGearCost(gearIndexes) {
+		var total = 0;
+		gearIndexes.forEach((idx) => total += $scope.getGear(idx).Cost);
+		return total;
+	}
+	
+	function updateEnabledUnits() {
+		$scope.availUnits.forEach((unit) => {
+			unit.disabled = $scope.models[unit.Name] != undefined && $scope.models[unit.Name].length > 0;
+		});
+	}
+	
+	function calculateUnitGearCost(unit) {
+		if($scope.models[unit.Name] == undefined) { return 0; }
+		var total = 0;
+		$scope.models[unit.Name].forEach( (model) => {
+			total += calculateModelGearCost(model.Gear)
+		});
+		return total;
+	}
+	
+	function cloneUnit(unit) {
+		var copy = {};
+		copy.Name = unit.Name
+		copy.NumberOfModels = unit.NumberOfModels
+		copy.Cost = unit.Cost
+		copy.SeparateGear = unit.SeparateGear;
+		copy.Powers = unit.Powers;
+		copy.Abilities = unit.Abilities.slice(0);
+		copy.AddOns = unit.AddOns.slice(0);
+		copy.Gear = unit.Gear.slice(0);
+		return copy;
+	}
+	
+	function initializeChosenPowers(unit, model, powerOptionIndex) {
+		if($scope.chosenPowers[unit.Name] == undefined) { $scope.chosenPowers[unit.Name] = []; }
+		if($scope.chosenPowers[unit.Name][model.Name] == undefined) { $scope.chosenPowers[unit.Name][model.Name] = []; }
+		if($scope.chosenPowers[unit.Name][model.Name][powerOptionIndex] == undefined) { $scope.chosenPowers[unit.Name][model.Name][powerOptionIndex] = 0; }
+	}
+
 	function processGear(unit, model) {
 		if(!unit.SeparateGear) {
 			return;
@@ -292,22 +328,6 @@ app.controller('builderCtrl', function($scope, $http){
 		return model;
 	}
 
-	$scope.increaseNumberOfModels = function(unit, amount) {
-		$scope.myArmyArray.forEach((elem) => {
-			if(elem.Name == unit.Name) {
-				elem.NumberOfModels += amount;
-			}
-		});
-		if(amount > 0){
-			addModel(unit);
-		}
-		else {
-			amount *= -1;
-			for(let i = 0; i < amount; i++);
-			$scope.models[unit.Name].pop();
-		}
-	}
-
 	function registerAddOnStatus(id, isEnabled, unitName){
 		if(!$scope.enabledAddOns[unitName]){
 			$scope.enabledAddOns[unitName] = [];
@@ -315,58 +335,29 @@ app.controller('builderCtrl', function($scope, $http){
 		$scope.enabledAddOns[unitName][id] = isEnabled;
 	}
 	
+		
+	function addModel(unit) {
+		var model = cloneUnit(unit);
+		model.Name = getModelName(model, unit);
+		processGear(unit, model);
+		$scope.models[unit.Name].push(model);
+	}
+	
+	function getModelName(model, unit) {
+		const numModelsInSquad = $scope.models[unit.Name].length;
+		const numSquadNames = unit.SquadNames ? unit.SquadNames.length : 0;
+		if (unit.SquadNames == undefined || numSquadNames <= numModelsInSquad) {
+			var ret = model.Name + ' ' + ($scope.models[unit.Name].length + 1 - numSquadNames);
+			return ret;
+		}
+		else {
+			var ret = unit.SquadNames[numModelsInSquad];
+			return ret;
+		}
+	}
+	
 	function deregisterAddOnStatus(unitName) {
 		$scope.enabledAddOns[unitName] = [];
 	}
 	
-	$scope.setAddOnCost = function(isChecked, unit, id, model) {
-		registerAddOnStatus(id, isChecked, unit.Name);
-		const addOn = $scope.getAddon(id);
-		switch(addOn.Type) {
-			case "Direct": 
-				isChecked ?
-					$scope.addOnCosts[unit] += addOn.Cost
-					:
-					$scope.addOnCosts[unit] -= addOn.Cost;
-			break;
-			case "ReplaceItem":
-				if(isChecked) {
-					$scope.replaceItem(model, addOn.Remove, addOn.Add, unit);
-				}                            
-				else {                       
-					$scope.replaceItem(model, addOn.Add, addOn.Remove, unit);
-				}
-			break;
-			case "IncreaseModelNum":
-				if(isChecked) {
-					$scope.increaseNumberOfModels(unit, addOn.Amount);
-				}
-				else {
-					$scope.increaseNumberOfModels(unit, -addOn.Amount);
-				}
-			break;
-		}
-	}
-	
-	$scope.calculateUnitCost = function(unit) {
-		return unit.NumberOfModels * unit.Cost + $scope.calculateUnitGearCost(unit) + $scope.getAddOnCost(unit);
-	}
-	
-	$scope.calculateUnitGearCost = function(unit) {
-		if($scope.models[unit.Name] == undefined) { return 0; }
-		var total = 0;
-		$scope.models[unit.Name].forEach( (model) => {
-			total += $scope.calculateModelGearCost(model.Gear)
-		});
-		return total;
-	}
-	
-	$scope.addSpaces= function(input){
-		var count = 2*($scope.longestUnitNameLength - input.length) + $scope.buffer; 
-		var result = "";
-		for(var i = 0; i < count; i++){
-			result += String.fromCharCode(160);
-		}
-		return result;
-	};
 });
