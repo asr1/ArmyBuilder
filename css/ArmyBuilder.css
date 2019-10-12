@@ -56,18 +56,6 @@ div.unitHeader {
 	margin-left: .5em;
 }
 
-div.unitBody {
-	margin-left: 1em;
-}
-
-div.gearItem {
-	margin-left: 1em;
-}
-
-div.addOnItem {
-	margin-left: 1em;
-}
-
 div.level2Item {
 	margin-left: 1em;
 }
@@ -78,10 +66,6 @@ div.modelHeader {
 
 div.modelBody {
 	margin-left: 2em;
-}
-
-div.abilityBody {
-	margin-left: 1em;
 }
 
 div.subtext {
