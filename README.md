@@ -14,7 +14,7 @@ This army builder depends on AngularJs (1.6.4) and JQuery, both of which are inc
 
 ## Contributing
 
-## Versioning
+Pull requests are welcome!
 
 ## License
 
