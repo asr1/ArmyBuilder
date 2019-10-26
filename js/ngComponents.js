@@ -148,6 +148,7 @@ app.controller('builderCtrl', function($scope, $http){
 		initializeChosenPowers(unit, model, powerOptionIndex);
 		const amountToAdd = isChecked ? 1 : -1
 		$scope.chosenPowers[unit.Name][model.Name][powerOptionIndex] += amountToAdd;
+		addPowerToUnit(unit.Name, power, model.Name);
 	}
 
 	$scope.ShouldDisablePower = function(unit, power, model, powerOptionIndex, amountAllowed, checked) {
@@ -250,6 +251,7 @@ app.controller('builderCtrl', function($scope, $http){
 	}
 	
 	//"Private" functions not exposed to HTML
+	
 	function buildBlob() {
 		let parts = [];
 		parts = addPartToArray(parts, getHeaderInformation());
@@ -258,6 +260,7 @@ app.controller('builderCtrl', function($scope, $http){
 		parts = addPartToArray(parts, $scope.models, true);
 		parts = addPartToArray(parts, "ADDONS");
 		parts = addPartToArray(parts, $scope.enabledAddOns, true);
+		parts = addPartToArray(parts, "END");
 		
 		return new Blob(parts, {type: 'text/plain'});
 	}
@@ -269,6 +272,22 @@ app.controller('builderCtrl', function($scope, $http){
 		part = part + "\n";
 		arr.push(part);
 		return arr;
+	}
+	
+	function addPowerToUnit(unitName, power, modelName) {
+		const model = getModelFromUnit(unitName, modelName);
+		if(!model.SelectedPowers) { model.SelectedPowers = []; }
+		model.SelectedPowers.push(power);
+	}
+	
+	function getModelFromUnit(unitName, modelName) {
+		let ret = undefined;
+		$scope.models[unitName].forEach( model => {
+			if (model.Name === modelName) { 
+				ret = model;
+			}
+		});
+		return ret;
 	}
 	
 	function  getHeaderInformation() {

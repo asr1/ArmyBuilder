@@ -1,9 +1,97 @@
 Army Builder
-1.0
-Warhammer 40k 8th edition
-Models
-Abilities
-Unit addons
-gear
-Model add ons
-Psychic power
+1.00
+Warhammer 40k 8th Edition
+MODELS
+{
+  "Malignant Plaguecaster": [
+    {
+      "Name": "Malignant Plaguecaster 1",
+      "NumberOfModels": 1,
+      "Cost": 95,
+      "Powers": {
+        "Known": [
+          1
+        ],
+        "Options": [
+          {
+            "Amount": 2,
+            "From": [
+              2,
+              3,
+              4
+            ]
+          }
+        ]
+      },
+      "Abilities": [
+        7,
+        13
+      ],
+      "AddOns": [],
+      "Gear": [
+        3,
+        7,
+        14,
+        15
+      ],
+      "SelectedPowers": [
+        3
+      ]
+    }
+  ],
+  "Poxwalkers": [],
+  "Primaris Lieutenants": [
+    {
+      "Name": "Primaris Lieutenants 1",
+      "NumberOfModels": 1,
+      "Cost": 60,
+      "Abilities": [
+        1,
+        3
+      ],
+      "AddOns": [
+        1,
+        2
+      ],
+      "Gear": [
+        2,
+        3,
+        6,
+        7
+      ]
+    },
+    {
+      "Name": "Primaris Lieutenants 2",
+      "NumberOfModels": 2,
+      "Cost": 60,
+      "Abilities": [
+        1,
+        3
+      ],
+      "AddOns": [
+        1,
+        2
+      ],
+      "Gear": [
+        3,
+        6,
+        7,
+        10
+      ]
+    }
+  ]
+}
+ADDONS
+{
+  "Poxwalkers": [],
+  "Primaris Lieutenants": [
+    null,
+    null,
+    true
+  ],
+  "Primaris Lieutenants 2": [
+    null,
+    true
+  ]
+}
+END

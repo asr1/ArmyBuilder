@@ -1,4 +1,5 @@
 Make ProcessUpload build the army
-Make save work
 In upload, make sure that Models has an element -- if it says ModelName: [], It has been removed
-update the format and sample files to match reality
+	This is true for many areas
+gear will be processed from the Models section, as will powers
+Consider changing From null null true to actual numbers for addons.
