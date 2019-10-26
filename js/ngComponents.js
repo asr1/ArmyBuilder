@@ -423,7 +423,9 @@ app.controller('builderCtrl', function($scope, $http){
 	}
 	
 	function deregisterAddOnStatus(unitName) {
-		$scope.enabledAddOns[unitName] = [];
+		if($scope.enabledAddOns[unitName]) {
+			$scope.enabledAddOns[unitName] = [];
+		}
 	}
 	
 });

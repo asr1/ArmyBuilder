@@ -1,5 +1,4 @@
 Make ProcessUpload build the army
 Make save work
-In upoad, make sure that Models has an element -- if it says ModelName: [], It has been removed
+In upload, make sure that Models has an element -- if it says ModelName: [], It has been removed
 update the format and sample files to match reality
-change var to let / const
