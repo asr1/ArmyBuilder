@@ -4,6 +4,9 @@ app.config(['$compileProvider',
         $compileProvider.aHrefSanitizationWhitelist(/^\s*(https?|ftp|mailto|tel|file|blob):/);
 }]);
 app.controller('builderCtrl', function($scope, $http){
+	const CURRENT_FILE_FORMAT_VERSION = 1.0
+	
+	
 	$http.get('data/squads.json').then(function(res){
 		$scope.games = res.data[Object.keys(res.data)[0]];
 		$scope.selectedGame = $scope.games[0];
@@ -240,9 +243,26 @@ app.controller('builderCtrl', function($scope, $http){
 	
 	//"Private" functions not exposed to HTML
 	function buildBlob() {
-		return new Blob([angular.toJson($scope.models, true)], {type: 'text/plain'});
+		let parts = [];
+		parts = addPartToArray(parts, getHeaderInformation());
+		parts = addPartToArray(parts, $scope.selectedGame.Name);
+		parts = addPartToArray(parts, $scope.models, true);
+		
+		return new Blob(parts, {type: 'text/plain'});
 	}
 	
+	function addPartToArray(arr, part, isJson = false) {
+		if(isJson) {
+			part = [angular.toJson(part, true)]
+		}
+		part = part + "\n";
+		arr.push(part);
+		return arr;
+	}
+	
+	function  getHeaderInformation() {
+		return "Army Builder" + "\n" + CURRENT_FILE_FORMAT_VERSION.toFixed(2);
+	}
 	
 	function processUpload(text) {
 		console.log(text); //TODO
