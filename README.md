@@ -4,6 +4,8 @@ An army builder for miniatures game. Right now, it only supports Warhammer 40k 8
 Today, the only supported units are those included in the Dark Imperium starter box.
 More troops and more systems may be added in the future.
 
+You can see the live version hosted [here](https://solipstry.com/projects/army/). 
+
 ## Getting Started
 
 You should be able to clone this and use it immediately on any classic server (including localhost).
