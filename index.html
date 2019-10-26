@@ -12,6 +12,18 @@
     
 	<body  ng-app="armyBuilder" ng-controller="builderCtrl">
 		<h1>Army Builder</h1>
+		
+		<p>Upload an existing army file</p>
+			<input type="file" accept='text/plain' ng-model="uploadFile" onchange="angular.element(this).scope().onUploadFile()" id="UploadArmyInput" />
+		<br>
+			<div ng-if="myArmyArray.length > 0">
+				<button ng-click="buildArmyFile()">Save your army</button>
+				<a download="myArmy.rme" ng-if="readyToDownload" href="{{downloadFile}}">Download army File</a>
+			</div>
+		<br>
+		
+		OR
+		<br>
 		<span>
 			Select a game: <select ng-model="selectedGame" ng-options="game.Name for game in games"></select>
 		</span>
@@ -94,7 +106,6 @@
 		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 		<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.4/angular.js"></script>
-		<script src="js/Models.js"></script>
 		<script src="js/ngComponents.js"></script>
 		<script src="//cdnjs.cloudflare.com/ajax/libs/angular-filter/0.5.15/angular-filter.min.js"></script>
 	</body>

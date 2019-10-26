@@ -1,5 +1,8 @@
 var app = angular.module('armyBuilder', []);
-
+app.config(['$compileProvider',
+    function ($compileProvider) {
+        $compileProvider.aHrefSanitizationWhitelist(/^\s*(https?|ftp|mailto|tel|file|blob):/);
+}]);
 app.controller('builderCtrl', function($scope, $http){
 	$http.get('data/squads.json').then(function(res){
 		$scope.games = res.data[Object.keys(res.data)[0]];
@@ -217,7 +220,25 @@ app.controller('builderCtrl', function($scope, $http){
 		return result;
 	};
 	
+	$scope.onUploadFile = function() {
+		let file = document.getElementById('UploadArmyInput').files[0];
+		let reader = new FileReader();
+		reader.readAsText(file);
+		reader.onload = () => processUpload(reader.result);
+	}
+	
+	$scope.buildArmyFile = function() {
+		var blob = new Blob([angular.toJson($scope.myArmyArray, true)], {type: 'text/plain'});
+		var fileName = "my army";
+		$scope.downloadFile = (window.URL || window.webkitURL).createObjectURL( blob );
+		$scope.readyToDownload=true;
+	}
+	
 	//"Private" functions not exposed to HTML
+	
+	function processUpload(text) {
+		console.log(text);
+	}
 	
 	function increaseNumberOfModels(unit, amount) {
 		$scope.myArmyArray.forEach((elem) => {
