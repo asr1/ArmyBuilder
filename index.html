@@ -17,8 +17,7 @@
 			<input type="file" accept='text/plain' ng-model="uploadFile" onchange="angular.element(this).scope().onUploadFile()" id="UploadArmyInput" />
 		<br>
 			<div ng-if="myArmyArray.length > 0">
-				<button ng-click="buildArmyFile()">Save your army</button>
-				<a download="myArmy.rme" ng-if="readyToDownload" href="{{downloadFile}}">Download army File</a>
+				<button ng-click="downloadArmyFile()">Download your army</button>
 			</div>
 		<br>
 		

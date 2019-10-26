@@ -1,0 +1,9 @@
+Army Builder
+Version Number
+Name of Game
+Models as a JSON
+Abilities as JSON
+Unit addons
+gear
+Model add ons
+Psychic power

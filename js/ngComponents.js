@@ -227,17 +227,25 @@ app.controller('builderCtrl', function($scope, $http){
 		reader.onload = () => processUpload(reader.result);
 	}
 	
-	$scope.buildArmyFile = function() {
-		var blob = new Blob([angular.toJson($scope.myArmyArray, true)], {type: 'text/plain'});
-		var fileName = "my army";
-		$scope.downloadFile = (window.URL || window.webkitURL).createObjectURL( blob );
-		$scope.readyToDownload=true;
+	$scope.downloadArmyFile = function() {
+		let blob = buildBlob();
+		let fileName = "my army.rme";
+		let downloadFile = (window.URL || window.webkitURL).createObjectURL( blob );
+		
+		let a = document.createElement("a");
+		a.href = downloadFile;
+		a.download = fileName;
+		a.click();
 	}
 	
 	//"Private" functions not exposed to HTML
+	function buildBlob() {
+		return new Blob([angular.toJson($scope.models, true)], {type: 'text/plain'});
+	}
+	
 	
 	function processUpload(text) {
-		console.log(text);
+		console.log(text); //TODO
 	}
 	
 	function increaseNumberOfModels(unit, amount) {
