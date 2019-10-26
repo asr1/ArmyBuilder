@@ -239,6 +239,7 @@ app.controller('builderCtrl', function($scope, $http){
 		a.href = downloadFile;
 		a.download = fileName;
 		a.click();
+		URL.revokeObjectURL(downloadFile) 
 	}
 	
 	//"Private" functions not exposed to HTML
@@ -246,7 +247,10 @@ app.controller('builderCtrl', function($scope, $http){
 		let parts = [];
 		parts = addPartToArray(parts, getHeaderInformation());
 		parts = addPartToArray(parts, $scope.selectedGame.Name);
+		parts = addPartToArray(parts, "MODELS");
 		parts = addPartToArray(parts, $scope.models, true);
+		parts = addPartToArray(parts, "ADDONS");
+		parts = addPartToArray(parts, $scope.enabledAddOns, true);
 		
 		return new Blob(parts, {type: 'text/plain'});
 	}

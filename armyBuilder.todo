@@ -1,2 +1,6 @@
 Make ProcessUpload build the army
 Make save work
+In upoad, make sure that Models has an element -- if it says ModelName: [], It has been removed
+update the format and sample files to match reality
+BUG: we dont' differentiate bewteen models for model level add ons when registering.
+change var to let / const
