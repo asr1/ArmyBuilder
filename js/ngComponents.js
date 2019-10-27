@@ -234,6 +234,7 @@ app.controller('builderCtrl', function($scope, $http){
 	};
 	
 	$scope.onUploadFile = function() {
+		clearArmy();
 		let file = document.getElementById('UploadArmyInput').files[0];
 		let reader = new FileReader();
 		reader.readAsText(file);
@@ -253,6 +254,10 @@ app.controller('builderCtrl', function($scope, $http){
 	}
 	
 	//"Private" functions not exposed to HTML
+	
+	function clearArmy() {
+		$scope.myArmyArray.forEach( unit => $scope.removeFromArmy(unit));
+	}
 	
 	function buildBlob() {
 		let parts = [];
