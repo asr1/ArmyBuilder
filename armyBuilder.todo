@@ -1,7 +1,8 @@
 Make ProcessUpload build the army
 In upload, make sure that Models has an element -- if it says ModelName: [], It has been removed
-	This is true for many areas
+	This is true for many areas -- might be irrelevant, actually. Due to json conversion, can probaly ignore
 gear will be processed from the Models section, as will powers
 Consider changing From null null true to actual numbers for addons.
 not sure we know on upload if we have addons checked, only that the gear changed.
 need to ensure the UI disabled elements are correct (for units already added) after upload
+Might need to give models a Unit field so they know what unit they belong to (when saving)

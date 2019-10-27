@@ -139,24 +139,24 @@ app.controller('builderCtrl', function($scope, $http){
 		});
 		updateEnabledUnits();
 	}
-	
+	 
 	$scope.calculateArmyCost = function(){
 		let cost = 0;
 		$scope.myArmyArray.forEach((unit) => cost += $scope.calculateUnitCost(unit));
 		return cost;
 	}
 
-	$scope.setChosenPower = function(isChecked, unit, power, model, powerOptionIndex) {
-		initializeChosenPowers(unit, model, powerOptionIndex);
+	$scope.setChosenPower = function(isChecked, unitName, power, modelName, powerOptionIndex) {
+		initializeChosenPowers(unitName, modelName, powerOptionIndex);
 		const amountToAdd = isChecked ? 1 : -1
-		$scope.chosenPowers[unit.Name][model.Name][powerOptionIndex] += amountToAdd;
-		addPowerToUnit(unit.Name, power, model.Name);
+		$scope.chosenPowers[unitName][modelName][powerOptionIndex] += amountToAdd;
+		addPowerToUnit(unitName, power, modelName);
 	}
 
-	$scope.ShouldDisablePower = function(unit, power, model, powerOptionIndex, amountAllowed, checked) {
+	$scope.ShouldDisablePower = function(unitName, power, modelName, powerOptionIndex, amountAllowed, checked) {
 		if(checked) { return false; }
-		initializeChosenPowers(unit, model, powerOptionIndex);
-		const result = $scope.chosenPowers[unit.Name][model.Name][powerOptionIndex] >= amountAllowed;
+		initializeChosenPowers(unitName, modelName, powerOptionIndex);
+		const result = $scope.chosenPowers[unitName][modelName][powerOptionIndex] >= amountAllowed;
 		return result;
 	}
 	
@@ -337,8 +337,10 @@ app.controller('builderCtrl', function($scope, $http){
 			if(text) { text = this.processFactions(text); }
 			if(text) { text = this.processUnits(text); }
 			if(text) { [text, models] = this.processModels(text); }
-			if(text) { text = this.processAddOns(text, models); } //TODO fix addons
+			if(text) { text = this.processAddOns(text, models); } 
+			//TODO fix addons
 			//TODO process psysker
+			processPsyker(models);
 			
 			$scope.$apply();
 		}
@@ -393,6 +395,18 @@ app.controller('builderCtrl', function($scope, $http){
 			text.unshift(nextLine);
 			const models = JSON.parse(modelJsonString);
 			return [text, models];
+		}
+		
+		processPsyker(models) {
+			models.forEach(model => {
+				if(model.SelectedPowers) {
+					processPower(model);
+				}
+			});
+		}
+		
+		processPower(model) {
+			
 		}
 		
 		processAddOns(text) {
@@ -525,10 +539,10 @@ app.controller('builderCtrl', function($scope, $http){
 		return copy;
 	}
 	
-	function initializeChosenPowers(unit, model, powerOptionIndex) {
-		if($scope.chosenPowers[unit.Name] == undefined) { $scope.chosenPowers[unit.Name] = []; }
-		if($scope.chosenPowers[unit.Name][model.Name] == undefined) { $scope.chosenPowers[unit.Name][model.Name] = []; }
-		if($scope.chosenPowers[unit.Name][model.Name][powerOptionIndex] == undefined) { $scope.chosenPowers[unit.Name][model.Name][powerOptionIndex] = 0; }
+	function initializeChosenPowers(unitName, modelName, powerOptionIndex) {
+		if($scope.chosenPowers[unitName] == undefined) { $scope.chosenPowers[unitName] = []; }
+		if($scope.chosenPowers[unitName][modelName] == undefined) { $scope.chosenPowers[unitName][modelName] = []; }
+		if($scope.chosenPowers[unitName][modelName][powerOptionIndex] == undefined) { $scope.chosenPowers[unitName][modelName][powerOptionIndex] = 0; }
 	}
 
 	function processGear(unit, model) {
