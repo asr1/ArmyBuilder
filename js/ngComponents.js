@@ -340,7 +340,7 @@ app.controller('builderCtrl', function($scope, $http){
 			if(text) { text = this.processAddOns(text, models); } 
 			//TODO fix addons
 			//TODO process psysker
-			processPsyker(models);
+			this.processPsyker(models);
 			
 			$scope.$apply();
 		}
@@ -398,10 +398,13 @@ app.controller('builderCtrl', function($scope, $http){
 		}
 		
 		processPsyker(models) {
-			models.forEach(model => {
+			models = Object.values(models);
+			models.forEach(unit => {
+				unit.forEach( model => {
 				if(model.SelectedPowers) {
-					processPower(model);
+					this.processPower(model);
 				}
+			});
 			});
 		}
 		
