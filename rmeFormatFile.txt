@@ -1,8 +1,10 @@
 Army Builder
 Version Number
 Name of Game
+FACTIONS
+all the factions in the army and their units as an array
 MODELS
-Models as a JSON
+Models as a JSON object
 ADDONS
-Unit and Model addons as a JSON
+Array of ids of all model and unit addons
 END
