@@ -337,20 +337,10 @@ app.controller('builderCtrl', function($scope, $http){
 			if(text) { text = this.processFactions(text); }
 			if(text) { text = this.processUnits(text); }
 			if(text) { [text, models] = this.processModels(text); }
-			if(text) { text = this.processAddOns(text, models); }
+			if(text) { text = this.processAddOns(text, models); } //TODO fix addons
 			//TODO process psysker
 			
 			$scope.$apply();
-			let doneProcessing = false;
-			// while(!doneProcessing) {
-				// var currentLine = text.shift();
-				
-				// ///
-				// console.log(currentLine);
-				// ////
-				
-				// doneProcessing = true;
-			// }
 		}
 		
 		processFactions(text) {
