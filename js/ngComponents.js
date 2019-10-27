@@ -356,14 +356,10 @@ app.controller('builderCtrl', function($scope, $http){
 			if(text) { text = this.processFactions(text); }
 			if(text) { text = this.processUnits(text); }
 			if(text) { [text, models] = this.processModels(text); }
-			//TODO process gear
-			//TODO process psysker
 			
 			$scope.$apply(); //Necessary becase the following require DOM interaction
-				//TODO fix addons
 				if(text) { text = this.processAddOns(text, models); } 
 				this.processPsyker(models);
-			
 			
 			$scope.$apply(); // Done, now apply updates
 		}
@@ -433,16 +429,12 @@ app.controller('builderCtrl', function($scope, $http){
 		
 		processPower(model) {
 			model.SelectedPowers.forEach( power => {
-				var chkbox = document.getElementById(power).click();
-				//$scope.setChosenPower(true, model.unitName, power, model.Name, 0); //Hardcoded to 0 for now.
+				document.getElementById(power).click();
 			});
 			
 		}
 		
 		processAddOns(text) {
-//TODO. The below doesn't work. Need to actuall call Set() function.
-//Not sure how "checked" will work due to scoping
-
 			if(text.shift() !== "ADDONS") {
 				showError(errorMessages.corruptedFile);
 				return;
@@ -455,7 +447,6 @@ app.controller('builderCtrl', function($scope, $http){
 			}
 			text.unshift(nextLine);
 			const addons = JSON.parse(json);
-			//TODO for each addon, check that box
 			addons.forEach( addon => {
 				document.getElementById(addon).click();
 			});
