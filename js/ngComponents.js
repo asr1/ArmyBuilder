@@ -406,6 +406,9 @@ app.controller('builderCtrl', function($scope, $http){
 		}
 		
 		processPower(model) {
+			model.SelectedPowers.forEach( power => {
+				$scope.setChosenPower(true, model.unitName, power, model.Name, 0); //Hardcoded to 0 for now.
+			});
 			
 		}
 		
@@ -600,6 +603,7 @@ app.controller('builderCtrl', function($scope, $http){
 	}
 	
 	function getModelName(model, unit) {
+		model.unitName = unit.Name;
 		const numModelsInSquad = $scope.models[unit.Name].length;
 		const numSquadNames = unit.SquadNames ? unit.SquadNames.length : 0;
 		if (unit.SquadNames == undefined || numSquadNames <= numModelsInSquad) {
