@@ -66,7 +66,7 @@
 						<div class="level2Item" ng-repeat="addon in unit.AddOns">
 							<span ng-show="getAddon(addon).Level == 'Unit'"><span><input ng-disabled="shouldDisableUnitAddOn(unit, addon)" ng-model="checked" ng-click="setAddOnCost(checked, unit, addon)" type="checkbox"></input> </span><span>{{getAddon(addon).Text}}</span><span> Cost: {{calculateAddOnCost(getAddon(addon), unit)}}</span></span>
 						</div>
-						<h5 class="Subheading">Models: ({{unit.NumberOfModels}})</h5>
+						<h5 class="Subheading">Models: ({{models[unit.Name].length}})</h5>
 						<div ng-repeat="model in models[unit.Name] track by $index">
 							<p class="modelName">{{model.Name}}</p>
 							<div class="modelBody">

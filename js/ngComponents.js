@@ -133,7 +133,12 @@ app.controller('builderCtrl', function($scope, $http){
 			if($scope.models[unit.Name] == undefined) {
 				$scope.models[unit.Name] = [];
 			}
-			for(let i = 0; i < unit.NumberOfModels; i++) {
+			if(!unit.StartingNumberOfModels) {
+				unit.StartingNumberOfModels = unit.NumberOfModels;
+			}
+			let numUnits = unit.StartingNumberOfModels;
+			console.log(numUnits);
+			for(let i = 0; i < numUnits; i++) {
 				addModel(unit);
 			}
 		});
@@ -491,7 +496,11 @@ app.controller('builderCtrl', function($scope, $http){
 	function increaseNumberOfModels(unit, amount) {
 		$scope.myArmyArray.forEach((elem) => {
 			if(elem.Name == unit.Name) {
+				if(!elem.StartingNumberOfModels) {
+					elem.StartingNumberOfModels = elem.NumberOfModels;
+				}
 				elem.NumberOfModels += amount;
+				
 			}
 		});
 		if(amount > 0){
