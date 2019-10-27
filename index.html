@@ -89,7 +89,7 @@
 									<span class="level2Item instructions">Choose {{option.Amount}}:<br></span>
 									<div class="level2Item" ng-repeat="power in option.From">
 										<span>
-											<input ng-model="checked" ng-click="setChosenPower(checked, unit.Name, power, model.Name, $parent.$index)" ng-disabled="ShouldDisablePower(unit.Name, power, model.Name, $parent.$index, option.Amount, checked)" type="checkbox"></input>
+											<input ng-model="checked" ng-click="setChosenPower(checked, unit.Name, power, model.Name, $parent.$index, $index)" ng-disabled="ShouldDisablePower(unit.Name, power, model.Name, $parent.$index, option.Amount, checked)" type="checkbox" id="{{getPowerId(model.Name, $parent.$index, $index)}}"></input>
 											<span class="skillName">{{getPower(power).Name}}: </span>
 											<span>{{getPower(power).Text}}</span></span>
 										 </span>

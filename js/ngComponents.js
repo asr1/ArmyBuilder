@@ -146,11 +146,11 @@ app.controller('builderCtrl', function($scope, $http){
 		return cost;
 	}
 
-	$scope.setChosenPower = function(isChecked, unitName, power, modelName, powerOptionIndex) {
+	$scope.setChosenPower = function(isChecked, unitName, power, modelName, powerOptionIndex, checkboxIndex) {
 		initializeChosenPowers(unitName, modelName, powerOptionIndex);
 		const amountToAdd = isChecked ? 1 : -1
 		$scope.chosenPowers[unitName][modelName][powerOptionIndex] += amountToAdd;
-		addPowerToUnit(unitName, power, modelName);
+		addPowerToUnit(unitName, power, modelName, powerOptionIndex, checkboxIndex);
 	}
 
 	$scope.ShouldDisablePower = function(unitName, power, modelName, powerOptionIndex, amountAllowed, checked) {
@@ -241,6 +241,10 @@ app.controller('builderCtrl', function($scope, $http){
 		reader.onload = () => processUpload(reader.result);
 	}
 	
+	$scope.getPowerId = function(modelName, parentIdx, powerIdx){
+		return modelName + ' &section#' + parentIdx + ' &checkbox#' + powerIdx;
+	}
+	
 	$scope.downloadArmyFile = function() {
 		let blob = buildBlob();
 		let fileName = "my army.rme";
@@ -285,10 +289,11 @@ app.controller('builderCtrl', function($scope, $http){
 		return arr;
 	}
 	
-	function addPowerToUnit(unitName, power, modelName) {
+	function addPowerToUnit(unitName, power, modelName, parentIdx, powerIdx) {
 		const model = getModelFromUnit(unitName, modelName);
 		if(!model.SelectedPowers) { model.SelectedPowers = []; }
-		model.SelectedPowers.push(power);
+		var id = $scope.getPowerId(modelName, parentIdx, powerIdx);
+		model.SelectedPowers.push(id);
 	}
 	
 	function getModelFromUnit(unitName, modelName) {
@@ -342,12 +347,16 @@ app.controller('builderCtrl', function($scope, $http){
 			if(text) { text = this.processFactions(text); }
 			if(text) { text = this.processUnits(text); }
 			if(text) { [text, models] = this.processModels(text); }
-			if(text) { text = this.processAddOns(text, models); } 
-			//TODO fix addons
+			//TODO process gear
 			//TODO process psysker
-			this.processPsyker(models);
 			
-			$scope.$apply();
+			$scope.$apply(); //Necessary becase the following require DOM interaction
+				//TODO fix addons
+				if(text) { text = this.processAddOns(text, models); } 
+				this.processPsyker(models);
+			
+			
+			$scope.$apply(); // Done, now apply updates
 		}
 		
 		processFactions(text) {
@@ -415,7 +424,8 @@ app.controller('builderCtrl', function($scope, $http){
 		
 		processPower(model) {
 			model.SelectedPowers.forEach( power => {
-				$scope.setChosenPower(true, model.unitName, power, model.Name, 0); //Hardcoded to 0 for now.
+				var chkbox = document.getElementById(power).click();
+				//$scope.setChosenPower(true, model.unitName, power, model.Name, 0); //Hardcoded to 0 for now.
 			});
 			
 		}
