@@ -1,4 +1,1 @@
-gear will be processed from the Models section, as will powers
-Consider changing From null null true to actual numbers for addons.
-not sure we know on upload if we have addons checked, only that the gear changed.
-need to ensure the UI disabled elements are correct (for units already added) after upload
+Consider changing From null null true to actual numbers for addons for human readability.
