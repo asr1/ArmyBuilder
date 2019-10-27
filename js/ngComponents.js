@@ -34,6 +34,7 @@ app.controller('builderCtrl', function($scope, $http){
 	$scope.models = {};
 	$scope.enabledAddOns = {}
 	$scope.chosenPowers = {};
+	$scope.addOnIndexes = new Set();
 	
 	$scope.allFacs = new Set();
 	
@@ -137,7 +138,6 @@ app.controller('builderCtrl', function($scope, $http){
 				unit.StartingNumberOfModels = unit.NumberOfModels;
 			}
 			let numUnits = unit.StartingNumberOfModels;
-			console.log(numUnits);
 			for(let i = 0; i < numUnits; i++) {
 				addModel(unit);
 			}
@@ -200,9 +200,13 @@ app.controller('builderCtrl', function($scope, $http){
 		}
 	}
 	
-	$scope.setAddOnCost = function(isChecked, unit, id, model) {
-		registerAddOnStatus(id, isChecked, unit.Name, model);
-		const addOn = $scope.getAddon(id);
+	$scope.getAddOnId = function(isUnitLevel, name, index) {
+		return isUnitLevel ? name + ' unit add on&' + index : name + ' model add on&' + index;
+	}
+	
+	$scope.setAddOnCost = function(isChecked, unit, addOnId, model, idx) {
+		registerAddOnStatus(addOnId, isChecked, unit.Name, model, idx);
+		const addOn = $scope.getAddon(addOnId);
 		switch(addOn.Type) {
 			case "Direct": 
 				isChecked ?
@@ -279,7 +283,7 @@ app.controller('builderCtrl', function($scope, $http){
 		parts = addPartToArray(parts, "MODELS");
 		parts = addPartToArray(parts, $scope.models, true);
 		parts = addPartToArray(parts, "ADDONS");
-		parts = addPartToArray(parts, $scope.enabledAddOns, true);
+		parts = addPartToArray(parts, Array.from($scope.addOnIndexes), true);
 		parts = addPartToArray(parts, "END");
 		
 		return new Blob(parts, {type: 'text/plain'});
@@ -439,24 +443,23 @@ app.controller('builderCtrl', function($scope, $http){
 //TODO. The below doesn't work. Need to actuall call Set() function.
 //Not sure how "checked" will work due to scoping
 
-			// if(text.shift() !== "ADDONS") {
-				// showError(errorMessages.corruptedFile);
-				// return;
-			// }
-			// let json = "";
-			// let nextLine = text.shift();
-			// while(nextLine !== "END") {
-				// json += nextLine;
-				// nextLine = text.shift();
-			// }
-			// text.unshift(nextLine);
-			// const addons = JSON.parse(json);
-			// const values = Object.values(addons);
-			// const keys = Object.keys(addons);
-			// for(let i = 0; i < values.length; i++) {
-				// $scope.enabledAddOns[keys[i]] = values[i];
-			// }
-			// return text;
+			if(text.shift() !== "ADDONS") {
+				showError(errorMessages.corruptedFile);
+				return;
+			}
+			let json = "";
+			let nextLine = text.shift();
+			while(nextLine !== "END") {
+				json += nextLine;
+				nextLine = text.shift();
+			}
+			text.unshift(nextLine);
+			const addons = JSON.parse(json);
+			//TODO for each addon, check that box
+			addons.forEach( addon => {
+				document.getElementById(addon).click();
+			});
+			return text;
 		}
 		
 		
@@ -606,18 +609,27 @@ app.controller('builderCtrl', function($scope, $http){
 		return model;
 	}
 
-	function registerAddOnStatus(id, isEnabled, unitName, model){
+	function registerAddOnStatus(addOnId, isEnabled, unitName, model, idx){
+		let checkBoxid;
 		if(model) {
 			if(!$scope.enabledAddOns[model.Name]){
 				$scope.enabledAddOns[model.Name] = [];
 			}
-			$scope.enabledAddOns[model.Name][id] = isEnabled;
+			$scope.enabledAddOns[model.Name][addOnId] = isEnabled;
+			checkBoxid = $scope.getAddOnId(false, model.Name, idx);
 		}
 		else {
 			if(!$scope.enabledAddOns[unitName]){
 				$scope.enabledAddOns[unitName] = [];
 			}
-			$scope.enabledAddOns[unitName][id] = isEnabled;
+			$scope.enabledAddOns[unitName][addOnId] = isEnabled;
+			checkBoxid = $scope.getAddOnId(true, unitName, idx);
+		}
+		if(isEnabled){
+			$scope.addOnIndexes.add(checkBoxid);
+		}
+		else {
+			$scope.addOnIndexes.delete(checkBoxid);
 		}
 	}
 	
