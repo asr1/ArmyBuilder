@@ -5,7 +5,7 @@ app.config(['$compileProvider',
 }]);
 app.controller('builderCtrl', function($scope, $http){
 	const CURRENT_FILE_FORMAT_VERSION = 1.0
-	
+	const HEADER_FIRST_LINE = "Army Builder";
 	
 	$http.get('data/squads.json').then(function(res){
 		$scope.games = res.data[Object.keys(res.data)[0]];
@@ -34,6 +34,8 @@ app.controller('builderCtrl', function($scope, $http){
 	$scope.models = {};
 	$scope.enabledAddOns = {}
 	$scope.chosenPowers = {};
+	
+	$scope.allFacs = new Set();
 	
 	$scope.getGear = function(id) {
 		return $scope.gear[id -1];
@@ -100,6 +102,7 @@ app.controller('builderCtrl', function($scope, $http){
 			if(Array.isArray($scope.selFac)) {
 				for(let i = 0; i < $scope.selFac.length; i++) {
 					$scope.availUnits = $scope.availUnits.concat($scope.selFac[i].Units);
+					$scope.allFacs.add($scope.selFac[i]);
 				}
 			}
 			$scope.availUnits.forEach((unit) => {
@@ -126,7 +129,6 @@ app.controller('builderCtrl', function($scope, $http){
 		// Add to array if not present in O(selUnit) instead of O(myArmy)
 		$scope.selUnit.reduce((set, elem) => set.add(cloneUnit(elem)), $scope.myArmy);
 		$scope.myArmyArray = Array.from($scope.myArmy); 
-		
 		$scope.selUnit.forEach( (unit) => {
 			if($scope.models[unit.Name] == undefined) {
 				$scope.models[unit.Name] = [];
@@ -256,6 +258,10 @@ app.controller('builderCtrl', function($scope, $http){
 		let parts = [];
 		parts = addPartToArray(parts, getHeaderInformation());
 		parts = addPartToArray(parts, $scope.selectedGame.Name);
+		parts = addPartToArray(parts, "FACTIONS");
+		parts = addPartToArray(parts,  Array.from($scope.allFacs), true);
+		parts = addPartToArray(parts, "UNITS");
+		parts = addPartToArray(parts, $scope.myArmyArray, true);
 		parts = addPartToArray(parts, "MODELS");
 		parts = addPartToArray(parts, $scope.models, true);
 		parts = addPartToArray(parts, "ADDONS");
@@ -291,11 +297,170 @@ app.controller('builderCtrl', function($scope, $http){
 	}
 	
 	function  getHeaderInformation() {
-		return "Army Builder" + "\n" + CURRENT_FILE_FORMAT_VERSION.toFixed(2);
+		return HEADER_FIRST_LINE + "\n" + CURRENT_FILE_FORMAT_VERSION.toFixed(1);
 	}
 	
 	function processUpload(text) {
-		console.log(text); //TODO
+		let allText = text.split('\n');
+		
+		if(!validateRMEFile(allText.shift())){
+			showError(errorMessages.InvalidFileFormat);
+		}
+		const processor = getProcessorFromVersion(allText.shift())
+		if(processor) {
+			processor.buildArmyFromFile(allText);
+		}
+	}
+	
+	function getProcessorFromVersion(version) {
+		try {
+			version = parseInt(version).toFixed(1) + '';
+		}
+		catch {
+			showError(errorMessages.InvalidVersion);
+			return null;
+		}
+		switch(version) {
+			case '1.0':
+				return new Warhammer40k8eVersionOneProcessor();
+			default:
+				showError(errorMessages.InvalidVersion);
+				return null;
+		}
+	}
+	
+	class Warhammer40k8eVersionOneProcessor {
+		buildArmyFromFile(text) {
+			let models;
+			
+			$scope.selectedGame = this.getGameFromName(text.shift());
+			if(text) { text = this.processFactions(text); }
+			if(text) { text = this.processUnits(text); }
+			if(text) { [text, models] = this.processModels(text); }
+			if(text) { text = this.processAddOns(text, models); }
+			//TODO process psysker
+			
+			$scope.$apply();
+			let doneProcessing = false;
+			// while(!doneProcessing) {
+				// var currentLine = text.shift();
+				
+				// ///
+				// console.log(currentLine);
+				// ////
+				
+				// doneProcessing = true;
+			// }
+		}
+		
+		processFactions(text) {
+			if(text.shift() !== "FACTIONS") {
+				showError(errorMessages.corruptedFile);
+				return;
+			}
+			let json = "";
+			let nextLine = text.shift();
+			while(nextLine !== "UNITS") {
+				json += nextLine;
+				nextLine = text.shift();
+			}
+			text.unshift(nextLine);
+			const factions = JSON.parse(json);
+			$scope.selFac = factions;
+			$scope.processUnits();
+			return text;
+		}
+		
+		processUnits(text) {
+			if(text.shift() !== "UNITS") {
+				showError(errorMessages.corruptedFile);
+				return;
+			}
+			let unitJson = "";
+			let nextLine = text.shift();
+			while(nextLine !== "MODELS") {
+				unitJson += nextLine;
+				nextLine = text.shift();
+			}
+			text.unshift(nextLine);
+			const units = JSON.parse(unitJson);
+			$scope.selUnit = units;
+			$scope.addUnit();
+			return text;
+		}
+		
+		processModels(text) {
+			if(text.shift() !== "MODELS") {
+				showError(errorMessages.corruptedFile);
+				return;
+			}
+			let modelJsonString = "";
+			let nextLine = text.shift();
+			while(nextLine !== "ADDONS") {
+				modelJsonString += nextLine;
+				nextLine = text.shift();
+			}
+			text.unshift(nextLine);
+			const models = JSON.parse(modelJsonString);
+			return [text, models];
+		}
+		
+		processAddOns(text) {
+//TODO. The below doesn't work. Need to actuall call Set() function.
+//Not sure how "checked" will work due to scoping
+
+			// if(text.shift() !== "ADDONS") {
+				// showError(errorMessages.corruptedFile);
+				// return;
+			// }
+			// let json = "";
+			// let nextLine = text.shift();
+			// while(nextLine !== "END") {
+				// json += nextLine;
+				// nextLine = text.shift();
+			// }
+			// text.unshift(nextLine);
+			// const addons = JSON.parse(json);
+			// const values = Object.values(addons);
+			// const keys = Object.keys(addons);
+			// for(let i = 0; i < values.length; i++) {
+				// $scope.enabledAddOns[keys[i]] = values[i];
+			// }
+			// return text;
+		}
+		
+		
+		getGameFromName(name) {
+			var ret = undefined;
+			$scope.games.forEach( game => {
+				if(game.Name === name) {
+					ret = game;
+				}
+			});
+			if(!ret) {
+				showError(errorMessages.InvalidGameName);
+			}
+			return ret;
+		}
+		
+	}
+	
+	const errorMessages = {
+		GenericError: "One or More errors occurred",
+		InvalidFileFormat: "Invalid file format",
+		InvalidVersion: "The file you have uploaded is not a supported version",
+		InvalidGameName: "The game you have selected is not supported",
+		corruptedFile: "Your file is corrupted."
+	};
+	
+	function showError(err) {
+		err = err ? err : errorMessages.GenericError;
+		//TOOD display client side error in HTML
+		console.log(err);
+	}
+	
+	function validateRMEFile(line) {
+		return line === HEADER_FIRST_LINE;
 	}
 	
 	function increaseNumberOfModels(unit, amount) {

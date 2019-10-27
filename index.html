@@ -14,7 +14,7 @@
 		<h1>Army Builder</h1>
 		
 		<p>Upload an existing army file</p>
-			<input type="file" accept='text/plain' ng-model="uploadFile" onchange="angular.element(this).scope().onUploadFile()" id="UploadArmyInput" />
+			<input type="file" accept='.rme' ng-model="uploadFile" onchange="angular.element(this).scope().onUploadFile()" id="UploadArmyInput" />
 		<br>
 			<div ng-if="myArmyArray.length > 0">
 				<button ng-click="downloadArmyFile()">Download your army</button>
