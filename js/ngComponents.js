@@ -279,6 +279,7 @@ app.controller('builderCtrl', function($scope, $http){
 		parts = addPartToArray(parts, "FACTIONS");
 		parts = addPartToArray(parts,  Array.from($scope.allFacs), true);
 		parts = addPartToArray(parts, "UNITS");
+		$scope.myArmyArray.forEach( unit => { if(unit.StartingNumberOfModels) { unit.NumberOfModels = unit.StartingNumberOfModels } });
 		parts = addPartToArray(parts, $scope.myArmyArray, true);
 		parts = addPartToArray(parts, "MODELS");
 		parts = addPartToArray(parts, $scope.models, true);
@@ -448,7 +449,10 @@ app.controller('builderCtrl', function($scope, $http){
 			text.unshift(nextLine);
 			const addons = JSON.parse(json);
 			addons.forEach( addon => {
-				document.getElementById(addon).click();
+				const elem = document.getElementById(addon);
+				if(elem) {
+					elem.click();
+				}
 			});
 			return text;
 		}
@@ -554,6 +558,7 @@ app.controller('builderCtrl', function($scope, $http){
 		let copy = {};
 		copy.Name = unit.Name
 		copy.NumberOfModels = unit.NumberOfModels
+		copy.StartingNumberOfModels = unit.StartingNumberOfModels
 		copy.Cost = unit.Cost
 		copy.SeparateGear = unit.SeparateGear;
 		copy.Powers = unit.Powers;
