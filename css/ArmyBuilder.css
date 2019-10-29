@@ -4,6 +4,23 @@ body {
 	margin-right:40px;
 }
 
+.panel {
+	background-color:#c8c8c8;
+	width: 20em;
+	border-style: double;
+	border-color:	red;
+	
+}
+
+h1.panelText {
+	background:#c8c8c8;
+	color:red;
+	font-size: 1.025em;
+	width:8em;
+    margin-top:-10px;
+    margin-left:0.985em;
+}
+
 		
 h6.Subheading {
   display: block;

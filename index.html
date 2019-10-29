@@ -13,19 +13,25 @@
 	<body  ng-app="armyBuilder" ng-controller="builderCtrl">
 		<h1>Army Builder</h1>
 		
-		<p>Upload an existing army file</p>
-			<input type="file" accept='.rme' ng-model="uploadFile" onchange="angular.element(this).scope().onUploadFile()" id="UploadArmyInput" />
-		<br>
-			<div ng-if="myArmyArray.length > 0">
-				<button ng-click="downloadArmyFile()">Download your army</button>
-			</div>
-		<br>
 		
+		<div class="panel panel-default">
+			<h1 class="panelText">Upload is in beta</h1>
+			<p>Upload an existing army file</p>
+				<input type="file" accept='.rme' ng-model="uploadFile" onchange="angular.element(this).scope().onUploadFile()" id="UploadArmyInput" />
+			<br>
+				<div ng-if="myArmyArray.length > 0">
+					<button ng-click="downloadArmyFile()">Download your army</button>
+				</div>
+		</div>
+
+
+
 		OR
 		<br>
 		<span>
 			Select a game: <select ng-model="selectedGame" ng-options="game.Name for game in games"></select>
 		</span>
+		
 		<!-- TODO: New, Save, Load buttons-->
 		<div ng-if="selectedGame">
 			You selected {{selectedGame.Name}}
