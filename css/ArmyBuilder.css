@@ -9,7 +9,7 @@ body {
 	width: 20em;
 	border-style: double;
 	border-color:	red;
-	
+	border-width:1px;
 }
 
 h1.panelText {

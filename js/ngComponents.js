@@ -125,12 +125,12 @@ app.controller('builderCtrl', function($scope, $http){
 		deregisterAddOnStatus(unit.Name)
 	}
 	
-	$scope.addUnit = function(){
-		if (!$scope.selUnit || $scope.selUnit.length == 0) {return;}
+	$scope.addUnits = function(units){
+		if (!units || units.length == 0) {return;}
 		// Add to array if not present in O(selUnit) instead of O(myArmy)
-		$scope.selUnit.reduce((set, elem) => set.add(cloneUnit(elem)), $scope.myArmy);
+		units.reduce((set, elem) => set.add(cloneUnit(elem)), $scope.myArmy);
 		$scope.myArmyArray = Array.from($scope.myArmy); 
-		$scope.selUnit.forEach( (unit) => {
+		units.forEach( (unit) => {
 			if($scope.models[unit.Name] == undefined) {
 				$scope.models[unit.Name] = [];
 			}
@@ -396,8 +396,7 @@ app.controller('builderCtrl', function($scope, $http){
 			}
 			text.unshift(nextLine);
 			const units = JSON.parse(unitJson);
-			$scope.selUnit = units;
-			$scope.addUnit();
+			$scope.addUnits(units);
 			return text;
 		}
 		
