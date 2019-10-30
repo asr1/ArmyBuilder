@@ -1,15 +1,40 @@
 body {
 	margin-left:40px;
-	background-color:#c8c8c8;
 	margin-right:40px;
 }
 
 .panel {
-	background-color:#c8c8c8;
 	width: 20em;
 	border-style: double;
 	border-color:	red;
-	border-width:1px;
+	border-width: 1px;
+	padding-bottom: 10px;
+}
+
+div.panel p,
+div.panel input,
+div.panel button {
+	margin-left: 15px;
+}
+
+.transparent {
+	background-color:#c8c8c8;
+}
+
+#addButton {
+	margin-bottom: 15px;
+}
+
+.padAfter {
+	padding-bottom: 10px;
+}
+
+.disabledButton {
+	color:#3c3c3c;
+	background-color: #adadad;
+}
+.disabledButton:after {
+	content: " (disabled)"
 }
 
 h1.panelText {

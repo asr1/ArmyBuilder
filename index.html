@@ -10,18 +10,15 @@
 		<title>Army Builder</title>
 	</head>
     
-	<body  ng-app="armyBuilder" ng-controller="builderCtrl">
+	<body  class="transparent" ng-app="armyBuilder" ng-controller="builderCtrl">
 		<h1>Army Builder</h1>
 		
 		
-		<div class="panel panel-default">
+		<div class="panel panel-default transparent">
 			<h1 class="panelText">Upload is in beta</h1>
 			<p>Upload an existing army file</p>
-				<input type="file" accept='.rme' ng-model="uploadFile" onchange="angular.element(this).scope().onUploadFile()" id="UploadArmyInput" />
-			<br>
-				<div ng-if="myArmyArray.length > 0">
-					<button ng-click="downloadArmyFile()">Download your army</button>
-				</div>
+			<input type="file" class="padAfter" accept='.rme' ng-model="uploadFile" onchange="angular.element(this).scope().onUploadFile()" id="UploadArmyInput" />
+			<button ng-disabled="shouldDisableDownloadButton()" ng-class="{'disabledButton': shouldDisableDownloadButton()}" ng-click="downloadArmyFile()">Download your army</button>
 		</div>
 
 		OR
@@ -30,7 +27,6 @@
 			Select a game: <select ng-model="selectedGame" ng-options="game.Name for game in games"></select>
 		</span>
 		
-		<!-- TODO: New, Save, Load buttons-->
 		<div ng-if="selectedGame">
 			You selected {{selectedGame.Name}}
 		</div>
@@ -51,7 +47,7 @@
 				 multiple>
 			</select>
 			
-			<button ng-click="addUnits(selUnit)" type="button" class="btn btn-default btn-sm">
+			<button ng-click="addUnits(selUnit)" type="button" id="addButton" class="btn btn-default btn-sm">
 			Add   <span class="glyphicon glyphicon-plus-sign"></span>
 			</button>
 			<br><br>			

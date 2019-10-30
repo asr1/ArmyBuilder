@@ -111,7 +111,11 @@ app.controller('builderCtrl', function($scope, $http){
 					$scope.longestUnitNameLength = unit.Name.length;
 				}
 			});
-	}	
+	}
+	
+	$scope.shouldDisableDownloadButton = function() {
+		return $scope.myArmyArray.length <= 0;
+	}
 
 	$scope.removeFromArmy = function(unit){
 		$scope.myArmy.delete(unit);
