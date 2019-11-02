@@ -9,6 +9,10 @@
 		<link rel="stylesheet" href="https://unpkg.com/purecss@1.0.1/build/pure-min.css" crossorigin="anonymous">
 		<link href="css/ArmyBuilder.css" rel="stylesheet" type="text/css">
 		<title>Army Builder</title>
+		
+		<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+		<meta name="HandheldFriendly" content="true">
 	</head>
     
 	<body  class="transparent" ng-app="armyBuilder" ng-controller="builderCtrl">
@@ -22,14 +26,13 @@
 			<button ng-disabled="shouldDisableDownloadButton()" ng-class="{'disabledButton': shouldDisableDownloadButton()}" ng-click="downloadArmyFile()">Download your army</button>
 		</div>
 
-		OR
-		<br>
+		<p class="centered">OR</p>
 		<span>
 			Select a game: <select ng-model="selectedGame" ng-options="game.Name for game in games"></select>
 		</span>
 		<hr>
 		<div ng-if="selectedGame">
-			You selected {{selectedGame.Name}}
+			<p>You selected {{selectedGame.Name}}</p>
 		</div>
 		
 			<select 
@@ -52,7 +55,7 @@
 				Add   <span class="glyphicon glyphicon-plus-sign"></span>
 			</button>
 			<hr>		
-			<span><h3>Total Army Cost: {{calculateArmyCost()}}</h3></span>
+			<span><h3 class="centered">Total Army Cost: {{calculateArmyCost()}}</h3></span>
 			<div class="section">
 				<div class="unit" ng-repeat="unit in myArmyArray">
 					<div class="unitHeader">

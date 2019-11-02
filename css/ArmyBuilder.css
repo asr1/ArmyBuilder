@@ -40,6 +40,14 @@ div.panel button {
 	content: " (disabled)"
 }
 
+p.centered {
+	margin-left:9em;
+}
+
+h3.centered {
+	margin-left:2em;
+}
+
 hr {
 	border-color: #422E2E;
     height: 2px;
