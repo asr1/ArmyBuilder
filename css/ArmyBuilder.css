@@ -1,6 +1,7 @@
 body {
 	margin-left:40px;
 	margin-right:40px;
+	font-family: 'Source Sans Pro', sans-serif;
 }
 
 .panel {
@@ -18,7 +19,9 @@ div.panel button {
 }
 
 .transparent {
-	background-color:#c8c8c8;
+		
+	/* Background pattern from Toptal Subtle Patterns */
+	background: url('gray_jean.png');
 }
 
 #addButton {
@@ -37,15 +40,22 @@ div.panel button {
 	content: " (disabled)"
 }
 
-h1.panelText {
-	background:#c8c8c8;
-	color:red;
-	font-size: 1.025em;
-	width:8em;
-    margin-top:-10px;
-    margin-left:0.985em;
+hr {
+	border-color: #422E2E;
+    height: 2px;
+	background-color:#422e2e;
 }
 
+h1.panelText {
+	/*background:#c8c8c8;*/
+	color:red;
+	font-size: 1.025em;
+	width:7.5em;
+    padding-left:0.25em;
+	margin-top:-10px;
+    margin-left:0.985em;
+	
+}
 		
 h6.Subheading {
   display: block;
