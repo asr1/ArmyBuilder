@@ -47,6 +47,12 @@ p.centered {
 h3.centered {
 	margin-left:2em;
 }
+div.centeredParent {
+	text-align: center
+}
+h1.centered {
+	display: inline-block;
+}
 
 hr {
 	border-color: #422E2E;
