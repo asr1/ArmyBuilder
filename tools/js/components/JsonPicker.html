@@ -1,4 +1,8 @@
-THIS IS A JSON PICKER 
-<br> Model: {{$ctrl.model}}
-<br> Output: {{$ctrl.output}}
-<button ng-click="$ctrl.updateValue()">Update</button>
+<select  
+ng-model="$ctrl.selected">
+<option value="new">New</option>
+<option value="{{item}}" ng-repeat="item in $ctrl.existingData | orderBy:'Name' track by $index">{{item.Name}}</option>
+</select>
+<button ng-click="$ctrl.processItemForAdd($ctrl.selected)">Add</button>
+<div id="newEntry"></div>
+<div ng-show="$ctrl.addingNew"><button ng-click="$ctrl.addNewItem()">Add New</button></div>

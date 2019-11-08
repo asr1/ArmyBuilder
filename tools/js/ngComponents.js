@@ -5,22 +5,81 @@ app.config(['$compileProvider',
 }]);
 app.component('jsonPicker', {
 	bindings: {
-		model: '<',
-		output: '='		
+		unit: '=',
+		newModel: '=',
+		propertyName: '@',
+		output: '=',
+		type: '@',
+		existingData: '='
 	},
     templateUrl: 'js/components/JsonPicker.html',
-    controller: function GreetUserControzller() {
-      	this.output = "I am outputting";
-		this.updateValue = function(){
-			this.model = "donkey";
-			this.output = "Another donkey";
+    controller: ['$scope', '$compile', function GreetUserControzller($scope, $compile) {
+		this.newItemDiv = document.getElementById("newEntry");
+		var aform = (angular.element(document.getElementById('newEntry')));
+		
+		this.processItemForAdd = function(item){
+			if(item === "new") {
+				this.addingNew = true;
+				this.myModel = new this.newModel();
+				Object.keys(this.myModel).forEach( (key) => {
+					this.newItemDiv.innerHTML +=
+					key + ": <input ng-model=\"$ctrl.myModel." + key + "\"></input> <br>";
+				});
+				$compile(aform)($scope);
+			} else {
+				item = JSON.parse(item);
+				this.addItem(item);
+			}
 		}
-	}
+		
+		this.addItem = function (item) {
+			console.log("item", item);
+			console.log("add item type", typeof(item));
+			if(this.type === 'array') {
+				this.unit[this.propertyName].push(parseInt(item.id));
+			}
+			this.output = this.unit;
+		}
+		
+		this.addNewItem = function () {
+			console.log("mymodel", this.myModel);
+			this.addingNew = false;
+			//this.newItemDiv.innerHTML = "";
+			console.log("add new type", typeof(this.myModel));
+			this.addItem(this.myModel);
+		}
+		
+	}]
 });
 
 app.controller('builderCtrl', function($scope, $http){
 	$scope.var = "input";
 	$scope.testModel = "Test model"
+	$scope.gear = "helloooo"
+	class gearModel {
+		constructor(id, Name, Cost, Ability, Keywords) {
+			this.id = id;
+			this.Name = Name;
+			this.Cost = Cost;
+			this.Ability = Ability;
+			this.Keywords = Keywords;
+		}
+	}
+	$scope.gearModel = gearModel;
+	
+	class unitModel {
+		constructor(unitName, numTroops, unitCost, unitAbility, addOns, gear, powers) {
+			this.Name = unitName;
+			this.NumberOfModels = numTroops;
+			this.Cost = unitCost;
+			this.Abilities = unitAbility;
+			this.AddOns = addOns;
+			this.Gear = gear;
+			this.Powers = powers;
+		}
+	}
+	$scope.unitModel = unitModel;
+	$scope.myUnit = new unitModel("Test", 1, 1, [], [], [], []);
 	
 	$http.get('../data/squads.json').then(function(res){
 		$scope.games = res.data[Object.keys(res.data)[0]];
