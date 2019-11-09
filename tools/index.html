@@ -23,9 +23,51 @@
 			</div>
 			<div class="col-md-3"></div>
 		</div>
-		<json-picker new-model="gearModel" type="array" unit="myUnit" output="var" existing-data="gear" property-Name="Gear"></json-picker>
-		<br> output:{{var}}
-
+		<label>Game:</label>
+		<input style="width:175px;" ng-model="game"></input>
+		<br>
+		
+		<label>Faction:</label>
+		<input ng-model="faction"></input>
+		<br>
+		
+		<label>Name:</label>
+		<input ng-model="myUnit.Name"></input>
+		<br>
+		
+		<label>Number of Models:</label>
+		<input ng-model="myUnit.NumberOfModels"></input>
+		<br>	
+		
+		<label>Cost:</label>
+		<input ng-model="myUnit.Cost"></input>
+		<br>
+		
+		<!-- Todo replace with json-picker-->
+		<label>Abilities:</label>
+		<input ng-model="myUnit.Abilities"></input>
+		<br>
+		
+		<!-- Todo replace with json-picker-->
+		<label>AddOns:</label>
+		<input ng-model="myUnit.AddOns"></input>
+		<br>
+		
+		<label>Gear</label>
+		<json-picker new-model="gearModel" type="array" output="myUnit.Gear" existing-data="gear" new-json="gearJson"></json-picker>
+		<br>
+		
+		<!-- Todo replace with json-picker-->
+		<label>Powers:</label>
+		<input ng-model="myUnit.Powers"></input>
+		<br>
+		
+		 gear:{{myUnit.Gear}}<br>
+		
+		<div ng-show="gearJson">
+			<h3>New Gear:</h3>
+			<textarea style="width:210px; height:255px;" ng-model="gearJson"></textarea>
+		</div>
 		<!--Load JS files-->
 		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>

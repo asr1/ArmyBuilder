@@ -5,12 +5,11 @@ app.config(['$compileProvider',
 }]);
 app.component('jsonPicker', {
 	bindings: {
-		unit: '=',
 		newModel: '=',
-		propertyName: '@',
 		output: '=',
 		type: '@',
-		existingData: '='
+		existingData: '=',
+		newJson: '='
 	},
     templateUrl: 'js/components/JsonPicker.html',
     controller: ['$scope', '$compile', function GreetUserControzller($scope, $compile) {
@@ -36,15 +35,15 @@ app.component('jsonPicker', {
 			console.log("item", item);
 			console.log("add item type", typeof(item));
 			if(this.type === 'array') {
-				this.unit[this.propertyName].push(parseInt(item.id));
+				this.output.push(parseInt(item.id));
 			}
-			this.output = this.unit;
 		}
 		
 		this.addNewItem = function () {
 			console.log("mymodel", this.myModel);
 			this.addingNew = false;
-			//this.newItemDiv.innerHTML = "";
+			this.newItemDiv.innerHTML = "";
+			this.newJson += ",\r\n" + angular.toJson(this.myModel, true);
 			console.log("add new type", typeof(this.myModel));
 			this.addItem(this.myModel);
 		}
@@ -53,9 +52,10 @@ app.component('jsonPicker', {
 });
 
 app.controller('builderCtrl', function($scope, $http){
-	$scope.var = "input";
-	$scope.testModel = "Test model"
-	$scope.gear = "helloooo"
+	$scope.gearJson = "";
+	$scope.game = "Warhammer 40k 8th Edition";
+	$scope.faction = "Space Marines";
+	
 	class gearModel {
 		constructor(id, Name, Cost, Ability, Keywords) {
 			this.id = id;
