@@ -23,45 +23,59 @@
 			</div>
 			<div class="col-md-3"></div>
 		</div>
-		<label>Game:</label>
-		<input style="width:175px;" ng-model="game"></input>
-		<br>
+
+<div class="banner">
+<div>
+<div class="block">
+	<label class="title-label">Game:</label class="title-label">
+	<input style="width:175px;" ng-model="game"></input>
+</div>
+
+<div class="block">		
+	<label class="title-label">Faction:</label class="title-label">
+	<input ng-model="faction"></input>
+</div>
+
+<div class="block">		
+	<label class="title-label">Name:</label class="title-label">
+	<input ng-model="myUnit.Name"></input>
+</div>
+
+<div class="block">		
+	<label class="title-label">Number of Models:</label class="title-label">
+	<input ng-model="myUnit.NumberOfModels"></input>
+</div>
+
+<div class="block">		
+	<label class="title-label">Cost:</label class="title-label">
+	<input ng-model="myUnit.Cost"></input>
+</div>
+
+<div class="block">		
+	<!-- Todo replace with json-picker-->
+	<label class="title-label">Abilities:</label class="title-label">
+	<input ng-model="myUnit.Abilities"></input>
+</div>
+
+<div class="block">	
+	<!-- Todo replace with json-picker-->
+	<label class="title-label">AddOns:</label class="title-label">
+	<input ng-model="myUnit.AddOns"></input>
+</div>
 		
-		<label>Faction:</label>
-		<input ng-model="faction"></input>
-		<br>
+<div class="block">	
+	<label class="title-label">Gear</label class="title-label">
+	<json-picker new-model="gearModel" type="array" output="myUnit.Gear" existing-data="gear" new-json="gearJson"></json-picker>
+</div>
 		
-		<label>Name:</label>
-		<input ng-model="myUnit.Name"></input>
-		<br>
-		
-		<label>Number of Models:</label>
-		<input ng-model="myUnit.NumberOfModels"></input>
-		<br>	
-		
-		<label>Cost:</label>
-		<input ng-model="myUnit.Cost"></input>
-		<br>
-		
-		<!-- Todo replace with json-picker-->
-		<label>Abilities:</label>
-		<input ng-model="myUnit.Abilities"></input>
-		<br>
-		
-		<!-- Todo replace with json-picker-->
-		<label>AddOns:</label>
-		<input ng-model="myUnit.AddOns"></input>
-		<br>
-		
-		<label>Gear</label>
-		<json-picker new-model="gearModel" type="array" output="myUnit.Gear" existing-data="gear" new-json="gearJson"></json-picker>
-		<br>
-		
-		<!-- Todo replace with json-picker-->
-		<label>Powers:</label>
-		<input ng-model="myUnit.Powers"></input>
-		<br>
-		
+<div class="block">	
+	<!-- Todo replace with json-picker-->
+	<label class="title-label">Powers:</label class="title-label">
+	<input ng-model="myUnit.Powers"></input>
+</div>
+<br>
+</div>
+</div>
 		 gear:{{myUnit.Gear}}<br>
 		
 		<div ng-show="gearJson">
