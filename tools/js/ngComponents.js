@@ -81,11 +81,14 @@ app.component('jsonPicker', {
 });
 
 app.controller('builderCtrl', function($scope, $http){
-	$scope.gearJson = "";
+	$scope.gameJson = "";
 	$scope.factionJson = "";
+	$scope.abilitiesJson = "";
+	$scope.addOnJson = "";
+	$scope.gearJson = "";
+	
 	$scope.game = "Warhammer 40k 8th Edition";
 	$scope.faction = { Name: "Space Marines"};
-	$scope.gameJson = "";;
 	
 	class gearModel {
 		constructor(id, Name, Cost, Ability, Keywords) {
@@ -97,6 +100,29 @@ app.controller('builderCtrl', function($scope, $http){
 		}
 	}
 	$scope.gearModel = gearModel;
+	
+	class abilityModel {
+		constructor(id, Name, Text) {
+			this.id = id;
+			this.Name = Name;
+			this.Text = Text;
+		}
+	}
+	$scope.abilityModel = abilityModel;
+	
+	class addOnModel {
+		constructor(id, Text, Cost, Type, Remove, Add, Level, Amount) {
+			this.id = id;
+			this.Text = Text;
+			this.Cost = Cost;
+			this.Type = Type;
+			this.Remove = Remove;
+			this.Add = Add;
+			this.Level = Level;
+			this.Amount = Amount;
+		}
+	}
+	$scope.addOnModel = addOnModel;
 	
 	class unitModel {
 		constructor(unitName, numTroops, unitCost, unitAbility, addOns, gear, powers) {

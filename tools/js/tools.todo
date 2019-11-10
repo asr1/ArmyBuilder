@@ -6,3 +6,6 @@ Clean up the label / input boxes in the HTML
 and toss it all in panels
 clean up "new" divs as well with CSS 
 after updating a "new", should add to dropdown.
+bind directly if type is string, UNLESS they pick new.
+if new object == null, don't add it.
+Powers

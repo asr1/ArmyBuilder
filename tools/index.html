@@ -27,14 +27,12 @@
 <div class="banner">
 <div>
 <div class="block">
-<!-- Todo replace with json-picker-->
 	<label class="title-label">Game:</label class="title-label">
 	<json-picker new-model="factionModel" type="string" output="game" existing-data="games" new-json="gamejson"></json-picker>
 
 </div>
 
 <div class="block">
-<!-- Todo replace with json-picker-->
 	<label class="title-label">Faction:</label class="title-label">
 	<json-picker new-model="factionModel" type="string" output="faction" existing-data="selectedGame.Factions" new-json="factionJson"></json-picker>
 </div>
@@ -55,15 +53,13 @@
 </div>
 
 <div class="block">		
-	<!-- Todo replace with json-picker-->
 	<label class="title-label">Abilities:</label class="title-label">
-	<input ng-model="myUnit.Abilities"></input>
+	<json-picker new-model="abilityModel" type="array" output="myUnit.Abilities" existing-data="abilities" new-json="abilitiesJson"></json-picker>
 </div>
 
 <div class="block">	
-	<!-- Todo replace with json-picker-->
 	<label class="title-label">AddOns:</label class="title-label">
-	<input ng-model="myUnit.AddOns"></input>
+		<json-picker new-model="addOnModel" type="array" output="myUnit.AddOns" existing-data="addons" new-json="addOnJson"></json-picker>
 </div>
 		
 <div class="block">	
@@ -77,10 +73,10 @@
 	<input ng-model="myUnit.Powers"></input>
 </div>
 <br>
-<button>Add new Model</button>
+<button>Add new Model</button><!--TODO is this even necessary? Maybe it clears the form, but keeps the old model around, or at least its JSON-->
 </div>
 </div>
-<button>Add and update JSON</button><br>
+<button>Add and update JSON</button><br> <!--TODO make this build the JSON(s)-->
 		 game:{{game}}<br>
 		 faction:{{faction}}<br>
 		 gear:{{myUnit.Gear}}<br>
