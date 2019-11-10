@@ -9,3 +9,7 @@ after updating a "new", should add to dropdown.
 bind directly if type is string, UNLESS they pick new.
 if new object == null, don't add it.
 Powers
+
+Figure out where in the JSON the new itemS --plural-- need to be added, then add them. 
+	Network wise this is better to do in the PHP, but may be easier to do in the JSON
+		(basically how do we build this object before we JSONify it)
