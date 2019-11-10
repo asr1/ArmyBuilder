@@ -50,9 +50,10 @@ app.component('jsonPicker', {
 				this.myModel = new this.newModel();
 				Object.keys(this.myModel).forEach( (key) => {
 					this.getNewItemDiv().innerHTML +=
-					key + ": <input ng-model=\"$ctrl.myModel." + key + "\"></input> <br>";
+					"<label>" + key + "</label>: <input ng-model=\"$ctrl.myModel." + key + "\"></input> <br>";
 				});
 				this.myModel.id = this.existingData.length + 1;
+				this.getAform().addClass("subblock");
 				$compile(this.getAform())($scope);
 			} else {
 				item = JSON.parse(item);
