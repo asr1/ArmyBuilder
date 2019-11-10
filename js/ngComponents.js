@@ -111,6 +111,7 @@ app.controller('builderCtrl', function($scope, $http){
 					$scope.longestUnitNameLength = unit.Name.length;
 				}
 			});
+			updateEnabledUnits();
 	}
 	
 	$scope.shouldDisableDownloadButton = function() {
