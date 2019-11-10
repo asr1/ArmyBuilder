@@ -196,7 +196,8 @@ app.controller('builderCtrl', function($scope, $http){
         )
         .then(function(response) {
           console.log('success', response);
-		  //TODO Reset the form: myUnit, Faction, Game should all get zeroed. Or maybe just myUnit.
+		  //Reset the form: myUnit, Faction, Game should all get zeroed. Or maybe just myUnit.
+		  $scope.myUnit = new unitModel("Test", 1, 1, [], [], [], {Known: [], Options: {Amount: 0, From: []}});
         })
         .catch(function(response) {
           console.log('error', response);
