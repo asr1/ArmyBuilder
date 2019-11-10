@@ -157,17 +157,25 @@ app.controller('builderCtrl', function($scope, $http){
 	$scope.buildFile = function() {
 			//TODO need to build squad file based on Game, Faction, MyUnit
 			console.log("all games", $scope.games);
-			let currGame = $scope.games.find( game => game.Name === $scope.game);
+			let currGame = $scope.games.find( game => game.Name === $scope.game && game.Factions); // Factions check necessary because of how we create on new.
+			let currGameIndex = $scope.games.findIndex( game => game.Name === $scope.game);
 			console.log("currgame", currGame);
 			
 			if(!currGame) {
+				console.log("should be here");
 				//We are adding a new game. Need to set curGame after adding to it.
+				let newGame = {Name: $scope.game, Factions: []}
+				$scope.games[currGameIndex] = newGame; //Can't just push here, need to override the object. When we add new, this gets created.
+				currGame = newGame;
 			}
 				
-			let currFac = currGame.Factions.find( fac => fac.Name === $scope.faction);
+			let currFac = currGame.Factions.find( fac => fac.Name === $scope.faction && fac.Units); // See above re: create on new.
 			console.log("curfac",currFac);
 			if(!currFac) { 
 				// We are adding a new faction.
+				let newFac = {Name: $scope.faction, Units: []}
+				currGame.Factions.push(newFac); //See above re pushing
+				currFac = newFac;
 			}
 			
 			currFac.Units.push($scope.myUnit);
@@ -178,11 +186,11 @@ app.controller('builderCtrl', function($scope, $http){
 	// Right now the entire file gets sent over the network, then destroyed and recreated. 
 	// This can be more efficent if we only send changes and build the file in PHP
 	$scope.postResults = function () {
-		  let restult = $scope.buildFile();
+		  $scope.buildFile();
 		
 		  $http.post(
           'scripts/processFile.php',
-          {unit: $scope.myUnit, items: $scope.gear, addons: $scope.addons, abilities: $scope.abilities, powers: $scope.powers}, function(data) {
+          {squads: $scope.games, items: $scope.gear, addons: $scope.addons, abilities: $scope.abilities, powers: $scope.powers}, function(data) {
 				console.log(data);
 			}
         )
