@@ -69,8 +69,9 @@ app.component('jsonPicker', {
 		}
 		
 		this.selectChanged = function(item) {
-			if(item !== 'new' && this.type === 'string') {
+			if(item && item !== 'new' && this.type === 'string') {
 				item = JSON.parse(item);
+				console.log(item);
 				this.addItem(item);
 			}
 		}
@@ -153,28 +154,41 @@ app.controller('builderCtrl', function($scope, $http){
 		}
 	}
 	
-	    //you need this function to convert the dataURI
-    function dataURItoBlob(dataURI) {
-      var binary = atob(dataURI.split(',')[1]);
-      var mimeString = dataURI.split(',')[0].split(':')[1].split(';')[0];
-      var array = [];
-      for (var i = 0; i < binary.length; i++) {
-        array.push(binary.charCodeAt(i));
-      }
-      return new Blob([new Uint8Array(array)], {
-        type: mimeString
-      });
+	$scope.buildFile = function() {
+			//TODO need to build squad file based on Game, Faction, MyUnit
+			console.log("all games", $scope.games);
+			let currGame = $scope.games.find( game => game.Name === $scope.game);
+			console.log("currgame", currGame);
+			
+			if(!currGame) {
+				//We are adding a new game. Need to set curGame after adding to it.
+			}
+				
+			let currFac = currGame.Factions.find( fac => fac.Name === $scope.faction);
+			console.log("curfac",currFac);
+			if(!currFac) { 
+				// We are adding a new faction.
+			}
+			
+			currFac.Units.push($scope.myUnit);
+			console.log("curfact with my unit", currFac);
+			console.log("all games?", $scope.games);
 	}
 	
+	// Right now the entire file gets sent over the network, then destroyed and recreated. 
+	// This can be more efficent if we only send changes and build the file in PHP
 	$scope.postResults = function () {
+		  let restult = $scope.buildFile();
+		
 		  $http.post(
           'scripts/processFile.php',
-          {unit: $scope.myUnit}, function(data) {
+          {unit: $scope.myUnit, items: $scope.gear, addons: $scope.addons, abilities: $scope.abilities, powers: $scope.powers}, function(data) {
 				console.log(data);
 			}
         )
         .then(function(response) {
           console.log('success', response);
+		  //TODO Reset the form: myUnit, Faction, Game should all get zeroed. Or maybe just myUnit.
         })
         .catch(function(response) {
           console.log('error', response);

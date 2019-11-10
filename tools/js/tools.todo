@@ -1,5 +1,5 @@
-See if we can append to existing JSON
 clean up "new" divs as well with CSS 
+write all files (items, powers, abilities, Squads, addons)
 
 Figure out where in the JSON the new itemS --plural-- need to be added, then add them. 
 	Network wise this is better to do in the PHP, but may be easier to do in the JSON
