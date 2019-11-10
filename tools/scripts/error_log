@@ -1,1 +1,0 @@
-[10-Nov-2019 05:57:50 UTC] PHP Warning:  fwrite() expects parameter 2 to be string, object given in /home/altrite/public_html_alexnet/projects/army/tools/scripts/processFile.php on line 12
