@@ -52,6 +52,7 @@ app.component('jsonPicker', {
 					this.getNewItemDiv().innerHTML +=
 					key + ": <input ng-model=\"$ctrl.myModel." + key + "\"></input> <br>";
 				});
+				this.myModel.id = this.existingData.length + 1;
 				$compile(this.getAform())($scope);
 			} else {
 				item = JSON.parse(item);
@@ -81,6 +82,7 @@ app.component('jsonPicker', {
 			this.newJson += ",\r\n" + angular.toJson(this.myModel, true);
 			console.log("add new type", typeof(this.myModel));
 			this.addItem(this.myModel);
+			this.existingData.push(this.myModel);
 		}
 		
 	}]
@@ -167,7 +169,7 @@ app.controller('builderCtrl', function($scope, $http){
 	$scope.postResults = function () {
 		  $http.post(
           'scripts/processFile.php',
-          {a: $scope.myUnit}, function(data) {
+          {unit: $scope.myUnit}, function(data) {
 				console.log(data);
 			}
         )
