@@ -60,7 +60,6 @@ app.component('jsonPicker', {
 		}
 		
 		this.addItem = function (item) {
-			console.log("add item type", typeof(item));
 			if(this.type === 'array') {
 				this.output.push(parseInt(item.id));
 			} else if(this.type === 'string') {
@@ -69,7 +68,6 @@ app.component('jsonPicker', {
 		}
 		
 		this.selectChanged = function(item) {
-			console.log(item);
 			if(item !== 'new' && this.type === 'string') {
 				item = JSON.parse(item);
 				this.addItem(item);
@@ -94,6 +92,8 @@ app.controller('builderCtrl', function($scope, $http){
 	$scope.abilitiesJson = "";
 	$scope.addOnJson = "";
 	$scope.gearJson = "";
+	$scope.powerJson = "";
+	$scope.powerOptionsJson = "";
 	
 	$scope.game = "Warhammer 40k 8th Edition";
 	$scope.faction = { Name: "Space Marines"};
@@ -117,6 +117,7 @@ app.controller('builderCtrl', function($scope, $http){
 		}
 	}
 	$scope.abilityModel = abilityModel;
+	$scope.powerModel = abilityModel;
 	
 	class addOnModel {
 		constructor(id, Text, Cost, Type, Remove, Add, Level, Amount) {
@@ -147,13 +148,12 @@ app.controller('builderCtrl', function($scope, $http){
 	class factionModel {
 		constructor(factionName) {
 			this.Name = factionName;
-			//this.Units = [];
 		}
 	}
 	
 	$scope.unitModel = unitModel;
 	$scope.factionModel = factionModel;
-	$scope.myUnit = new unitModel("Test", 1, 1, [], [], [], []);
+	$scope.myUnit = new unitModel("Test", 1, 1, [], [], [], {Known: [], Options: {Amount: 0, From: []}});
 	
 	$http.get('../data/squads.json').then(function(res){
 		$scope.games = res.data[Object.keys(res.data)[0]];

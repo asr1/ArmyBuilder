@@ -68,10 +68,20 @@
 </div>
 		
 <div class="block">	
-	<!-- Todo replace with json-picker-->
-	<label class="title-label">Powers:</label class="title-label">
-	<input ng-model="myUnit.Powers"></input>
+	<label class="title-label">Powers (known):</label class="title-label">
+	<json-picker new-model="powerModel" type="array" output="myUnit.Powers.Known" existing-data="powers" new-json="powerJson"></json-picker>
 </div>
+
+<div class="block">		
+	<label class="title-label">Powers (options (amount)):</label class="title-label">
+	<input ng-model="myUnit.Powers.Options.Amount"></input>
+</div>
+
+<div class="block">	
+	<label class="title-label">Powers (options):</label class="title-label">
+	<json-picker new-model="powerModel" type="array" output="myUnit.Powers.Options.From" existing-data="powers" new-json="powerOptionsJson"></json-picker>
+</div>
+
 <br>
 <button>Add new Model</button><!--TODO is this even necessary? Maybe it clears the form, but keeps the old model around, or at least its JSON-->
 </div>
