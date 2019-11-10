@@ -190,7 +190,7 @@ app.controller('builderCtrl', function($scope, $http){
 		
 		  $http.post(
           'scripts/processFile.php',
-          {squads: $scope.games, items: $scope.gear, addons: $scope.addons, abilities: $scope.abilities, powers: $scope.powers}, function(data) {
+          {squads: {games: $scope.games}, items: {gear: $scope.gear}, addons: {addons: $scope.addons}, abilities: {abilities: $scope.abilities}, powers: {powers: $scope.powers}}, function(data) {
 				console.log(data);
 			}
         )
