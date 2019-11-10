@@ -68,6 +68,14 @@ app.component('jsonPicker', {
 			}
 		}
 		
+		this.selectChanged = function(item) {
+			console.log(item);
+			if(item !== 'new' && this.type === 'string') {
+				item = JSON.parse(item);
+				this.addItem(item);
+			}
+		}
+		
 		this.addNewItem = function () {
 			console.log("mymodel", this.myModel);
 			this.addingNew = false;

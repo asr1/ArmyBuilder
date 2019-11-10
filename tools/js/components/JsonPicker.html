@@ -1,5 +1,6 @@
 <select  
-ng-model="$ctrl.selected">
+ng-model="$ctrl.selected"
+ng-change="$ctrl.selectChanged($ctrl.selected)">
 <option value="new">New</option>
 <option value="{{item}}" ng-repeat="item in $ctrl.existingData | orderBy:'Name' track by $index">{{item.Name ? item.Name : item.Text}}</option>
 </select>
