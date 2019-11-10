@@ -27,16 +27,19 @@
 <div class="banner">
 <div>
 <div class="block">
+<!-- Todo replace with json-picker-->
 	<label class="title-label">Game:</label class="title-label">
-	<input style="width:175px;" ng-model="game"></input>
+	<json-picker new-model="factionModel" type="string" output="game" existing-data="games" new-json="gamejson"></json-picker>
+
 </div>
 
-<div class="block">		
+<div class="block">
+<!-- Todo replace with json-picker-->
 	<label class="title-label">Faction:</label class="title-label">
-	<input ng-model="faction"></input>
+	<json-picker new-model="factionModel" type="string" output="faction" existing-data="selectedGame.Factions" new-json="factionJson"></json-picker>
 </div>
 
-<div class="block">		
+<div class="block">
 	<label class="title-label">Name:</label class="title-label">
 	<input ng-model="myUnit.Name"></input>
 </div>
@@ -74,9 +77,14 @@
 	<input ng-model="myUnit.Powers"></input>
 </div>
 <br>
+<button>Add new Model</button>
 </div>
 </div>
+<button>Add and update JSON</button><br>
+		 game:{{game}}<br>
+		 faction:{{faction}}<br>
 		 gear:{{myUnit.Gear}}<br>
+		 Model:{{myUnit}}
 		
 		<div ng-show="gearJson">
 			<h3>New Gear:</h3>

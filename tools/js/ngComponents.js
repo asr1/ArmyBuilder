@@ -13,18 +13,46 @@ app.component('jsonPicker', {
 	},
     templateUrl: 'js/components/JsonPicker.html',
     controller: ['$scope', '$compile', function GreetUserControzller($scope, $compile) {
-		this.newItemDiv = document.getElementById("newEntry");
-		var aform = (angular.element(document.getElementById('newEntry')));
+		this.myRand = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+		this.getNewElementName = function() {
+			return 'newEntry' + this.myRand;
+		}
+		
+		this.getAform = function() {
+			if(!this.aform) {
+				this.aform = (angular.element(document.getElementById(this.getNewElementName())));
+			}
+			return this.aform;
+		}
+		
+		this.getNewItemDiv = function() {
+			if(!this.newItemDiv) {
+				this.newItemDiv = document.getElementById(this.getNewElementName());
+			}
+			return this.newItemDiv;
+		}
+		
+		this.shouldShowSelectButton = function() {
+			let ret = true;
+			if(this.type === 'array') {
+				ret = true;
+			}
+			if(this.type === 'string') {
+				ret = false;
+			}
+			
+			return ret;
+		}
 		
 		this.processItemForAdd = function(item){
 			if(item === "new") {
 				this.addingNew = true;
 				this.myModel = new this.newModel();
 				Object.keys(this.myModel).forEach( (key) => {
-					this.newItemDiv.innerHTML +=
+					this.getNewItemDiv().innerHTML +=
 					key + ": <input ng-model=\"$ctrl.myModel." + key + "\"></input> <br>";
 				});
-				$compile(aform)($scope);
+				$compile(this.getAform())($scope);
 			} else {
 				item = JSON.parse(item);
 				this.addItem(item);
@@ -32,17 +60,18 @@ app.component('jsonPicker', {
 		}
 		
 		this.addItem = function (item) {
-			console.log("item", item);
 			console.log("add item type", typeof(item));
 			if(this.type === 'array') {
 				this.output.push(parseInt(item.id));
+			} else if(this.type === 'string') {
+				this.output = item.Name;
 			}
 		}
 		
 		this.addNewItem = function () {
 			console.log("mymodel", this.myModel);
 			this.addingNew = false;
-			this.newItemDiv.innerHTML = "";
+			this.getNewItemDiv().innerHTML = "";
 			this.newJson += ",\r\n" + angular.toJson(this.myModel, true);
 			console.log("add new type", typeof(this.myModel));
 			this.addItem(this.myModel);
@@ -53,8 +82,10 @@ app.component('jsonPicker', {
 
 app.controller('builderCtrl', function($scope, $http){
 	$scope.gearJson = "";
+	$scope.factionJson = "";
 	$scope.game = "Warhammer 40k 8th Edition";
-	$scope.faction = "Space Marines";
+	$scope.faction = { Name: "Space Marines"};
+	$scope.gameJson = "";;
 	
 	class gearModel {
 		constructor(id, Name, Cost, Ability, Keywords) {
@@ -78,7 +109,16 @@ app.controller('builderCtrl', function($scope, $http){
 			this.Powers = powers;
 		}
 	}
+	
+	class factionModel {
+		constructor(factionName) {
+			this.Name = factionName;
+			//this.Units = [];
+		}
+	}
+	
 	$scope.unitModel = unitModel;
+	$scope.factionModel = factionModel;
 	$scope.myUnit = new unitModel("Test", 1, 1, [], [], [], []);
 	
 	$http.get('../data/squads.json').then(function(res){
@@ -113,8 +153,4 @@ app.controller('builderCtrl', function($scope, $http){
 	$scope.getAddon = function(id) {
 		return $scope.addons[id -1];
 	}
-	
-
-
-	
 });

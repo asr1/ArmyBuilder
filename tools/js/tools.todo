@@ -4,3 +4,5 @@ See if we can append to existing JSON
 Pretty-print the JSON output(s)
 Clean up the label / input boxes in the HTML
 and toss it all in panels
+clean up "new" divs as well with CSS 
+after updating a "new", should add to dropdown.
