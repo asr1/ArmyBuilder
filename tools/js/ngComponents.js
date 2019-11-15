@@ -65,6 +65,13 @@ app.component('jsonPicker', {
 			}
 		}
 		
+		this.pushScoped = function(key, item) { 
+		console.log(item)
+		console.log(key)
+		console.log(this.myModel);
+		 this.myModel[key].push(parseInt(item));
+		}
+		
 		this.generateHtmlInput = function(key) {
 			let ifcode = "";
 			let model;
@@ -88,13 +95,13 @@ app.component('jsonPicker', {
 					}
 					
 					if(opts.source === 'data') {
-						model = "<select " + ifcode +" ng-model=\"$ctrl.scopedSel." + key + "\">";
+						model = "<select " + ifcode +" ng-model=\"$ctrl.scopedSel\">";
 						this.existingData.forEach( option => {
 							model += "<option value=\"" + option.id + "\">"+option.Text+"</option>"
 							console.log(option);
 						});
 						console.log(this.myModel[key]);
-						model += "</select><button ng-click=\"$ctrl.myModel." + key + ".push($ctrl.scopedSel)\">Add</button><br>";
+						model += "</select><button ng-click=\"$ctrl.pushScoped('"+key+"', $ctrl.scopedSel)\">Add</button><br>";
 					}
 					
 					
