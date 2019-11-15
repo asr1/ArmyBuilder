@@ -29,13 +29,13 @@
 <div>
 <div class="block">
 	<label class="title-label">Game:</label class="title-label">
-	<json-picker new-model="factionModel" type="string" output="game" existing-data="games" new-json="gamejson"></json-picker>
+	<json-picker new-model="factionModel" type="string" output="game" existing-data="games"></json-picker>
 
 </div>
 
 <div class="block">
 	<label class="title-label">Faction:</label class="title-label">
-	<json-picker new-model="factionModel" type="string" output="faction" existing-data="selectedGame.Factions" new-json="factionJson"></json-picker>
+	<json-picker new-model="factionModel" type="string" output="faction" existing-data="selectedGame.Factions"></json-picker>
 </div>
 
 <div class="block">
@@ -55,22 +55,22 @@
 
 <div class="block">		
 	<label class="title-label">Abilities:</label class="title-label">
-	<json-picker new-model="abilityModel" type="array" output="myUnit.Abilities" existing-data="abilities" new-json="abilitiesJson"></json-picker>
+	<json-picker new-model="abilityModel" type="array" output="myUnit.Abilities" existing-data="abilities"></json-picker>
 </div>
 
 <div class="block">	
 	<label class="title-label">AddOns:</label class="title-label">
-		<json-picker new-model="addOnModel" type="array" output="myUnit.AddOns" existing-data="addons" new-json="addOnJson" options="addOnOptions"></json-picker>
+		<json-picker new-model="addOnModel" type="array" output="myUnit.AddOns" existing-data="addons" options="addOnOptions"></json-picker>
 </div>
 		
 <div class="block">	
 	<label class="title-label">Gear</label class="title-label">
-	<json-picker new-model="gearModel" type="array" output="myUnit.Gear" existing-data="gear" new-json="gearJson"></json-picker>
+	<json-picker new-model="gearModel" type="array" output="myUnit.Gear" existing-data="gear"></json-picker>
 </div>
 		
 <div class="block">	
 	<label class="title-label">Powers (known):</label class="title-label">
-	<json-picker new-model="powerModel" type="array" output="myUnit.Powers.Known" existing-data="powers" new-json="powerJson"></json-picker>
+	<json-picker new-model="powerModel" type="array" output="myUnit.Powers.Known" existing-data="powers"></json-picker>
 </div>
 
 <div class="block">		
@@ -80,24 +80,14 @@
 
 <div class="block">	
 	<label class="title-label">Powers (options):</label class="title-label">
-	<json-picker new-model="powerModel" type="array" output="myUnit.Powers.Options.From" existing-data="powers" new-json="powerOptionsJson"></json-picker>
+	<json-picker new-model="powerModel" type="array" output="myUnit.Powers.Options.From" existing-data="powers"></json-picker>
 </div>
 
 <br>
-<button ng-click="postResults()">Add new Model</button><!--TODO is this even necessary? Maybe it clears the form, but keeps the old model around, or at least its JSON-->
+<button ng-click="postResults()">Add new Model</button>
 </div>
 </div>
 </div>
-<button>Add and update JSON</button><br> <!--TODO make this build the JSON(s)-->
-		 game:{{game}}<br>
-		 faction:{{faction}}<br>
-		 gear:{{myUnit.Gear}}<br>
-		 Model:{{myUnit}}
-		
-		<div ng-show="gearJson">
-			<h3>New Gear:</h3>
-			<textarea style="width:210px; height:255px;" ng-model="gearJson"></textarea>
-		</div>
 		<!--Load JS files-->
 		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>

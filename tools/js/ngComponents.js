@@ -9,7 +9,6 @@ app.component('jsonPicker', {
 		output: '=',
 		type: '@',
 		existingData: '=',
-		newJson: '=',
 		options: '='
 	},
     templateUrl: 'js/components/JsonPicker.html',
@@ -125,7 +124,6 @@ app.component('jsonPicker', {
 		this.addNewItem = function () {
 			this.addingNew = false;
 			this.getNewItemDiv().innerHTML = "";
-			this.newJson += ",\r\n" + angular.toJson(this.myModel, true);
 			this.addItem(this.myModel);
 			this.existingData.push(this.myModel);
 		}
