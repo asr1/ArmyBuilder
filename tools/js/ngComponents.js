@@ -66,9 +66,6 @@ app.component('jsonPicker', {
 		}
 		
 		this.pushScoped = function(key, item) { 
-		console.log(item)
-		console.log(key)
-		console.log(this.myModel);
 		 this.myModel[key].push(parseInt(item));
 		}
 		
@@ -98,9 +95,7 @@ app.component('jsonPicker', {
 						model = "<select " + ifcode +" ng-model=\"$ctrl.scopedSel\">";
 						this.existingData.forEach( option => {
 							model += "<option value=\"" + option.id + "\">"+option.Text+"</option>"
-							console.log(option);
 						});
-						console.log(this.myModel[key]);
 						model += "</select><button ng-click=\"$ctrl.pushScoped('"+key+"', $ctrl.scopedSel)\">Add</button><br>";
 					}
 					
@@ -128,11 +123,9 @@ app.component('jsonPicker', {
 		}
 		
 		this.addNewItem = function () {
-			console.log("mymodel", this.myModel);
 			this.addingNew = false;
 			this.getNewItemDiv().innerHTML = "";
 			this.newJson += ",\r\n" + angular.toJson(this.myModel, true);
-			console.log("add new type", typeof(this.myModel));
 			this.addItem(this.myModel);
 			this.existingData.push(this.myModel);
 		}
@@ -259,7 +252,6 @@ app.controller('builderCtrl', function($scope, $http){
 			}
 				
 			let currFac = currGame.Factions.find( fac => fac.Name === $scope.faction && fac.Units); // See above re: create on new.
-			console.log("curfac",currFac);
 			if(!currFac) { 
 				// We are adding a new faction.
 				let newFac = {Name: $scope.faction, Units: []}
@@ -268,8 +260,6 @@ app.controller('builderCtrl', function($scope, $http){
 			}
 			
 			currFac.Units.push($scope.myUnit);
-			console.log("curfact with my unit", currFac);
-			console.log("all games?", $scope.games);
 	}
 	
 	// Right now the entire file gets sent over the network, then destroyed and recreated. 
@@ -284,7 +274,6 @@ app.controller('builderCtrl', function($scope, $http){
 			}
         )
         .then(function(response) {
-          console.log('success', response);
 		  //Reset the form: myUnit, Faction, Game should all get zeroed. Or maybe just myUnit.
 		  $scope.myUnit = new unitModel("Test", 1, 1, [], [], [], {Known: [], Options: {Amount: 0, From: []}});
         })
