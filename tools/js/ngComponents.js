@@ -74,17 +74,30 @@ app.component('jsonPicker', {
 				if(opts.conditional) {
 					const condition = "$ctrl.myModel." + opts.on.key + "===" + "'" + opts.on.value + "'";
 					ifcode ="ng-if=\""+condition+"\"";
-					console.log(ifcode);
 				}
 				ret = "<label " + ifcode +":>" + key + "</label>"
 				
 				if(opts.type === 'dropdown') {
-					model = "<select " + ifcode +" ng-model=\"$ctrl.myModel." + key + "\">";
-					opts.allowed.forEach( option => {
-						model += "<option value=\"" + option + "\">"+option+"</option>"
-					});
-					model += "</select><br>";
-					model += "{{myModel[opts.on.key]}}"
+					
+					if(opts.source === 'list') {
+						model = "<select " + ifcode +" ng-model=\"$ctrl.myModel." + key + "\">";
+						opts.allowed.forEach( option => {
+							model += "<option value=\"" + option + "\">"+option+"</option>"
+						});
+						model += "</select><br>";
+					}
+					
+					if(opts.source === 'data') {
+						model = "<select " + ifcode +" ng-model=\"$ctrl.scopedSel." + key + "\">";
+						this.existingData.forEach( option => {
+							model += "<option value=\"" + option.id + "\">"+option.Text+"</option>"
+							console.log(option);
+						});
+						console.log(this.myModel[key]);
+						model += "</select><button ng-click=\"$ctrl.myModel." + key + ".push($ctrl.scopedSel)\">Add</button><br>";
+					}
+					
+					
 					return ret + model;
 				}
 			}
@@ -103,7 +116,6 @@ app.component('jsonPicker', {
 		this.selectChanged = function(item) {
 			if(item && item !== 'new' && this.type === 'string') {
 				item = JSON.parse(item);
-				console.log(item);
 				this.addItem(item);
 			}
 		}
@@ -135,10 +147,12 @@ app.controller('builderCtrl', function($scope, $http){
 	$scope.addOnOptions = {
 		Type: {
 			type: 'dropdown',
+			source: 'list',
 			allowed: ['IncreaseModelNum', 'ReplaceItem']
 		},
 		Level: {
 			type: 'dropdown',
+			source: 'list',
 			allowed: ['Model', 'Unit']
 		},
 		Amount: {
@@ -161,6 +175,10 @@ app.controller('builderCtrl', function($scope, $http){
 				key: 'Type',
 				value: 'ReplaceItem'
 			}
+		},
+		Mutex: {
+			type: 'dropdown',
+			source: 'data'
 		}
 	}
 	
@@ -191,6 +209,7 @@ app.controller('builderCtrl', function($scope, $http){
 			this.Text = Text;
 			this.Cost = Cost;
 			this.Level = Level;
+			this.Mutex = [];
 			this.Type = Type;
 			this.Amount = Amount;
 			this.Remove = Remove;
