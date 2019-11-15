@@ -9,7 +9,8 @@ app.component('jsonPicker', {
 		output: '=',
 		type: '@',
 		existingData: '=',
-		newJson: '='
+		newJson: '=',
+		options: '='
 	},
     templateUrl: 'js/components/JsonPicker.html',
     controller: ['$scope', '$compile', function GreetUserControzller($scope, $compile) {
@@ -45,20 +46,50 @@ app.component('jsonPicker', {
 		}
 		
 		this.processItemForAdd = function(item){
+			if(!item) { return;}
 			if(item === "new") {
-				this.addingNew = true;
-				this.myModel = new this.newModel();
-				Object.keys(this.myModel).forEach( (key) => {
-					this.getNewItemDiv().innerHTML +=
-					"<label>" + key + "</label>: <input ng-model=\"$ctrl.myModel." + key + "\"></input> <br>";
-				});
-				this.myModel.id = this.existingData.length + 1;
-				this.getAform().addClass("subblock");
-				$compile(this.getAform())($scope);
+				if(!this.addingNew){
+					this.addingNew = true;
+					this.myModel = new this.newModel();
+					Object.keys(this.myModel).forEach( (key) => {
+						this.getNewItemDiv().innerHTML +=
+						this.generateHtmlInput(key);
+					});
+					this.myModel.id = this.existingData.length + 1;
+					this.getAform().addClass("subblock");
+					$compile(this.getAform())($scope);
+				}
 			} else {
 				item = JSON.parse(item);
 				this.addItem(item);
 			}
+		}
+		
+		this.generateHtmlInput = function(key) {
+			let ifcode = "";
+			let model;
+			let ret = "<label>" + key + ":</label>";
+			if(this.options && (Object.keys(this.options).indexOf(key) != -1)) {
+				const opts = this.options[key];
+				if(opts.conditional) {
+					const condition = "$ctrl.myModel." + opts.on.key + "===" + "'" + opts.on.value + "'";
+					ifcode ="ng-if=\""+condition+"\"";
+					console.log(ifcode);
+				}
+				ret = "<label " + ifcode +":>" + key + "</label>"
+				
+				if(opts.type === 'dropdown') {
+					model = "<select " + ifcode +" ng-model=\"$ctrl.myModel." + key + "\">";
+					opts.allowed.forEach( option => {
+						model += "<option value=\"" + option + "\">"+option+"</option>"
+					});
+					model += "</select><br>";
+					model += "{{myModel[opts.on.key]}}"
+					return ret + model;
+				}
+			}
+			model = " ng-model=\"$ctrl.myModel." + key + "\"></input><" + ifcode +"br>";
+			return ret + "<input  "+ ifcode + model;	
 		}
 		
 		this.addItem = function (item) {
@@ -101,6 +132,37 @@ app.controller('builderCtrl', function($scope, $http){
 	
 	$scope.game = "Warhammer 40k 8th Edition";
 	$scope.faction = { Name: "Space Marines"};
+	$scope.addOnOptions = {
+		Type: {
+			type: 'dropdown',
+			allowed: ['IncreaseModelNum', 'ReplaceItem']
+		},
+		Level: {
+			type: 'dropdown',
+			allowed: ['Model', 'Unit']
+		},
+		Amount: {
+			conditional: true,
+			on: {
+				key: 'Type',
+				value: 'IncreaseModelNum'
+			}
+		},
+		Remove: {
+			conditional: true,
+			on: {
+				key: 'Type',
+				value: 'ReplaceItem'
+			}
+		},
+		Add: {
+			conditional: true,
+			on: {
+				key: 'Type',
+				value: 'ReplaceItem'
+			}
+		}
+	}
 	
 	class gearModel {
 		constructor(id, Name, Cost, Ability, Keywords) {
@@ -128,11 +190,11 @@ app.controller('builderCtrl', function($scope, $http){
 			this.id = id;
 			this.Text = Text;
 			this.Cost = Cost;
+			this.Level = Level;
 			this.Type = Type;
+			this.Amount = Amount;
 			this.Remove = Remove;
 			this.Add = Add;
-			this.Level = Level;
-			this.Amount = Amount;
 		}
 	}
 	$scope.addOnModel = addOnModel;

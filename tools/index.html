@@ -24,6 +24,7 @@
 			<div class="col-md-3"></div>
 		</div>
 
+<div class="col-md-12">
 <div class="banner">
 <div>
 <div class="block">
@@ -59,7 +60,7 @@
 
 <div class="block">	
 	<label class="title-label">AddOns:</label class="title-label">
-		<json-picker new-model="addOnModel" type="array" output="myUnit.AddOns" existing-data="addons" new-json="addOnJson"></json-picker>
+		<json-picker new-model="addOnModel" type="array" output="myUnit.AddOns" existing-data="addons" new-json="addOnJson" options="addOnOptions"></json-picker>
 </div>
 		
 <div class="block">	
@@ -84,6 +85,7 @@
 
 <br>
 <button ng-click="postResults()">Add new Model</button><!--TODO is this even necessary? Maybe it clears the form, but keeps the old model around, or at least its JSON-->
+</div>
 </div>
 </div>
 <button>Add and update JSON</button><br> <!--TODO make this build the JSON(s)-->
