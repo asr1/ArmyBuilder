@@ -132,14 +132,6 @@ app.component('jsonPicker', {
 });
 
 app.controller('builderCtrl', function($scope, $http){
-	$scope.gameJson = "";
-	$scope.factionJson = "";
-	$scope.abilitiesJson = "";
-	$scope.addOnJson = "";
-	$scope.gearJson = "";
-	$scope.powerJson = "";
-	$scope.powerOptionsJson = "";
-	
 	$scope.game = "Warhammer 40k 8th Edition";
 	$scope.faction = { Name: "Space Marines"};
 	$scope.addOnOptions = {
@@ -235,29 +227,34 @@ app.controller('builderCtrl', function($scope, $http){
 	}
 	
 	$scope.buildFile = function() {
-			//TODO need to build squad file based on Game, Faction, MyUnit
 			console.log("all games", $scope.games);
 			let currGame = $scope.games.find( game => game.Name === $scope.game && game.Factions); // Factions check necessary because of how we create on new.
 			let currGameIndex = $scope.games.findIndex( game => game.Name === $scope.game);
 			console.log("currgame", currGame);
+			console.log("cur game index", currGameIndex);
 			
 			if(!currGame) {
-				console.log("should be here");
+				console.log("Adding a new game");
 				//We are adding a new game. Need to set curGame after adding to it.
 				let newGame = {Name: $scope.game, Factions: []}
 				$scope.games[currGameIndex] = newGame; //Can't just push here, need to override the object. When we add new, this gets created.
 				currGame = newGame;
 			}
+			console.log("Halfway games", $scope.games);
 				
 			let currFac = currGame.Factions.find( fac => fac.Name === $scope.faction && fac.Units); // See above re: create on new.
+			let currFacIndex = currGame.Factions.findIndex( fac => fac.Name === $scope.faction);
 			if(!currFac) { 
-				// We are adding a new faction.
+				console.log("Adding a new faction");
 				let newFac = {Name: $scope.faction, Units: []}
-				currGame.Factions.push(newFac); //See above re pushing
+				currFacIndex = currFacIndex >= 0 ? currFacIndex : 0;
+				currGame.Factions[currFacIndex] = newFac; //See above re pushing
 				currFac = newFac;
 			}
 			
 			currFac.Units.push($scope.myUnit);
+			console.log("currFac", currFac);
+			console.log("final games", $scope.games);
 	}
 	
 	// Right now the entire file gets sent over the network, then destroyed and recreated. 
