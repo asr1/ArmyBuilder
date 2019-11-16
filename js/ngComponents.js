@@ -506,7 +506,10 @@ app.controller('builderCtrl', function($scope, $http){
 			}
 		});
 		if(amount > 0){
-			addModel(unit);
+			while(amount--)
+			{
+				addModel(unit);
+			}
 		}
 		else {
 			amount *= -1;
