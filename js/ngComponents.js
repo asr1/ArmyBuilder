@@ -513,8 +513,9 @@ app.controller('builderCtrl', function($scope, $http){
 		}
 		else {
 			amount *= -1;
-			for(let i = 0; i < amount; i++);
-			$scope.models[unit.Name].pop();
+			for(let i = 0; i < amount; i++) {
+				$scope.models[unit.Name].pop();
+			}
 		}
 	}
 	
@@ -572,6 +573,7 @@ app.controller('builderCtrl', function($scope, $http){
 		copy.Abilities = unit.Abilities.slice(0);
 		copy.AddOns = unit.AddOns.slice(0);
 		copy.Gear = unit.Gear.slice(0);
+		copy.SquadNames = unit.SquadNames;
 		return copy;
 	}
 	
