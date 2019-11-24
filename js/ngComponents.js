@@ -35,6 +35,7 @@ app.controller('builderCtrl', function($scope, $http){
 	$scope.enabledAddOns = {}
 	$scope.chosenPowers = {};
 	$scope.addOnIndexes = new Set();
+	$scope.currentUnitCount = {};
 	
 	$scope.allFacs = new Set();
 	
@@ -128,17 +129,76 @@ app.controller('builderCtrl', function($scope, $http){
 		$scope.chosenPowers[unit.Name] = [];
 		updateEnabledUnits();
 		deregisterAddOnStatus(unit.Name)
+		//addToScopeCurrentCount(unit, -1);
+		$scope.apply;
+	}
+	
+	function AddSecondSquad(unit) { 
+		console.log("");
+		console.log("adding a second");
+		$scope.removeFromArmy(unit);
+		unit.Name = getNextName(unit);
+		//$scope.addUnits([unit]);
+		console.log("Unit I want to add", unit)
+		
+		let newUnit = cloneUnit(unit);
+		newUnit.Name = getNextName(unit);
+		//$scope.addUnits([newUnit]);
+		console.log("New unit", newUnit);
+	}
+	
+	function addToScopeCurrentCount(unit, number) {
+		console.log("");
+		console.log("add scope count");
+		console.log("Unit", unit)
+		console.log("count", $scope.currentUnitCount[unit.BaseName]);
+		if(!$scope.currentUnitCount[unit.BaseName]) {
+			$scope.currentUnitCount[unit.BaseName] = 0;
+		}
+		$scope.currentUnitCount[unit.BaseName] += number;
+	}
+	
+	function getNameCount(unit) {
+		console.log("");
+		console.log("Get scope count name");
+		console.log("Unit", unit)
+		console.log("count", $scope.currentUnitCount[unit.BaseName]);
+		if(!$scope.currentUnitCount[unit.BaseName]) {
+			$scope.currentUnitCount[unit.BaseName] = 0;
+		}
+		console.log("count", $scope.currentUnitCount[unit.BaseName]);
+		console.log("")
+		return $scope.currentUnitCount[unit.BaseName];
+	}
+	
+	function getNextName(unit) {
+		return unit.BaseName + ' - Squad ' + (getNameCount(unit));
+	}
+	
+	$scope.getOptionsName = function(unit) {
+		return unit.BaseName ? unit.BaseName : unit.Name;
 	}
 	
 	$scope.addUnits = function(units){
+		console.log("entering add");
+		console.log("addding unit: ", units);
+		console.log("My army", $scope.myArmy);
+		console.log("models", $scope.models);
 		if (!units || units.length == 0) {return;}
 		// Add to array if not present in O(selUnit) instead of O(myArmy)
-		units.reduce((set, elem) => set.add(cloneUnit(elem)), $scope.myArmy);
-		$scope.myArmyArray = Array.from($scope.myArmy); 
+		
 		units.forEach( (unit) => {
+			unit.BaseName = unit.BaseName ? unit.BaseName : unit.Name;
+			addToScopeCurrentCount(unit, 1);
 			if($scope.models[unit.Name] == undefined) {
 				$scope.models[unit.Name] = [];
 			}
+			
+			if($scope.models[unit.Name].length) {
+				unit.Name = getNextName(unit);
+				$scope.models[unit.Name] = [];
+			}
+			
 			if(!unit.StartingNumberOfModels) {
 				unit.StartingNumberOfModels = unit.NumberOfModels;
 			}
@@ -146,7 +206,12 @@ app.controller('builderCtrl', function($scope, $http){
 			for(let i = 0; i < numUnits; i++) {
 				addModel(unit);
 			}
+			
 		});
+		units.reduce((set, elem) => set.add(cloneUnit(elem)), $scope.myArmy);
+		$scope.myArmyArray = Array.from($scope.myArmy); 
+		console.log("leaving add");
+		console.log("");
 		updateEnabledUnits();
 	}
 	 
@@ -565,6 +630,7 @@ app.controller('builderCtrl', function($scope, $http){
 	function cloneUnit(unit) {
 		let copy = {};
 		copy.Name = unit.Name
+		copy.BaseName = unit.BaseName
 		copy.NumberOfModels = unit.NumberOfModels
 		copy.StartingNumberOfModels = unit.StartingNumberOfModels
 		copy.Cost = unit.Cost
