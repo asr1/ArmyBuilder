@@ -1,0 +1,205 @@
+body {
+	margin-left:40px;
+	margin-right:40px;
+	font-family: 'Source Sans Pro', sans-serif;
+}
+
+.panel:not(.boring) {
+	width: 20em;
+	border-style: double;
+	border-color:	red;
+	border-width: 1px;
+	padding-bottom: 10px;
+}
+
+.panel.boring {
+	border-style: double;
+	border-color:	red;
+	border-width: 1px;
+}
+
+div.block {
+	margin-top:7px;
+}
+
+div.subblock {
+	margin-left:15px;
+	clear: both;
+}
+.subblock > input {
+	width: 50%;
+	clear:both;
+	float:right;
+	margin-right: 150px;
+}
+
+
+div.banner {
+	border-style: double;
+	border-color:	red;
+	border-width: 1px;
+	padding-top:20px;
+	padding-left:15px;
+	width:470px;
+	border-radius: 25px;
+}
+
+select {
+	vertical-align: top;
+}
+
+div.panel p,
+div.panel input,
+div.panel button {
+	margin-left: 15px;
+}
+
+label.title-label {
+	display: inline-block;
+	width: 140px;
+	text-align: left;
+}
+
+.transparent {
+		
+	/* Background pattern from Toptal Subtle Patterns */
+	background: url('gray_jean.png');
+}
+
+#addButton {
+	margin-bottom: 15px;
+}
+
+.padAfter {
+	padding-bottom: 10px;
+}
+
+.disabledButton {
+	color:#3c3c3c;
+	background-color: #adadad;
+}
+.disabledButton:after {
+	content: " (disabled)"
+}
+
+p.centered {
+	margin-left:9em;
+}
+
+h3.centered {
+	margin-left:2em;
+}
+div.centeredParent {
+	text-align: center
+}
+h1.centered {
+	display: inline-block;
+}
+
+hr {
+	border-color: #422E2E;
+    height: 2px;
+	background-color:#422e2e;
+}
+
+h1.panelText {
+	/*background:#c8c8c8;*/
+	color:red;
+	font-size: 1.025em;
+	width:7.5em;
+    padding-left:0.25em;
+	margin-top:-10px;
+    margin-left:0.985em;
+	
+}
+		
+h6.Subheading {
+  display: block;
+  font-size: 1.125em;
+  margin-top: 0.267em;
+  margin-bottom: 0.1167em;
+  margin-left: 0;
+  margin-right: 0;
+  font-weight: bold;
+}
+
+h5.Subheading {
+  display: block;
+  font-size: 1.15em;
+  margin-top: 0.267em;
+  margin-bottom: 0.1167em;
+  margin-left: 0;
+  margin-right: 0;
+  font-weight: bold;
+}
+
+div.unitHeader {
+	margin-left: .5em;
+}
+
+div.level2Item {
+	margin-left: 1em;
+}
+
+div.modelHeader {
+	margin-left: 1.5em;
+}
+
+div.modelBody {
+	margin-left: 2em;
+}
+
+div.subtext {
+	font-size: .95em;
+	font-style: italic;
+	margin-left: 1.5em;
+	margin-top: -1.5em;
+}
+
+span.abilityName {
+	font-size: 1.015em;
+	font-style: bold;
+	font-weight: bold;
+}
+
+span.skillName {
+	font-size: 1.0015em;
+	font-style: bold;
+	font-weight: bold;
+}
+
+p.modelName {
+	font-style: bold;
+	font-weight: bold;
+	margin-bottom: 0.1167em;
+	font-size: 1.18em;
+	margin-left: 1em;
+}
+
+
+.section > div:nth-of-type(2n+1){
+  background-color:#CC8F8F;
+}
+.section > div:nth-of-type(2n+1) > *{
+  color:#141414;
+}
+
+
+.section > div:nth-of-type(2n){
+  background-color:#424242;
+}
+.section > div:nth-of-type(2n) > *{
+	color:#DBDBDB;
+}
+
+
+
+.remove {
+	color:red;
+	cursor:pointer;
+}
+
+.instructions{
+	font-style: bold;
+	font-weight: bold;
+}

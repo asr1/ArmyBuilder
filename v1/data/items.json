@@ -1,0 +1,215 @@
+{
+    "gear": [
+        {
+            "id": 1,
+            "Name": "Assault bolter",
+            "Cost": 7,
+            "Ability": "",
+            "Keywords": ""
+        },
+        {
+            "id": 2,
+            "Name": "Auto bolt rifle",
+            "Cost": 0,
+            "Ability": "",
+            "Keywords": ""
+        },
+        {
+            "id": 3,
+            "Name": "Bolt pistol",
+            "Cost": 0,
+            "Ability": "",
+            "Keywords": ""
+        },
+        {
+            "id": 4,
+            "Name": "Bolt rifle",
+            "Cost": 0,
+            "Ability": "",
+            "Keywords": ""
+        },
+        {
+            "id": 5,
+            "Name": "Boltstorm guantlet",
+            "Cost": 33,
+            "Ability": "If a model is making a close combat attack with a boltstorm guantlet, you must subtract 1 from the hit roll.",
+            "Keywords": "Melee, pistol 3",
+            "Range": "Melee\/ranged"
+        },
+        {
+            "id": 6,
+            "Name": "Frag grenade",
+            "Cost": 0,
+            "Ability": "",
+            "Keywords": ""
+        },
+        {
+            "id": 7,
+            "Name": "Krak grenade",
+            "Cost": 0,
+            "Ability": "",
+            "Keywords": ""
+        },
+        {
+            "id": 8,
+            "Name": "Plasma incinerator",
+            "Cost": 17,
+            "Ability": "Each time a model fires a plasma incinerator, it can supercharge the weapon before firing. If it does so, increase the Strength and Damage of the weapon by 1 this turn. If you roll any hit rolls of 1 when firing a supercharged plasma incinerator, the firing model is slain as the weapon explodes.",
+            "Keywords": ""
+        },
+        {
+            "id": 9,
+            "Name": "Master-crafted power sword",
+            "Cost": 17,
+            "Ability": "",
+            "Keywords": "Melee"
+        },
+        {
+            "id": 10,
+            "Name": "Power sword",
+            "Cost": 4,
+            "Ability": "",
+            "Keywords": "Melee"
+        },
+        {
+            "id": 11,
+            "Name": "Plaguespitter",
+            "Cost": 17,
+            "Ability": "You can re-roll any wound rolls of 1 when attacking with a plague weapon. In addition, a plaguespitter automatically hits its target - there is no need to make hit rolls.",
+            "Keywords": "Ranged"
+        },
+        {
+            "id": 12,
+            "Name": "Plague probe",
+            "Cost": 29,
+            "Ability": "You can re-roll any wound rolls of 1 when attacking with a plague weapon.",
+            "Keywords": "Melee"
+        },
+        {
+            "id": 13,
+            "Name": "Plaguereaper",
+            "Cost": 45,
+            "Ability": "You can re-roll any wound rolls of 1 when attacking with a plague weapon.",
+            "Keywords": "Melee"
+        },
+        {
+            "id": 14,
+            "Name": "Corrupted staff",
+            "Cost": 19,
+            "Ability": "",
+            "Keywords": "Melee"
+        },
+        {
+            "id": 15,
+            "Name": "Blight grenade",
+            "Cost": 0,
+            "Ability": "You can re-roll any wound rolls of 1 when attacking with a plague weapon.",
+            "Keywords": "Grenade"
+        },
+        {
+            "id": 16,
+            "Name": "Plasma pistol",
+            "Cost": 7,
+            "Ability": "Each time a model fires a plasma pistol, it can supercharge the weapon before firing. If it does so, increase the Strength and Damage of the weapon by 1 this turn. If you roll any hit rolls of 1 when firing a supercharged plasma pistol, the firing model is slain as the weapon explodes.",
+            "Keywords": "Ranged"
+        },
+        {
+            "id": 17,
+            "Name": "Cursed plague bell",
+            "Cost": 9,
+            "Ability": "You can re-roll any wound rolls of 1 when attacking with a plague weapon.",
+            "Keywords": "Melee"
+        },
+        {
+            "id": 18,
+            "Name": "Improvised weapon",
+            "Cost": 0,
+            "Ability": "",
+            "Keywords": "Melee"
+        },
+        {
+            "id": 19,
+            "Name": "Plaguesword",
+            "Cost": 3,
+            "Ability": "You can re-roll any wound rolls of 1 when attacking with a plague weapon. You can also re-roll all failed wound rolls when resolving attacks with this weapon.",
+            "Keywords": "Melee"
+        },
+        {
+            "id": 20,
+            "Name": "Power fist",
+            "Cost": 29,
+            "Ability": "If a model is attacking with a power fist, you must subtract 1 from the hit roll",
+            "Keywords": "Melee"
+        },
+        {
+            "id": 21,
+            "Name": "Plasma gun",
+            "Cost": 13,
+            "Ability": "Each time a model fires a plasma gun, it can supercharge the weapon before firing. If it does so, increase the Strength and Damage of the weapon by 1 this turn. If you roll any hit rolls of 1 when firing a supercharged plasma gun, the firing model is slain as the weapon explodes.",
+            "Keywords": "Ranged"
+        },
+        {
+            "id": 22,
+            "Name": "Plague knife",
+            "Cost": 0,
+            "Ability": "You can re-roll any wound rolls of 1 when attacking with a plague weapon.",
+            "Keywords": "Melee"
+        },
+        {
+            "id": 23,
+            "Name": "Boltgun",
+            "Cost": 0,
+            "Ability": "",
+            "Keywords": "Ranged"
+        },
+        {
+            "id": 24,
+            "Name": "Acid Spray",
+            "Cost": 25,
+            "Ability": "This weapon automatically hits its target"
+        },
+        {
+            "id": 25,
+            "Name": "Fleshborer Hive",
+            "Cost": 15
+        },
+        {
+            "id": 26,
+            "Name": "Rupture Cannon",
+            "Cost": 49
+        },
+        {
+            "id": 27,
+            "Name": "Stinger salvo",
+            "Cost": 8
+        },
+        {
+            "id": 28,
+            "Name": "Powerful limbs",
+            "Cost": 0
+        },
+        {
+            "id": 29,
+            "Name": "Scything Talons",
+            "Cost": 0,
+            "Ability": "You can re-roll hit rolls of 1 for this weapon"
+        },
+        {
+            "id": 30,
+            "Name": "Rending Claws",
+            "Cost": 2,
+            "Ability": "Each time you make a wound roll of 6+ for this weapon, that hit is resolved with an AP of -4."
+        },
+        {
+            "id": 31,
+            "Name": "Acid Maw",
+            "Cost": 0
+        },
+        {
+            "id": 32,
+            "Name": "Flesh hooks",
+            "Cost": 2,
+            "Ability": "This weapon can be fired within 1\" of an enemy unit, and can target enemy within 1\" of friendly units."
+        }
+    ]
+}

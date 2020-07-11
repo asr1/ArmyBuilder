@@ -1,0 +1,103 @@
+{
+    "addons": [
+        {
+            "id": 1,
+            "Text": "Trade auto bolt rifle for power sword",
+            "Cost": 0,
+            "Type": "ReplaceItem",
+            "Remove": 2,
+            "Add": 10,
+            "Level": "Model"
+        },
+        {
+            "id": 2,
+            "Text": "Add a second Primaris Lietanant",
+            "Cost": 0,
+            "Type": "IncreaseModelNum",
+            "Amount": 1,
+            "Level": "Unit"
+        },
+        {
+            "id": 3,
+            "Text": "Add an extra 10 Poxwalkers",
+            "Cost": 0,
+            "Type": "IncreaseModelNum",
+            "Amount": 10,
+            "Level": "Unit"
+        },
+        {
+            "id": 4,
+            "Text": "Add an extra 2 Plague Marines",
+            "Cost": 0,
+            "Type": "IncreaseModelNum",
+            "Amount": 2,
+            "Level": "Unit",
+            "Mutex": [
+                5
+            ]
+        },
+        {
+            "id": 5,
+            "Text": "Add an extra 5 Plague Marines",
+            "Cost": 0,
+            "Type": "IncreaseModelNum",
+            "Amount": 5,
+            "Level": "Unit",
+            "Mutex": [
+                4
+            ]
+        },
+        {
+            "id": 6,
+            "Text": "Toxin Sacs",
+            "Cost": 8,
+            "Type": "Diret",
+            "Level": "Model",
+            "Mutex": []
+        },
+        {
+            "id": 7,
+            "Text": "Adrenal Glands",
+            "Cost": 5,
+            "Type": "Diret",
+            "Level": "Model",
+            "Mutex": []
+        },
+        {
+            "id": 8,
+            "Text": "Add an extra Genestealer",
+            "Cost": 10,
+            "Level": "Unit",
+            "Mutex": [],
+            "Type": "IncreaseModelNum",
+            "Amount": "1"
+        },
+        {
+            "id": 9,
+            "Cost": 0,
+            "Text": "Add an acid Maw",
+            "Type": "AddItem",
+            "Remove": null,
+            "Add": 31,
+            "Level": "Model"
+        },
+        {
+            "id": 10,
+            "Text": "Add flesh hooks",
+            "Cost": 0,
+            "Type": "AddItem",
+            "Remove": null,
+            "Add": 32,
+            "Level": "Model"
+        },
+        {
+            "id": 11,
+            "Text": "Add scything talons",
+            "Cost": 0,
+            "Type": "AddItem",
+            "Remove": null,
+            "Add": 29,
+            "Level": "Model"
+        }
+    ]
+}

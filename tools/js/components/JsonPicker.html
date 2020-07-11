@@ -1,0 +1,9 @@
+<select  
+ng-model="$ctrl.selected"
+ng-change="$ctrl.selectChanged($ctrl.selected)">
+<option value="new">New</option>
+<option value="{{item}}" ng-repeat="item in $ctrl.existingData | orderBy:'Name' track by $index">{{item.Name ? item.Name : item.Text}}</option>
+</select>
+<button ng-show="$ctrl.shouldShowSelectButton() || $ctrl.selected === 'new'" ng-click="$ctrl.processItemForAdd($ctrl.selected)">Add</button>
+<div id="{{$ctrl.getNewElementName()}}"></div>
+<div ng-show="$ctrl.addingNew"><button ng-click="$ctrl.addNewItem()">Add New</button></div>

@@ -1,0 +1,134 @@
+{
+    "abilities": [
+        {
+            "id": 1,
+            "Name": "And They Shall Know No Fear",
+            "Text": "This unit can re-roll failed Morale Tests"
+        },
+        {
+            "id": 2,
+            "Name": "Iron halo",
+            "Text": "+4 invulnerable save"
+        },
+        {
+            "id": 3,
+            "Name": "Rites of Battle",
+            "Text": "You can re-roll all hit rolls of 1 made for one friendly <chapter> units that are within 6\" of this unit."
+        },
+        {
+            "id": 4,
+            "Name": "Adeptus Astartes Banner <chapter>",
+            "Text": "Units within 6\" of any friendly <chapter> ancients gain +1 to their Leadership. In addition, roll a dice each time a <chapter> Infantry model is destroyed within 6\" of any friendly <chapter> Ancients, before removing the model as a casualty. On a 4+, that model musters one last surge of strength before succumbing to its wounds; it can either shoot with one of its weapons as if it were the Shooting phase, or make a single attack as if it were the Fight phase."
+        },
+        {
+            "id": 5,
+            "Name": "Heavy Jump Pack",
+            "Text": "The sheer impact of a charging Inceptor can break through walls and shatter bones. Roll a dice each time an Inceptor finishes a charge move within 1\" of an enemy unit; on a 6, that unit suffers a mortal wound."
+        },
+        {
+            "id": 6,
+            "Name": "Meteoric Descent",
+            "Text": "When you set up an Inceptor Squad during deployment, they can be set up in high orbit insterad of being placed on the battlefield. If they do so, they can use a meteoric descent to arrvie on the battlefield at the end of any of your Movement phases; when they do so set them up anywhere that is more than 9\" from any enemy model."
+        },
+        {
+            "id": 7,
+            "Name": "Disgustingly Resilient",
+            "Text": "Each time a model in this unit loses a wound, roll a dice; on a roll of 5 or 6 the model does not lose that wound."
+        },
+        {
+            "id": 8,
+            "Name": "Putrid Explosion",
+            "Text": "If a Foetid Bloat-drone is reduced to 0 wounds, roll a dice before removing the model from the playfield; on a roll of 4+ it explodes, and each unit within 7\" suffers 1 mortal wound."
+        },
+        {
+            "id": 9,
+            "Name": "Daemonic",
+            "Text": "A Foetid Bloat-drone has a +5 invulnerable save."
+        },
+        {
+            "id": 10,
+            "Name": "Nurgle's Gift",
+            "Text": "All Death Guard models within 7\" of a Lord of Contagion are surrounded by a deadly aura of plague and disease. Roll a dice for each enemy unit that is within 1\" of a such a model at the start of your turn. On a roll of 4+, that unit suffers a mortal wound."
+        },
+        {
+            "id": 11,
+            "Name": "Cataphractii Armour",
+            "Text": "A Lord of Contagion has 4+ invulnerable save, but you must halve the result of the dice rolled when determining how far this model Advances."
+        },
+        {
+            "id": 12,
+            "Name": "Teleport Strike",
+            "Text": "When you set up a Lord of Contagion during deployment, he can be set up in a teleportation chamber instead of being placed on the battlefield. If he does so, he can use a teleport strike to arrive on the battlefield at the end of any of your Movement phases; when he does so set him up anywhere that is more than 9\" from any enemy models."
+        },
+        {
+            "id": 13,
+            "Name": "Pestitential Fallout",
+            "Text": "Each time a Malignant Plaguecaster successfully manifests a psychic power with a Psychic test of 7 or more, the nearest enemy unit within 7\" suffers a mortal wound after the effects of the psychic power have been resolved."
+        },
+        {
+            "id": 14,
+            "Name": "Tocsin of Misery",
+            "Text": "Enemy units must subtract 1 from their Leadership whilst they are within 7\" of any Noxious Blightbringers (enemy Psykers must subtract 2 instead). In addition, if a Death Guard unit is within 7\" of any friendly Noxious Blightbringers when it Advances, roll two dice and discard the lowest result when determining how far that unit Advances."
+        },
+        {
+            "id": 15,
+            "Name": "Curse of the Walking Pox",
+            "Text": "Each time an enemy model is slain by a Poxwalker in the Fight phase, add one model to the Poxwalker's unit."
+        },
+        {
+            "id": 16,
+            "Name": "Mindless",
+            "Text": "Poxwalkers never have to take Morale tests"
+        },
+        {
+            "id": 17,
+            "Name": "Diseased Horde",
+            "Text": "You can add 1 to all hit rolls made for a Poxwalker in the Fight phase if its unit contains more than 10 models."
+        },
+        {
+            "id": 18,
+            "Name": "Instinctive Behavior",
+            "Text": "Unless a <Hive Fleet> unit with this ability is within 24\" of any friendly <Hive Fleet> Synapse unit, you must subtract 1 from any hit rolls made for it when shooting any target other than the nearest visible enemy unit, and you must subtract 2 from its charge roll if it declares a charge against any unit other than the nearest enemy unit."
+        },
+        {
+            "id": 19,
+            "Name": "Bio-tank",
+            "Text": "This model does not suffer the penalty to its hit rolls for moving and firing Heavy weapons"
+        },
+        {
+            "id": 20,
+            "Name": "Weapon Beast",
+            "Text": "If this model does not move in your Movement phase, it can shoot all of its weapons twice in the Shooting phase."
+        },
+        {
+            "id": 21,
+            "Name": "Death Throes",
+            "Text": "If a Tyrannofex is reduced to 0 wounds, roll a dice before removing the model from the battlefield; on a 6 it lashes out in its death throes, and each unit within 3\" suffers D3 mortal wounds."
+        },
+        {
+            "id": 22,
+            "Name": "Flurry of Claws",
+            "Text": "Genestealers have 4 Attacks instead of 3 whilst their unit has 10 or more models"
+        },
+        {
+            "id": 23,
+            "Name": "Lightning Reflexes",
+            "Text": "Genestealers have a 5+ invulnerable save."
+        },
+        {
+            "id": 24,
+            "Name": "Swift and Deadly",
+            "Text": "Genestealers can charge even if they Advanced during their turn."
+        },
+        {
+            "id": 25,
+            "Name": "Extended Carapaces",
+            "Text": "Genestealers with extended carapaces have a Save characteristic of 4+ but lose the Swift and Deadly ability."
+        },
+        {
+            "id": 26,
+            "Name": "Infestation",
+            "Text": "If your army includes any units of Genestealers, you can place up to four infestation nodes anywhere in your deployment zone when your army deploys. You can set up any unit of Genestealers lurking, instead of setting them up on the battlefield. If an enemy model is ever within 9\" of an infestation node, the node is destroyed and removed from the battlefield. Whilst there are friendly infestation nodes on the battlefield, this unit can stop lurking: at the end of your Movement phase, set it up wholly within 6\" of a friendly infestation node. That infestation node is then removed from the battlefield. If this unit is still lurking when the last friendly infestation node is removed, this unit is destroyed."
+        }
+    ]
+}
