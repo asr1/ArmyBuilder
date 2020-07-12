@@ -8,14 +8,23 @@ app.controller('builderCtrl', function($scope, $http){
 	const HEADER_FIRST_LINE = "Army Builder";
 	$scope.factions = []; //An array of factions where the index is the gameId.
 	
-	//Initialize default game and factions.
-	$http.post('src/read/getGames.php').then(async function successCB(data){
-		$scope.games = data.data;
-		$scope.selectedGame = $scope.games[0];
-		$scope.updateSelectedFactions($scope.selectedGame);
-	});
+	/*Initialize default game and factions.
+	 * Gets all games from the database,
+	 * Then sets selectedGame to the first game
+	 * And sets selectedFactions based on that game.
+	*/
+	(function initialize() {
+		$http.post('src/php/getGames.php').then(async function successCB(data){
+			$scope.games = data.data;
+			$scope.selectedGame = $scope.games[0];
+			$scope.updateSelectedFactions($scope.selectedGame);
+		});
+	})();
 	
-	// Side effects: modifies state of Selected Factions based on game
+	/* Sets selectedFactions equal to all factions associated 
+	 * To the provided game.
+	 * Side effects: modifies state of $scope.selectedFactions based on game
+	*/
 	$scope.updateSelectedFactions = async function (game) {
 		$scope.selectedFactions = await getFactionsAsync(game);
 		$scope.$apply();
@@ -113,6 +122,35 @@ app.controller('builderCtrl', function($scope, $http){
 	
 	$scope.longestTotalLength = 0;
 	
+	//
+	$scope.processUnitsV2 = function() {
+
+	}
+	
+	/* Takes in a list of units. 
+	 * Returns the unit with the longest name.
+	 * Example: findUnitWithLongestName({name: 'Alex'},
+	 * {name: 'Jonathan'}) would return {name: 'Jonathan'}
+	*/  
+	function findLongestNameAndCost(units) {
+		let longestUnit = units[0];
+		units.forEach( (unit) => {
+			if(unit.name.length > longestUnit.name.length) {
+				longestUnit = unit;
+			}
+		});
+		return longestUnit;
+	}
+
+	/* Returns a list of units associated with the factions provided
+	 * Calls database.
+	 */
+	$scope.getUnitsFromFactionsAync = async function(factions) {
+		console.log(factions);
+		const factionIds = factions.map(faction => faction.id);
+		const response = await $http.post('src/php/getUnitsForFactions.php?factionIds[]='+factionIds);
+	}
+
 	$scope.processUnits = function() {
 			$scope.availUnits = [];
 			if(Array.isArray($scope.selFac)) {
@@ -315,7 +353,7 @@ app.controller('builderCtrl', function($scope, $http){
 	const getFactionsAsync = async function(game) {
 		if(!game) { return; }
 		if($scope.factions[game.id] === undefined) {
-			const response = await $http.post('src/read/getFactionsForGame.php?gameId='+game.id);
+			const response = await $http.post('src/php/getFactionsForGame.php?gameId='+game.id);
 			$scope.factions[game.id] = response.data;
 		}
 		return $scope.factions[game.id];

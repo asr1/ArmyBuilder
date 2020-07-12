@@ -32,7 +32,6 @@
 		<span>
 			Select a game: <select ng-model="selectedGame" ng-change="updateSelectedFactions(selectedGame)" ng-options="game.name for game in games"></select>
 		</span>
-
 		<hr>
 		<div ng-if="selectedGame">
 			<p>You selected {{selectedGame.name}}</p>
@@ -47,6 +46,7 @@
 				ng-options="x as x.name for x in selectedFactions"
 				multiple>
 			</select>
+		<button ng-click="getUnitsFromFactionsAync(selFac)">TEST BUTTON</button>
 				<!-- ng-change="processUnits()" TODO IS THIS NECESSARY -->
 
 			<select
