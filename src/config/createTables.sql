@@ -1,6 +1,7 @@
 create table if not exists factions (
 	id int not null auto_increment,
 	name varchar(50),
+	gameId int,
 	primary key (id)
 );
 
@@ -15,13 +16,14 @@ create table if not exists units (
 	name varchar(50),
 	numerOfModels int,
 	cost int,
+	factionId int,
 	primary key (id)
 );
 
 create table if not exists unit_abilities (
 	id int not null auto_increment,
 	name varchar(50),
-	text varchar(50),
+	text varchar(8000),
 	primary key (id)
 );
 
@@ -53,7 +55,7 @@ create table if not exists addon_mutexes (
 
 create table if not exists addon_types (
 	id int not null auto_increment,
-	name varchar(20),
+	name varchar(30),
 	primary key (id)
 );
 
@@ -80,7 +82,7 @@ create table if not exists gear (
 
 create table if not exists gear_abilities (
 	id int not null auto_increment,
-	text varchar(50),
+	text varchar(8000),
 	primary key (id)
 );
 
@@ -120,7 +122,7 @@ create table if not exists unit_to_gear (
 create table if not exists powers (
 	id int not null auto_increment,
 	name varchar(50),
-	text varchar(50),
+	text varchar(8000),
 	tableSetId int,
 	primary key (id)
 );
