@@ -7,29 +7,69 @@ app.controller('builderCtrl', function($scope, $http){
 	const CURRENT_FILE_FORMAT_VERSION = 1.0
 	const HEADER_FIRST_LINE = "Army Builder";
 	$scope.factions = []; //An array of factions where the index is the gameId.
-	
+	let cache = {};
+
 	/*Initialize default game and factions.
 	 * Gets all games from the database,
 	 * Then sets selectedGame to the first game
-	 * And sets selectedFactions based on that game.
+	 * And sets availableFactions based on that game.
 	*/
 	(function initialize() {
 		$http.post('src/php/getGames.php').then(async function successCB(data){
 			$scope.games = data.data;
 			$scope.selectedGame = $scope.games[0];
-			$scope.updateSelectedFactions($scope.selectedGame);
+			$scope.updateavailableFactions($scope.selectedGame);
 		});
 	})();
-	
-	/* Sets selectedFactions equal to all factions associated 
+
+	/* Sets availableFactions equal to all factions associated 
 	 * To the provided game.
-	 * Side effects: modifies state of $scope.selectedFactions based on game
+	 * Side effects: modifies state of $scope.availableFactions based on game
 	*/
-	$scope.updateSelectedFactions = async function (game) {
-		$scope.selectedFactions = await getFactionsAsync(game);
+	$scope.updateavailableFactions = async function (game) {
+		$scope.availableFactions = await getFactionsAsync(game);
 		$scope.$apply();
 	}
-	
+
+	/* Returns a list of units associated with the factions provided
+	 * Calls database and modifies $scope.availableUnits with the options.
+	 */
+	$scope.getUnitsFromFactionsAync = async function(factions) {
+		let response;
+		const factionIds = factions.map(faction => faction.id);
+
+		const cacheKey = generateCacheKey("getUnitsFromFactionsAync", factionIds);
+		response = getFromCache(cacheKey);
+
+		if(response === undefined) {
+			response = await $http.post('src/php/getUnitsForFactions.php?factionIds[]='+factionIds);
+			storeToCache(cacheKey, response);
+		}
+		$scope.availableUnits = response;
+	}
+
+	/* Returns an entry from the cache if it exists.
+	 * Returns the cache data if present, or undefined otherwise.
+	*/
+	function getFromCache(cacheKey) {
+		return cache[cacheKey];
+	}
+
+	/* Updates the cache with new data.
+	 */
+	function storeToCache(cacheKey, data) {
+		cache[cacheKey] = data;
+	}
+
+	/* Generates a cache key from a function name and arguments.
+	 * Cache key will be the name of the function followed
+	 * by a hyphen and a hyphen-delimeted list of arguments.
+	 * Example: getUnitsFromFactionsAync-1-2.
+	*/
+	function generateCacheKey(functionName, args) {
+		return functionName + '-' + args.join('-');
+	}
+
 	//OLD
 
 	$http.get('data/items.json').then(function(res){
@@ -57,9 +97,9 @@ app.controller('builderCtrl', function($scope, $http){
 	$scope.chosenPowers = {};
 	$scope.addOnIndexes = new Set();
 	$scope.currentUnitCount = {};
-	
+
 	$scope.allFacs = new Set();
-	
+
 	$scope.getGear = function(id) {
 		return $scope.gear[id -1];
 	}
@@ -71,11 +111,11 @@ app.controller('builderCtrl', function($scope, $http){
 	$scope.getPower = function(id) {
 		return $scope.powers[id -1];
 	}
-	
+
 	$scope.getAddon = function(id) {
 		return $scope.addons[id -1];
 	}
-	
+
 	$scope.itemAbilityExists = function(item) {
 		return $scope.getGear(item).Ability != "";
 	} 
@@ -105,7 +145,7 @@ app.controller('builderCtrl', function($scope, $http){
 		});
 		return ret;
 	}
-	
+
 	$scope.modelAddonExists = function(unit) {
 		let ret = false;
 		if (unit.AddOns.length === 0) {
@@ -119,14 +159,14 @@ app.controller('builderCtrl', function($scope, $http){
 		});
 		return ret;
 	}
-	
+
 	$scope.longestTotalLength = 0;
-	
+
 	//
 	$scope.processUnitsV2 = function() {
 
 	}
-	
+
 	/* Takes in a list of units. 
 	 * Returns the unit with the longest name.
 	 * Example: findUnitWithLongestName({name: 'Alex'},
@@ -140,15 +180,6 @@ app.controller('builderCtrl', function($scope, $http){
 			}
 		});
 		return longestUnit;
-	}
-
-	/* Returns a list of units associated with the factions provided
-	 * Calls database.
-	 */
-	$scope.getUnitsFromFactionsAync = async function(factions) {
-		console.log(factions);
-		const factionIds = factions.map(faction => faction.id);
-		const response = await $http.post('src/php/getUnitsForFactions.php?factionIds[]='+factionIds);
 	}
 
 	$scope.processUnits = function() {
@@ -167,7 +198,7 @@ app.controller('builderCtrl', function($scope, $http){
 			});
 			updateEnabledUnits();
 	}
-	
+
 	$scope.shouldDisableDownloadButton = function() {
 		return $scope.myArmyArray.length <= 0;
 	}
@@ -177,35 +208,35 @@ app.controller('builderCtrl', function($scope, $http){
 		$scope.myArmyArray = Array.from($scope.myArmy);
 		$scope.models[unit.Name].forEach(model =>
 			deregisterAddOnStatus(model.Name));
-		
+
 		$scope.models[unit.Name] = [];
 		$scope.chosenPowers[unit.Name] = [];
 		updateEnabledUnits();
 		deregisterAddOnStatus(unit.Name)
 		$scope.apply;
 	}
-	
+
 	$scope.getOptionsName = function(unit) {
 		return unit.BaseName ? unit.BaseName : unit.Name;
 	}
-	
+
 	$scope.addUnits = function(units){
 		$scope.selUnit = [];
 		if (!units || units.length == 0) {return;}
 		// Add to array if not present in O(selUnit) instead of O(myArmy)
-		
+
 		units.forEach( (unit) => {
 			unit.BaseName = unit.BaseName ? unit.BaseName : unit.Name;
 			addToScopeCurrentCount(unit, 1);
 			if($scope.models[unit.Name] == undefined) {
 				$scope.models[unit.Name] = [];
 			}
-			
+
 			if($scope.models[unit.Name].length) {
 				unit.Name = getNextName(unit);
 				$scope.models[unit.Name] = [];
 			}
-			
+
 			if(!unit.StartingNumberOfModels) {
 				unit.StartingNumberOfModels = unit.NumberOfModels;
 			}
@@ -213,7 +244,7 @@ app.controller('builderCtrl', function($scope, $http){
 			for(let i = 0; i < numUnits; i++) {
 				addModel(unit);
 			}
-			
+
 		});
 		units.reduce((set, elem) => set.add(cloneUnit(elem)), $scope.myArmy);
 		$scope.myArmyArray = Array.from($scope.myArmy); 
@@ -239,7 +270,7 @@ app.controller('builderCtrl', function($scope, $http){
 		const result = $scope.chosenPowers[unitName][modelName][powerOptionIndex] >= amountAllowed;
 		return result;
 	}
-	
+
 	$scope.shouldDisableUnitAddOn = function(unit, id) {		
 		if(!$scope.enabledAddOns[unit.Name]) {return false;}
 		const addOn = $scope.getAddon(id);
@@ -247,7 +278,7 @@ app.controller('builderCtrl', function($scope, $http){
 			return false;
 		}
 		let shouldDisable = false;
-	
+
 		addOn.Mutex.forEach( (conflictId) => {
 			if($scope.enabledAddOns[unit.Name][conflictId]) {
 				shouldDisable = true;
@@ -256,11 +287,11 @@ app.controller('builderCtrl', function($scope, $http){
 
 		return shouldDisable;
 	}
-	
+
 	$scope.calculateUnitCost = function(unit) {
 		return unit.NumberOfModels * unit.Cost + calculateUnitGearCost(unit) + getAddOnCost(unit);
 	}
-	
+
 	$scope.calculateAddOnCost = function(addOn, unit) {
 		switch(addOn.Type) {
 			case "Direct": 
@@ -277,11 +308,11 @@ app.controller('builderCtrl', function($scope, $http){
 			break;
 		}
 	}
-	
+
 	$scope.getAddOnId = function(isUnitLevel, name, index) {
 		return isUnitLevel ? name + ' unit add on&' + index : name + ' model add on&' + index;
 	}
-	
+
 	$scope.setAddOnCost = function(isChecked, unit, addOnId, model, idx) {
 		registerAddOnStatus(addOnId, isChecked, unit.Name, model, idx);
 		const addOn = $scope.getAddon(addOnId);
@@ -318,14 +349,14 @@ app.controller('builderCtrl', function($scope, $http){
 			break;
 		}
 	}
-	
+
 	$scope.addSpaces= function(input){
 		const count = 2*($scope.longestUnitNameLength - input.length) + $scope.buffer; 
 		let result = "";
 		let num = $scope.longestTotalLength - input.length;
 		return String.fromCharCode(160).repeat(num);
 	};
-	
+
 	$scope.onUploadFile = function() {
 		clearArmy();
 		let file = document.getElementById('UploadArmyInput').files[0];
@@ -333,23 +364,23 @@ app.controller('builderCtrl', function($scope, $http){
 		reader.readAsText(file);
 		reader.onload = () => processUpload(reader.result);
 	}
-	
+
 	$scope.getPowerId = function(modelName, parentIdx, powerIdx){
 		return modelName + ' &section#' + parentIdx + ' &checkbox#' + powerIdx;
 	}
-	
+
 	$scope.downloadArmyFile = function() {
 		let blob = buildBlob();
 		let fileName = "my army.rme";
 		let downloadFile = (window.URL || window.webkitURL).createObjectURL( blob );
-		
+
 		let a = document.createElement("a");
 		a.href = downloadFile;
 		a.download = fileName;
 		a.click();
 		URL.revokeObjectURL(downloadFile) 
 	}
-	
+
 	const getFactionsAsync = async function(game) {
 		if(!game) { return; }
 		if($scope.factions[game.id] === undefined) {
@@ -358,13 +389,13 @@ app.controller('builderCtrl', function($scope, $http){
 		}
 		return $scope.factions[game.id];
 	}
-	
+
 	//"Private" functions not exposed to HTML
-	
+
 	function clearArmy() {
 		$scope.myArmyArray.forEach( unit => $scope.removeFromArmy(unit));
 	}
-	
+
 	function buildBlob() {
 		let parts = [];
 		parts = addPartToArray(parts, getHeaderInformation());
@@ -379,10 +410,10 @@ app.controller('builderCtrl', function($scope, $http){
 		parts = addPartToArray(parts, "ADDONS");
 		parts = addPartToArray(parts, Array.from($scope.addOnIndexes), true);
 		parts = addPartToArray(parts, "END");
-		
+
 		return new Blob(parts, {type: 'text/plain'});
 	}
-	
+
 	function addPartToArray(arr, part, isJson = false) {
 		if(isJson) {
 			part = [angular.toJson(part, true)]
@@ -391,14 +422,14 @@ app.controller('builderCtrl', function($scope, $http){
 		arr.push(part);
 		return arr;
 	}
-	
+
 	function addPowerToUnit(unitName, power, modelName, parentIdx, powerIdx) {
 		const model = getModelFromUnit(unitName, modelName);
 		if(!model.SelectedPowers) { model.SelectedPowers = []; }
 		var id = $scope.getPowerId(modelName, parentIdx, powerIdx);
 		model.SelectedPowers.push(id);
 	}
-	
+
 	function getModelFromUnit(unitName, modelName) {
 		let ret = undefined;
 		$scope.models[unitName].forEach( model => {
@@ -408,14 +439,14 @@ app.controller('builderCtrl', function($scope, $http){
 		});
 		return ret;
 	}
-	
+
 	function  getHeaderInformation() {
 		return HEADER_FIRST_LINE + "\n" + CURRENT_FILE_FORMAT_VERSION.toFixed(1);
 	}
-	
+
 	function processUpload(text) {
 		let allText = text.split('\n');
-		
+
 		if(!validateRMEFile(allText.shift())){
 			showError(errorMessages.InvalidFileFormat);
 		}
@@ -424,7 +455,7 @@ app.controller('builderCtrl', function($scope, $http){
 			processor.buildArmyFromFile(allText);
 		}
 	}
-	
+
 	function getProcessorFromVersion(version) {
 		try {
 			version = parseInt(version).toFixed(1) + '';
@@ -441,23 +472,23 @@ app.controller('builderCtrl', function($scope, $http){
 				return null;
 		}
 	}
-	
+
 	class Warhammer40k8eVersionOneProcessor {
 		buildArmyFromFile(text) {
 			let models;
-			
+
 			$scope.selectedGame = this.getGameFromName(text.shift());
 			if(text) { text = this.processFactions(text); }
 			if(text) { text = this.processUnits(text); }
 			if(text) { [text, models] = this.processModels(text); }
-			
+
 			$scope.$apply(); //Necessary becase the following require DOM interaction
 				if(text) { text = this.processAddOns(text, models); } 
 				this.processPsyker(models);
-			
+
 			$scope.$apply(); // Done, now apply updates
 		}
-		
+
 		processFactions(text) {
 			if(text.shift() !== "FACTIONS") {
 				showError(errorMessages.corruptedFile);
@@ -475,7 +506,7 @@ app.controller('builderCtrl', function($scope, $http){
 			$scope.processUnits();
 			return text;
 		}
-		
+
 		processUnits(text) {
 			if(text.shift() !== "UNITS") {
 				showError(errorMessages.corruptedFile);
@@ -492,7 +523,7 @@ app.controller('builderCtrl', function($scope, $http){
 			$scope.addUnits(units);
 			return text;
 		}
-		
+
 		processModels(text) {
 			if(text.shift() !== "MODELS") {
 				showError(errorMessages.corruptedFile);
@@ -508,7 +539,7 @@ app.controller('builderCtrl', function($scope, $http){
 			const models = JSON.parse(modelJsonString);
 			return [text, models];
 		}
-		
+
 		processPsyker(models) {
 			models = Object.values(models);
 			models.forEach(unit => {
@@ -519,14 +550,14 @@ app.controller('builderCtrl', function($scope, $http){
 			});
 			});
 		}
-		
+
 		processPower(model) {
 			model.SelectedPowers.forEach( power => {
 				document.getElementById(power).click();
 			});
-			
+
 		}
-		
+
 		processAddOns(text) {
 			if(text.shift() !== "ADDONS") {
 				showError(errorMessages.corruptedFile);
@@ -548,8 +579,8 @@ app.controller('builderCtrl', function($scope, $http){
 			});
 			return text;
 		}
-		
-		
+
+
 		getGameFromName(name) {
 			var ret = undefined;
 			$scope.games.forEach( game => {
@@ -562,9 +593,9 @@ app.controller('builderCtrl', function($scope, $http){
 			}
 			return ret;
 		}
-		
+
 	}
-	
+
 	const errorMessages = {
 		GenericError: "One or More errors occurred",
 		InvalidFileFormat: "Invalid file format",
@@ -572,17 +603,17 @@ app.controller('builderCtrl', function($scope, $http){
 		InvalidGameName: "The game you have selected is not supported",
 		corruptedFile: "Your file is corrupted."
 	};
-	
+
 	function showError(err) {
 		err = err ? err : errorMessages.GenericError;
 		//TOOD display client side error in HTML
 		console.log(err);
 	}
-	
+
 	function validateRMEFile(line) {
 		return line === HEADER_FIRST_LINE;
 	}
-	
+
 	function increaseNumberOfModels(unit, amount) {
 		$scope.myArmyArray.forEach((elem) => {
 			if(elem.Name == unit.Name) {
@@ -590,7 +621,7 @@ app.controller('builderCtrl', function($scope, $http){
 					elem.StartingNumberOfModels = elem.NumberOfModels;
 				}
 				elem.NumberOfModels += amount;
-				
+
 			}
 		});
 		if(amount > 0){
@@ -606,7 +637,7 @@ app.controller('builderCtrl', function($scope, $http){
 			}
 		}
 	}
-	
+
 	function replaceItem(model, oldItem, newItem, unit) {
 		$scope.models[unit.Name].forEach((soldier) => {
 			if(soldier.Name == model.Name) {// Find the right guy
@@ -623,26 +654,26 @@ app.controller('builderCtrl', function($scope, $http){
 			}
 		});
 	}
-	
+
 	 function getAddOnCost(unit) {
 		if($scope.addOnCosts[unit] == undefined) {
 			$scope.addOnCosts[unit] = 0;
 		}
 		return $scope.addOnCosts[unit];
 	}
-	
+
 	function calculateModelGearCost(gearIndexes) {
 		let total = 0;
 		gearIndexes.forEach((idx) => total += $scope.getGear(idx).Cost);
 		return total;
 	}
-	
+
 	function updateEnabledUnits() {
 		$scope.availUnits.forEach((unit) => {
 			unit.disabled = $scope.models[unit.Name] != undefined && $scope.models[unit.Name].length > 0;
 		});
 	}
-	
+
 	function calculateUnitGearCost(unit) {
 		if($scope.models[unit.Name] == undefined) { return 0; }
 		let total = 0;
@@ -651,7 +682,7 @@ app.controller('builderCtrl', function($scope, $http){
 		});
 		return total;
 	}
-	
+
 	function cloneUnit(unit) {
 		let copy = {};
 		copy.Name = unit.Name
@@ -667,7 +698,7 @@ app.controller('builderCtrl', function($scope, $http){
 		copy.SquadNames = unit.SquadNames;
 		return copy;
 	}
-	
+
 	function initializeChosenPowers(unitName, modelName, powerOptionIndex) {
 		if($scope.chosenPowers[unitName] == undefined) { $scope.chosenPowers[unitName] = []; }
 		if($scope.chosenPowers[unitName][modelName] == undefined) { $scope.chosenPowers[unitName][modelName] = []; }
@@ -686,7 +717,7 @@ app.controller('builderCtrl', function($scope, $http){
 		for(let i = 0; i < unit.SeparateGear.length; i++) {
 			count += unit.SeparateGear[i].Number;
 			if(unit.SeparateGear[i].Default) {
-				
+
 				defaultLoadout = unit.SeparateGear[i].Loadout;
 			}
 			if(count <= numProcessed) {
@@ -698,7 +729,7 @@ app.controller('builderCtrl', function($scope, $http){
 				break;
 			}
 		}
-		
+
 		if(!processed) {
 			model.Gear = model.Gear.concat(defaultLoadout);
 		}
@@ -728,32 +759,32 @@ app.controller('builderCtrl', function($scope, $http){
 			$scope.addOnIndexes.delete(checkBoxid);
 		}
 	}
-	
+
 	function addToScopeCurrentCount(unit, number) {
 		if(!$scope.currentUnitCount[unit.BaseName]) {
 			$scope.currentUnitCount[unit.BaseName] = 0;
 		}
 		$scope.currentUnitCount[unit.BaseName] += number;
 	}
-	
+
 	function getNameCount(unit) {
 		if(!$scope.currentUnitCount[unit.BaseName]) {
 			$scope.currentUnitCount[unit.BaseName] = 0;
 		}
 		return $scope.currentUnitCount[unit.BaseName];
 	}
-	
+
 	function getNextName(unit) {
 		return unit.BaseName + ' - Squad ' + (getNameCount(unit));
 	}
-		
+
 	function addModel(unit) {
 		let model = cloneUnit(unit);
 		model.Name = getModelName(model, unit);
 		processGear(unit, model);
 		$scope.models[unit.Name].push(model);
 	}
-	
+
 	function getModelName(model, unit) {
 		model.unitName = unit.Name;
 		const numModelsInSquad = $scope.models[unit.Name].length;
@@ -765,11 +796,11 @@ app.controller('builderCtrl', function($scope, $http){
 			return ret = unit.SquadNames[numModelsInSquad];
 		}
 	}
-	
+
 	function deregisterAddOnStatus(unitName) {
 		if($scope.enabledAddOns[unitName]) {
 			$scope.enabledAddOns[unitName] = [];
 		}
 	}
-	
+
 });

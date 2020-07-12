@@ -4,7 +4,7 @@ include('../config/sql_config.php');
 $factionIds = $_GET['factionIds'];
 // // It feels like there should be an easier way to take in an array of parameters. This is hedge magic and I'm deeply resentful that it works.
 $ids = implode(",",$factionIds); // Array to comma-delimted string
-$newIdsArr = explode(",", $ids);
+$newIdsArr = explode(",", $ids); // And back to array. Doesn't work with $factionIds itself.
 
 $params = implode(",", array_fill(0, count($newIdsArr), "?")); // Build a string with the right number of ?s
 $query =  $mysqli->prepare("select * from units where factionId in ($params)");

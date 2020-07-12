@@ -37,26 +37,32 @@
 			<p>You selected {{selectedGame.name}}</p>
 		</div>
 		
+		<span>Select faction(s)</span><span style="margin-left:2em;" ng-show="selectedFactions">Select unit(s)</span>
 		<div class="top-aligned">
 			<select
 				style="font-family:monospace"
 				ng-show="selectedGame"
-				ng-model="selFac"
+				ng-model="selectedFactions"
+				ng-change="getUnitsFromFactionsAync(selectedFactions)"
 				data-ng-attr-size="{{Math.max(6, availUnits ? availUnits.length : 6)}}"
-				ng-options="x as x.name for x in selectedFactions"
+				ng-options="faction as faction.name for faction in availableFactions"
 				multiple>
 			</select>
-		<button ng-click="getUnitsFromFactionsAync(selFac)">TEST BUTTON</button>
+		<!-- <button ng-click="getUnitsFromFactionsAync(selFac)">TEST BUTTON</button> -->
 				<!-- ng-change="processUnits()" TODO IS THIS NECESSARY -->
 
+			
 			<select
 				style="font-family:monospace"
-				data-ng-attr-size="{{availUnits.length}}"
-				ng-show="selFac"
-				ng-model="selUnit"
-				ng-options="x as getOptionsName(x) + addSpaces(x.Name) + x.Cost for x in availUnits"
+				data-ng-attr-size="{{availableUnits.length}}"
+				ng-show="selectedFactions"
+				ng-model="selectedUnits"
+				ng-options="x as x.name for x in availableUnits"
 				 multiple>
 			</select>
+			<!-- ng-options="x as getOptionsName(x) + addSpaces(x.Name) + x.Cost for x in availableUnits" -->
+
+			
 		<!-- </div> -->
 			<!-- <button ng-click="addUnits(selUnit)" type="button" id="addButton" class="btn btn-default btn-sm"> -->
 				<!-- Add   <span class="glyphicon glyphicon-plus-sign"></span> -->
