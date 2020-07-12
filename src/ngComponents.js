@@ -7,7 +7,8 @@ app.controller('builderCtrl', function($scope, $http){
 	const CURRENT_FILE_FORMAT_VERSION = 1.0
 	const HEADER_FIRST_LINE = "Army Builder";
 	$scope.factions = []; //An array of factions where the index is the gameId.
-	let cache = {};
+	let cache = {}; // Cache for network calls to db
+	$scope.buffer = 5; //Padding for addSpaces
 
 	/*Initialize default game and factions.
 	 * Gets all games from the database,
@@ -42,11 +43,24 @@ app.controller('builderCtrl', function($scope, $http){
 		response = getFromCache(cacheKey);
 
 		if(response === undefined) {
-			response = await $http.post('src/php/getUnitsForFactions.php?factionIds[]='+factionIds);
+			const webResponse = await $http.post('src/php/getUnitsForFactions.php?factionIds[]='+factionIds);
+			console.log(webResponse);
+			response = webResponse.data;
 			storeToCache(cacheKey, response);
 		}
 		$scope.availableUnits = response;
+		updateLongestUnit(response);
+		$scope.$apply();
 	}
+
+	/* Takes in a list of units and sets $scope.longestUnitNameLength
+	 * based on the longest unit name.
+	*/
+	function updateLongestUnit(units) {
+		const longestUnit = findUnitWithLongestName(units);
+		$scope.longestUnitNameLength = longestUnit.name.length;
+		$scope.longestTotalLength = $scope.longestUnitNameLength + + longestUnit.cost.toString().length;
+	}		
 
 	/* Returns an entry from the cache if it exists.
 	 * Returns the cache data if present, or undefined otherwise.
@@ -69,25 +83,25 @@ app.controller('builderCtrl', function($scope, $http){
 	function generateCacheKey(functionName, args) {
 		return functionName + '-' + args.join('-');
 	}
+	
+	/* Returns a number of spaces propotional to the difference
+	 * between the length of the input name and the longest unit
+	 * name available.
+	*/
+	$scope.addSpaces= function(inputName){
+		console.log(inputName);
+		const count = 2*($scope.longestUnitNameLength - inputName.length) + $scope.buffer; 
+		let result = "";
+		let num = $scope.longestTotalLength - inputName.length;
+		return String.fromCharCode(160).repeat(num);
+	};
 
 	//OLD
 
-	$http.get('data/items.json').then(function(res){
-		$scope.gear = res.data[Object.keys(res.data)[0]];
-	});
-	$http.get('data/abilities.json').then(function(res){
-		$scope.abilities = res.data[Object.keys(res.data)[0]];
-	});
-	$http.get('data/addons.json').then(function(res){
-		$scope.addons = res.data[Object.keys(res.data)[0]];
-	});
-	$http.get('data/powers.json').then(function(res){
-		$scope.powers = res.data[Object.keys(res.data)[0]];
-	});
 	$scope.selFac = null;
 	$scope.availUnits = null;
 	$scope.longestUnitNameLength = 0;
-	$scope.buffer = 5; //Padding for addSpaces
+	
 	$scope.myArmy = new Set();
 	$scope.myArmyArray = [];
 
@@ -162,17 +176,13 @@ app.controller('builderCtrl', function($scope, $http){
 
 	$scope.longestTotalLength = 0;
 
-	//
-	$scope.processUnitsV2 = function() {
-
-	}
 
 	/* Takes in a list of units. 
 	 * Returns the unit with the longest name.
 	 * Example: findUnitWithLongestName({name: 'Alex'},
 	 * {name: 'Jonathan'}) would return {name: 'Jonathan'}
 	*/  
-	function findLongestNameAndCost(units) {
+	function findUnitWithLongestName(units) {
 		let longestUnit = units[0];
 		units.forEach( (unit) => {
 			if(unit.name.length > longestUnit.name.length) {
@@ -349,13 +359,6 @@ app.controller('builderCtrl', function($scope, $http){
 			break;
 		}
 	}
-
-	$scope.addSpaces= function(input){
-		const count = 2*($scope.longestUnitNameLength - input.length) + $scope.buffer; 
-		let result = "";
-		let num = $scope.longestTotalLength - input.length;
-		return String.fromCharCode(160).repeat(num);
-	};
 
 	$scope.onUploadFile = function() {
 		clearArmy();

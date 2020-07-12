@@ -57,10 +57,10 @@
 				data-ng-attr-size="{{availableUnits.length}}"
 				ng-show="selectedFactions"
 				ng-model="selectedUnits"
-				ng-options="x as x.name for x in availableUnits"
+				ng-options="x as x.name + addSpaces(x.name) + x.cost for x in availableUnits"
 				 multiple>
 			</select>
-			<!-- ng-options="x as getOptionsName(x) + addSpaces(x.Name) + x.Cost for x in availableUnits" -->
+			<!-- ng-options="x as getOptionsName(x)  for x in availableUnits" -->
 
 			
 		<!-- </div> -->
