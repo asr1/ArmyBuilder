@@ -6,11 +6,23 @@ app.config(['$compileProvider',
 app.controller('builderCtrl', function($scope, $http){
 	const CURRENT_FILE_FORMAT_VERSION = 1.0
 	const HEADER_FIRST_LINE = "Army Builder";
+	$scope.factions = []; //An array of factions where the index is the gameId.
 	
-	$http.get('data/squads.json').then(function(res){
-		$scope.games = res.data[Object.keys(res.data)[0]];
+	//Initialize default game and factions.
+	$http.post('src/read/getGames.php').then(async function successCB(data){
+		$scope.games = data.data;
 		$scope.selectedGame = $scope.games[0];
+		$scope.updateSelectedFactions($scope.selectedGame);
 	});
+	
+	// Side effects: modifies state of Selected Factions based on game
+	$scope.updateSelectedFactions = async function (game) {
+		$scope.selectedFactions = await getFactionsAsync(game);
+		$scope.$apply();
+	}
+	
+	//OLD
+
 	$http.get('data/items.json').then(function(res){
 		$scope.gear = res.data[Object.keys(res.data)[0]];
 	});
@@ -298,6 +310,15 @@ app.controller('builderCtrl', function($scope, $http){
 		a.download = fileName;
 		a.click();
 		URL.revokeObjectURL(downloadFile) 
+	}
+	
+	const getFactionsAsync = async function(game) {
+		if(!game) { return; }
+		if($scope.factions[game.id] === undefined) {
+			const response = await $http.post('src/read/getFactionsForGame.php?gameId='+game.id);
+			$scope.factions[game.id] = response.data;
+		}
+		return $scope.factions[game.id];
 	}
 	
 	//"Private" functions not exposed to HTML
