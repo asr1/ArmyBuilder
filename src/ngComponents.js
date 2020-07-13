@@ -97,7 +97,9 @@ app.controller('builderCtrl', function($scope, $http){
 	$scope.addSpaces= function(inputName){
 		const count = 2*($scope.longestUnitNameLength - inputName.length) + $scope.buffer; 
 		let result = "";
+		console.log(inputName);
 		let num = $scope.longestTotalLength - inputName.length;
+		console.log(num);
 		return String.fromCharCode(160).repeat(num);
 	};
 	
@@ -109,7 +111,8 @@ app.controller('builderCtrl', function($scope, $http){
 	function findUnitWithLongestName(units) {
 		let longestUnit = units[0];
 		units.forEach( (unit) => {
-			if(unit.name.length > longestUnit.name.length) {
+			let name = unit.baseName ? unit.baseName : unit.name;
+			if(name > longestUnit.name.length) {
 				longestUnit = unit;
 			}
 		});
@@ -140,7 +143,6 @@ app.controller('builderCtrl', function($scope, $http){
 	async function getAddonsForUnit(unit) {
 		const cacheKey = generateCacheKey("getAddonsForUnit", [unit.id]);
 		response = getFromCache(cacheKey);
-		console.log(unit);
 
 		if(response === undefined) {
 			const webResponse = await $http.post('src/php/getAddonsForUnit.php?unitId='+unit.id);
@@ -148,6 +150,24 @@ app.controller('builderCtrl', function($scope, $http){
 			storeToCache(cacheKey, response);
 		}
 		unit.addons = response;
+		return unit;
+	}
+
+	/* Takes a unit and fetches its gear 
+	 * from the database or cache. Returns the
+	 * provided unit with all gear as a property
+	*/
+	async function getGearForUnit(unit) {
+		const cacheKey = generateCacheKey("getGearForUnit", [unit.id]);
+		response = getFromCache(cacheKey);
+
+		if(response === undefined) {
+			const webResponse = await $http.post('src/php/getGearForUnit.php?unitId='+unit.id);
+			response = webResponse.data;
+			storeToCache(cacheKey, response);
+		}
+		unit.gear = response;
+		console.log("Gear", unit);
 		return unit;
 	}
 
@@ -229,6 +249,7 @@ app.controller('builderCtrl', function($scope, $http){
 			//V2 work. Update model details.
 			unit = await getAbilitiesForUnit(unit);
 			unit = await getAddonsForUnit(unit);
+			unit = await getGearForUnit(unit);
 			
 			if(!unit.startingNumberOfModels) {
 				unit.startingNumberOfModels = unit.numberOfModels;
@@ -702,6 +723,7 @@ app.controller('builderCtrl', function($scope, $http){
 		copy.addons = unit.addons.slice(0);
 		copy.baseName = unit.baseName;
 		copy.cost = unit.cost;
+		copy.gear = unit.gear.slice(0);
 		copy.id = unit.id;
 		copy.name = unit.name;
 		copy.numberOfModels = unit.numberOfModels;
@@ -709,7 +731,6 @@ app.controller('builderCtrl', function($scope, $http){
 		copy.startingNumberOfModels = unit.startingNumberOfModels;
 		// copy.separateGear = unit.separateGear;
 		// copy.powers = unit.powers;
-		// copy.gear = unit.gear.slice(0);
 		return copy;
 	}
 

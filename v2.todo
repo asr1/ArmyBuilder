@@ -1,6 +1,12 @@
 Addon Support
-Model support
-Gear Support
+	Model
+	Unit
+\# Model support
+\# Gear Support
 File download
 File upload
 Remove from army
+Allow adding the same unit twice - possible cloning issue.
+Total cost
+Powers support
+Mixed units (with 1 captain and 3 lieutenants, for example)

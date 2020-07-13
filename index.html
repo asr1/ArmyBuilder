@@ -70,7 +70,7 @@
 			<hr>
 			<span><h3 class="centered">Total Army Cost: {{calculateArmyCost()}}</h3></span>
 			<div class="section">
-				<div class="unit" ng-repeat="unit in myArmyV2">
+				<div class="unit" ng-repeat="unit in myArmyV2 track by $index">
 					<div class="unitHeader">
 						<span class="glyphicon glyphicon-remove remove" title="Remove" ng-click="removeFromArmy(unit)">  </span><span>  {{unit.name}}</span><span><b> {{calculateUnitCost(unit)}}</b></span>
 					</div>
@@ -98,32 +98,34 @@
 						<h5 class="Subheading">Models: ({{unit.numberOfModels}})</h5>
 						<div ng-repeat="model in models[unit.name] track by $index">
 							<p class="modelName">{{model.name}}</p>
-							<div class="modelBody">
-								<h6 ng-show="unitHasGear(unit)" class="Subheading">Gear</h6>
-								<div class="level2Item" ng-repeat="item in model.Gear track by $index">
-									<span>{{getGear(item).Name}}</span><span> Cost: {{getGear(item).Cost}}</span>
-									<div ng-show="itemAbilityExists(item)" class="subtext"><br>{{getGear(item).Ability}}</div>
+							<div class="modelBody"> 
+							<!-- TODO below this line -->
+								<h6 ng-show="unit.gear && unit.gear.length" class="Subheading">Gear</h6>
+								<div class="level2Item" ng-repeat="item in model.gear track by $index">
+									<span>{{item.name}}</span>
+									<span> Cost: {{item.cost}}</span>
+									<div ng-show="item.ability && item.ability.length" class="subtext"><br>{{item.ability}}</div>
 								</div>
-								<h6 ng-show="modelAddonExists(unit)" class="Subheading">Model Add Ons</h6>
-								<div class="level2Item" ng-repeat="addon in model.addons track by $index">
-									<span ng-show="getAddon(addon).Level =='Model'"><span><input id="{{getAddOnId(false, model.Name, $index)}}" ng-model="checked" ng-click="setAddOnCost(checked, unit, addon, model, $index)" type="checkbox"></input> </span><span>{{getAddon(addon).Text}}</span><span> Cost: {{calculateAddOnCost(getAddon(addon), unit)}}</span></span>
-								</div>
-								<h6 ng-show="powerExists(unit)" class="Subheading">Psychic Powers</h6>
-								<div class="level2Item" ng-repeat="power in model.Powers.Known">
-									<span>
-										<span class="skillName">{{getPower(power).Name}}: </span>
-										<span>{{getPower(power).Text}}</span></span>
-								</div>
-								<div class="level2Item" ng-repeat="option in model.Powers.Options track by $index">
-									<span class="level2Item instructions">Choose {{option.Amount}}:<br></span>
-									<div class="level2Item" ng-repeat="power in option.From">
-										<span>
-											<input ng-model="checked" ng-click="setChosenPower(checked, unit.name, power, model.Name, $parent.$index, $index)" ng-disabled="ShouldDisablePower(unit.name, power, model.Name, $parent.$index, option.Amount, checked)" type="checkbox" id="{{getPowerId(model.Name, $parent.$index, $index)}}"></input>
-											<span class="skillName">{{getPower(power).Name}}: </span>
-											<span>{{getPower(power).Text}}</span></span>
-										 </span>
-									</div>
-								</div>
+								<!-- <h6 ng-show="modelAddonExists(unit)" class="Subheading">Model Add Ons</h6> -->
+								<!-- <div class="level2Item" ng-repeat="addon in model.addons track by $index"> -->
+									<!-- <span ng-show="getAddon(addon).Level =='Model'"><span><input id="{{getAddOnId(false, model.Name, $index)}}" ng-model="checked" ng-click="setAddOnCost(checked, unit, addon, model, $index)" type="checkbox"></input> </span><span>{{getAddon(addon).Text}}</span><span> Cost: {{calculateAddOnCost(getAddon(addon), unit)}}</span></span> -->
+								<!-- </div> -->
+								<!-- <h6 ng-show="powerExists(unit)" class="Subheading">Psychic Powers</h6> -->
+								<!-- <div class="level2Item" ng-repeat="power in model.Powers.Known"> -->
+									<!-- <span> -->
+										<!-- <span class="skillName">{{getPower(power).Name}}: </span> -->
+										<!-- <span>{{getPower(power).Text}}</span></span> -->
+								<!-- </div> -->
+								<!-- <div class="level2Item" ng-repeat="option in model.Powers.Options track by $index"> -->
+									<!-- <span class="level2Item instructions">Choose {{option.Amount}}:<br></span> -->
+									<!-- <div class="level2Item" ng-repeat="power in option.From"> -->
+										<!-- <span> -->
+											<!-- <input ng-model="checked" ng-click="setChosenPower(checked, unit.name, power, model.Name, $parent.$index, $index)" ng-disabled="ShouldDisablePower(unit.name, power, model.Name, $parent.$index, option.Amount, checked)" type="checkbox" id="{{getPowerId(model.Name, $parent.$index, $index)}}"></input> -->
+											<!-- <span class="skillName">{{getPower(power).Name}}: </span> -->
+											<!-- <span>{{getPower(power).Text}}</span></span> -->
+										 <!-- </span> -->
+									<!-- </div> -->
+								<!-- </div> -->
 							</div>
 						</div>
 					</div>
