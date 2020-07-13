@@ -60,31 +60,31 @@
 				ng-options="x as x.name + addSpaces(x.name) + x.cost for x in availableUnits"
 				 multiple>
 			</select>
-			<!-- ng-options="x as getOptionsName(x)  for x in availableUnits" -->
 
 			
-		<!-- </div> -->
-			<!-- <button ng-click="addUnits(selUnit)" type="button" id="addButton" class="btn btn-default btn-sm"> -->
-				<!-- Add   <span class="glyphicon glyphicon-plus-sign"></span> -->
-			<!-- </button> -->
-			<!-- <hr>		 -->
-			<!-- <span><h3 class="centered">Total Army Cost: {{calculateArmyCost()}}</h3></span> -->
-			<!-- <div class="section"> -->
-				<!-- <div class="unit" ng-repeat="unit in myArmyArray"> -->
-					<!-- <div class="unitHeader"> -->
-						<!-- <span class="glyphicon glyphicon-remove remove" title="Remove" ng-click="removeFromArmy(unit)">  </span><span>  {{unit.Name}}</span><span><b> {{calculateUnitCost(unit)}}</b></span> -->
-					<!-- </div> -->
-					<!-- <div class="level2Item"> -->
-						<!-- <h6 ng-show="unitAbilityExists(unit)" class="Subheading">Abilities</h6> -->
-							<!-- <div class="level2Item" ng-repeat="ability in unit.Abilities"> -->
-								<!-- <span class="abilityName">{{getAbility(ability).Name}}: </span><span>{{getAbility(ability).Text}}</span> -->
-							<!-- </div> -->
+		</div>
+			<button ng-click="addUnitsV2(selectedUnits)" type="button" id="addButton" class="btn btn-default btn-sm">
+				Add   <span class="glyphicon glyphicon-plus-sign"></span>
+			</button>
+			{{myArmyV2}}
+			<hr>
+			<span><h3 class="centered">Total Army Cost: {{calculateArmyCost()}}</h3></span>
+			<div class="section">
+				<div class="unit" ng-repeat="unit in myArmyV2">
+					<div class="unitHeader">
+						<span class="glyphicon glyphicon-remove remove" title="Remove" ng-click="removeFromArmy(unit)">  </span><span>  {{unit.name}}</span><span><b> {{calculateUnitCost(unit)}}</b></span>
+					</div>
+					<div class="level2Item">
+						<h6 class="Subheading">Abilities</h6>
+							<div class="level2Item" ng-repeat="ability in unit.abilities">
+								<span class="abilityName">{{ability.name}}: </span><span>{{ability.text}}</span>
+							</div>
 						<!-- <h5 ng-show="unitAddonExists(unit)" class="Subheading">Unit Add Ons</h5> -->
-						<!-- <div class="level2Item" ng-repeat="addon in unit.AddOns track by $index"> -->
-							<!-- <span ng-show="getAddon(addon).Level == 'Unit'"><span><input id="{{getAddOnId(true, unit.Name, $index)}}" ng-disabled="shouldDisableUnitAddOn(unit, addon)" ng-model="checked" ng-click="setAddOnCost(checked, unit, addon, null,$index)" type="checkbox"></input> </span><span>{{getAddon(addon).Text}}</span><span> Cost: {{calculateAddOnCost(getAddon(addon), unit)}}</span></span> -->
+						<!-- <div class="level2Item" ng-repeat="addon in unit.addOns track by $index"> -->
+							<!-- <span ng-show="getAddon(addon).Level == 'Unit'"><span><input id="{{getAddOnId(true, unit.name, $index)}}" ng-disabled="shouldDisableUnitAddOn(unit, addon)" ng-model="checked" ng-click="setAddOnCost(checked, unit, addon, null,$index)" type="checkbox"></input> </span><span>{{getAddon(addon).Text}}</span><span> Cost: {{calculateAddOnCost(getAddon(addon), unit)}}</span></span> -->
 						<!-- </div> -->
-						<!-- <h5 class="Subheading">Models: ({{models[unit.Name].length}})</h5> -->
-						<!-- <div ng-repeat="model in models[unit.Name] track by $index"> -->
+						<!-- <h5 class="Subheading">Models: ({{models[unit.name].length}})</h5> -->
+						<!-- <div ng-repeat="model in models[unit.name] track by $index"> -->
 							<!-- <p class="modelName">{{model.Name}}</p> -->
 							<!-- <div class="modelBody"> -->
 								<!-- <h6 ng-show="unitHasGear(unit)" class="Subheading">Gear</h6> -->
@@ -106,7 +106,7 @@
 									<!-- <span class="level2Item instructions">Choose {{option.Amount}}:<br></span> -->
 									<!-- <div class="level2Item" ng-repeat="power in option.From"> -->
 										<!-- <span> -->
-											<!-- <input ng-model="checked" ng-click="setChosenPower(checked, unit.Name, power, model.Name, $parent.$index, $index)" ng-disabled="ShouldDisablePower(unit.Name, power, model.Name, $parent.$index, option.Amount, checked)" type="checkbox" id="{{getPowerId(model.Name, $parent.$index, $index)}}"></input> -->
+											<!-- <input ng-model="checked" ng-click="setChosenPower(checked, unit.name, power, model.Name, $parent.$index, $index)" ng-disabled="ShouldDisablePower(unit.name, power, model.Name, $parent.$index, option.Amount, checked)" type="checkbox" id="{{getPowerId(model.Name, $parent.$index, $index)}}"></input> -->
 											<!-- <span class="skillName">{{getPower(power).Name}}: </span> -->
 											<!-- <span>{{getPower(power).Text}}</span></span> -->
 										 <!-- </span> -->
@@ -114,10 +114,10 @@
 								<!-- </div> -->
 							<!-- </div> -->
 						<!-- </div> -->
-					<!-- </div> -->
-				<!-- </div> -->
-			<!-- </div> -->
-<!-- <br><br> -->
+					</div>
+				</div>
+			</div>
+<br><br>
 		<!--Load JS files-->
 		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>

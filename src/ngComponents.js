@@ -9,6 +9,7 @@ app.controller('builderCtrl', function($scope, $http){
 	$scope.factions = []; //An array of factions where the index is the gameId.
 	let cache = {}; // Cache for network calls to db
 	$scope.buffer = 5; //Padding for addSpaces
+	$scope.myArmyV2 = [];
 
 	/*Initialize default game and factions.
 	 * Gets all games from the database,
@@ -44,7 +45,6 @@ app.controller('builderCtrl', function($scope, $http){
 
 		if(response === undefined) {
 			const webResponse = await $http.post('src/php/getUnitsForFactions.php?factionIds[]='+factionIds);
-			console.log(webResponse);
 			response = webResponse.data;
 			storeToCache(cacheKey, response);
 		}
@@ -53,17 +53,20 @@ app.controller('builderCtrl', function($scope, $http){
 		$scope.$apply();
 	}
 
-	/* Takes in a list of units and sets $scope.longestUnitNameLength
+	/* Takes in a list of units
+	 * and sets $scope.longestUnitNameLength
 	 * based on the longest unit name.
 	*/
 	function updateLongestUnit(units) {
+		if(!units || units.length === 0) { return; }
 		const longestUnit = findUnitWithLongestName(units);
 		$scope.longestUnitNameLength = longestUnit.name.length;
 		$scope.longestTotalLength = $scope.longestUnitNameLength + + longestUnit.cost.toString().length;
 	}		
 
-	/* Returns an entry from the cache if it exists.
-	 * Returns the cache data if present, or undefined otherwise.
+	/* Returns an entry from the cache
+	 * if it exists. Returns the cache
+	 * data if present, or undefined otherwise.
 	*/
 	function getFromCache(cacheKey) {
 		return cache[cacheKey];
@@ -79,6 +82,7 @@ app.controller('builderCtrl', function($scope, $http){
 	 * Cache key will be the name of the function followed
 	 * by a hyphen and a hyphen-delimeted list of arguments.
 	 * Example: getUnitsFromFactionsAync-1-2.
+	 * Takes in a string name and an array of arguments
 	*/
 	function generateCacheKey(functionName, args) {
 		return functionName + '-' + args.join('-');
@@ -89,12 +93,26 @@ app.controller('builderCtrl', function($scope, $http){
 	 * name available.
 	*/
 	$scope.addSpaces= function(inputName){
-		console.log(inputName);
 		const count = 2*($scope.longestUnitNameLength - inputName.length) + $scope.buffer; 
 		let result = "";
 		let num = $scope.longestTotalLength - inputName.length;
 		return String.fromCharCode(160).repeat(num);
 	};
+	
+	/* Takes in a list of units. 
+	 * Returns the unit with the longest name.
+	 * Example: findUnitWithLongestName({name: 'Alex'},
+	 * {name: 'Jonathan'}) would return {name: 'Jonathan'}
+	*/  
+	function findUnitWithLongestName(units) {
+		let longestUnit = units[0];
+		units.forEach( (unit) => {
+			if(unit.name.length > longestUnit.name.length) {
+				longestUnit = unit;
+			}
+		});
+		return longestUnit;
+	}
 
 	//OLD
 
@@ -118,6 +136,7 @@ app.controller('builderCtrl', function($scope, $http){
 		return $scope.gear[id -1];
 	}
 
+	//Deprecated, can remove
 	$scope.getAbility = function(id) {
 		return $scope.abilities[id -1];
 	}
@@ -135,23 +154,24 @@ app.controller('builderCtrl', function($scope, $http){
 	} 
 
 	$scope.unitHasGear = function(unit) {
-		return unit.Gear.length > 0;
+		return unit.gear.length > 0;
 	}
 
 	$scope.unitAbilityExists = function(unit) {
-		return unit.Abilities.length > 0;
+		console.log("Abilities test", unit);
+		return unit.abilities.length > 0;
 	}
 
 	$scope.powerExists = function(unit) {
-		return unit.Powers != undefined;
+		return unit.powers != undefined;
 	}
 
 	$scope.unitAddonExists = function(unit) {
 		let ret = false;	
-		if (unit.AddOns.length === 0) {
+		if (unit.addOns.length === 0) {
 			ret = false;
 		}
-		unit.AddOns.forEach( (id) => {
+		unit.addOns.forEach( (id) => {
 			const addon = $scope.getAddon(id);
 			if(addon.Level === "Unit") {
 				ret = true;
@@ -162,10 +182,10 @@ app.controller('builderCtrl', function($scope, $http){
 
 	$scope.modelAddonExists = function(unit) {
 		let ret = false;
-		if (unit.AddOns.length === 0) {
+		if (unit.addOns.length === 0) {
 			return false;
 		}
-		unit.AddOns.forEach( (id) => {
+		unit.addOns.forEach( (id) => {
 			const addon = $scope.getAddon(id);
 			if(addon.Level === "Model") {
 				ret = true;
@@ -177,21 +197,6 @@ app.controller('builderCtrl', function($scope, $http){
 	$scope.longestTotalLength = 0;
 
 
-	/* Takes in a list of units. 
-	 * Returns the unit with the longest name.
-	 * Example: findUnitWithLongestName({name: 'Alex'},
-	 * {name: 'Jonathan'}) would return {name: 'Jonathan'}
-	*/  
-	function findUnitWithLongestName(units) {
-		let longestUnit = units[0];
-		units.forEach( (unit) => {
-			if(unit.name.length > longestUnit.name.length) {
-				longestUnit = unit;
-			}
-		});
-		return longestUnit;
-	}
-
 	$scope.processUnits = function() {
 			$scope.availUnits = [];
 			if(Array.isArray($scope.selFac)) {
@@ -201,9 +206,9 @@ app.controller('builderCtrl', function($scope, $http){
 				}
 			}
 			$scope.availUnits.forEach((unit) => {
-				if(unit.Name.length > $scope.longestUnitNameLength) {
-					$scope.longestUnitNameLength = unit.Name.length;
-					$scope.longestTotalLength = unit.Name.length + unit.Cost.toString().length + $scope.buffer;
+				if(unit.name.length > $scope.longestUnitNameLength) {
+					$scope.longestUnitNameLength = unit.name.length;
+					$scope.longestTotalLength = unit.name.length + unit.cost.toString().length + $scope.buffer;
 				}
 			});
 			updateEnabledUnits();
@@ -216,41 +221,72 @@ app.controller('builderCtrl', function($scope, $http){
 	$scope.removeFromArmy = function(unit){
 		$scope.myArmy.delete(unit);
 		$scope.myArmyArray = Array.from($scope.myArmy);
-		$scope.models[unit.Name].forEach(model =>
+		$scope.models[unit.name].forEach(model =>
 			deregisterAddOnStatus(model.Name));
 
-		$scope.models[unit.Name] = [];
-		$scope.chosenPowers[unit.Name] = [];
+		$scope.models[unit.name] = [];
+		$scope.chosenPowers[unit.name] = [];
 		updateEnabledUnits();
-		deregisterAddOnStatus(unit.Name)
+		deregisterAddOnStatus(unit.name)
 		$scope.apply;
 	}
 
 	$scope.getOptionsName = function(unit) {
-		return unit.BaseName ? unit.BaseName : unit.Name;
+		return unit.baseName ? unit.baseName : unit.name;
+	}
+
+	/* Adds all units to myArmy
+	 * Modifies $scope.myArmyV2.
+	 */
+	$scope.addUnitsV2 = function(units) {
+		$scope.selectedUnits = [];
+		if (!units || units.length == 0) {return;}
+
+		units.forEach( (unit) => {
+			unit = getAbilitiesForUnit(unit);
+		});
+		$scope.myArmyV2 = $scope.myArmyV2.concat(units);
+	}
+
+	/* Takes a unit and fetches its abilities 
+	 * from the database or cache. Returns the
+	 * provided unit with all abilities as a property
+	*/
+	async function getAbilitiesForUnit(unit) {
+		const cacheKey = generateCacheKey("getAbilitiesForUnit", [unit.id]);
+		response = getFromCache(cacheKey);
+
+		if(response === undefined) {
+			const webResponse = await $http.post('src/php/getAbilitiesForUnit.php?unitId='+unit.id);
+			response = webResponse.data;
+			storeToCache(cacheKey, response);
+		}
+		unit.abilities = response;
+		$scope.$apply();
+		return unit;
 	}
 
 	$scope.addUnits = function(units){
-		$scope.selUnit = [];
+		$scope.selectedUnits = [];
 		if (!units || units.length == 0) {return;}
+
 		// Add to array if not present in O(selUnit) instead of O(myArmy)
-
 		units.forEach( (unit) => {
-			unit.BaseName = unit.BaseName ? unit.BaseName : unit.Name;
+			unit.baseName = unit.baseName ? unit.baseName : unit.name;
 			addToScopeCurrentCount(unit, 1);
-			if($scope.models[unit.Name] == undefined) {
-				$scope.models[unit.Name] = [];
+			if($scope.models[unit.name] == undefined) {
+				$scope.models[unit.name] = [];
 			}
 
-			if($scope.models[unit.Name].length) {
-				unit.Name = getNextName(unit);
-				$scope.models[unit.Name] = [];
+			if($scope.models[unit.name].length) {
+				unit.name = getNextName(unit);
+				$scope.models[unit.name] = [];
 			}
 
-			if(!unit.StartingNumberOfModels) {
-				unit.StartingNumberOfModels = unit.NumberOfModels;
+			if(!unit.startingNumberOfModels) {
+				unit.startingNumberOfModels = unit.numberOfModels;
 			}
-			let numUnits = unit.StartingNumberOfModels;
+			let numUnits = unit.startingNumberOfModels;
 			for(let i = 0; i < numUnits; i++) {
 				addModel(unit);
 			}
@@ -282,7 +318,7 @@ app.controller('builderCtrl', function($scope, $http){
 	}
 
 	$scope.shouldDisableUnitAddOn = function(unit, id) {		
-		if(!$scope.enabledAddOns[unit.Name]) {return false;}
+		if(!$scope.enabledAddOns[unit.name]) {return false;}
 		const addOn = $scope.getAddon(id);
 		if(!addOn.Mutex) {
 			return false;
@@ -290,7 +326,7 @@ app.controller('builderCtrl', function($scope, $http){
 		let shouldDisable = false;
 
 		addOn.Mutex.forEach( (conflictId) => {
-			if($scope.enabledAddOns[unit.Name][conflictId]) {
+			if($scope.enabledAddOns[unit.name][conflictId]) {
 				shouldDisable = true;
 			}
 		});
@@ -299,7 +335,7 @@ app.controller('builderCtrl', function($scope, $http){
 	}
 
 	$scope.calculateUnitCost = function(unit) {
-		return unit.NumberOfModels * unit.Cost + calculateUnitGearCost(unit) + getAddOnCost(unit);
+		return unit.numberOfModels * unit.cost + calculateUnitGearCost(unit) + getAddOnCost(unit);
 	}
 
 	$scope.calculateAddOnCost = function(addOn, unit) {
@@ -311,7 +347,7 @@ app.controller('builderCtrl', function($scope, $http){
 				return $scope.getGear(addOn.Add).Cost - $scope.getGear(addOn.Remove).Cost;
 			break;
 			case "IncreaseModelNum":
-				return (unit.Cost + calculateModelGearCost(unit.Gear)) * addOn.Amount;
+				return (unit.cost + calculateModelGearCost(unit.gear)) * addOn.Amount;
 			break;
 			case "AddItem":
 				return $scope.getGear(addOn.Add).Cost;
@@ -324,7 +360,7 @@ app.controller('builderCtrl', function($scope, $http){
 	}
 
 	$scope.setAddOnCost = function(isChecked, unit, addOnId, model, idx) {
-		registerAddOnStatus(addOnId, isChecked, unit.Name, model, idx);
+		registerAddOnStatus(addOnId, isChecked, unit.name, model, idx);
 		const addOn = $scope.getAddon(addOnId);
 		switch(addOn.Type) {
 			case "Direct": 
@@ -406,7 +442,7 @@ app.controller('builderCtrl', function($scope, $http){
 		parts = addPartToArray(parts, "FACTIONS");
 		parts = addPartToArray(parts,  Array.from($scope.allFacs), true);
 		parts = addPartToArray(parts, "UNITS");
-		$scope.myArmyArray.forEach( unit => { if(unit.StartingNumberOfModels) { unit.NumberOfModels = unit.StartingNumberOfModels } });
+		$scope.myArmyArray.forEach( unit => { if(unit.startingNumberOfModels) { unit.numberOfModels = unit.startingNumberOfModels } });
 		parts = addPartToArray(parts, $scope.myArmyArray, true);
 		parts = addPartToArray(parts, "MODELS");
 		parts = addPartToArray(parts, $scope.models, true);
@@ -619,7 +655,7 @@ app.controller('builderCtrl', function($scope, $http){
 
 	function increaseNumberOfModels(unit, amount) {
 		$scope.myArmyArray.forEach((elem) => {
-			if(elem.Name == unit.Name) {
+			if(elem.Name == unit.name) {
 				if(!elem.StartingNumberOfModels) {
 					elem.StartingNumberOfModels = elem.NumberOfModels;
 				}
@@ -636,13 +672,13 @@ app.controller('builderCtrl', function($scope, $http){
 		else {
 			amount *= -1;
 			for(let i = 0; i < amount; i++) {
-				$scope.models[unit.Name].pop();
+				$scope.models[unit.name].pop();
 			}
 		}
 	}
 
 	function replaceItem(model, oldItem, newItem, unit) {
-		$scope.models[unit.Name].forEach((soldier) => {
+		$scope.models[unit.name].forEach((soldier) => {
 			if(soldier.Name == model.Name) {// Find the right guy
 				let toRemove = -1;
 				soldier.Gear.forEach((item, idx) => {
@@ -673,14 +709,14 @@ app.controller('builderCtrl', function($scope, $http){
 
 	function updateEnabledUnits() {
 		$scope.availUnits.forEach((unit) => {
-			unit.disabled = $scope.models[unit.Name] != undefined && $scope.models[unit.Name].length > 0;
+			unit.disabled = $scope.models[unit.name] != undefined && $scope.models[unit.name].length > 0;
 		});
 	}
 
 	function calculateUnitGearCost(unit) {
-		if($scope.models[unit.Name] == undefined) { return 0; }
+		if($scope.models[unit.name] == undefined) { return 0; }
 		let total = 0;
-		$scope.models[unit.Name].forEach( (model) => {
+		$scope.models[unit.name].forEach( (model) => {
 			total += calculateModelGearCost(model.Gear)
 		});
 		return total;
@@ -688,17 +724,17 @@ app.controller('builderCtrl', function($scope, $http){
 
 	function cloneUnit(unit) {
 		let copy = {};
-		copy.Name = unit.Name
-		copy.BaseName = unit.BaseName
-		copy.NumberOfModels = unit.NumberOfModels
-		copy.StartingNumberOfModels = unit.StartingNumberOfModels
-		copy.Cost = unit.Cost
-		copy.SeparateGear = unit.SeparateGear;
-		copy.Powers = unit.Powers;
-		copy.Abilities = unit.Abilities.slice(0);
-		copy.AddOns = unit.AddOns.slice(0);
-		copy.Gear = unit.Gear.slice(0);
-		copy.SquadNames = unit.SquadNames;
+		copy.name = unit.name
+		copy.baseName = unit.baseName
+		copy.numberOfModels = unit.numberOfModels
+		copy.startingNumberOfModels = unit.startingNumberOfModels
+		copy.cost = unit.cost
+		copy.separateGear = unit.separateGear;
+		copy.powers = unit.powers;
+		copy.abilities = unit.abilities.slice(0);
+		copy.addOns = unit.addOns.slice(0);
+		copy.gear = unit.gear.slice(0);
+		copy.squadNames = unit.squadNames;
 		return copy;
 	}
 
@@ -709,32 +745,32 @@ app.controller('builderCtrl', function($scope, $http){
 	}
 
 	function processGear(unit, model) {
-		if(!unit.SeparateGear) {
+		if(!unit.separateGear) {
 			return;
 		}
 		let defaultLoadout = [];
-		const numProcessed = $scope.models[unit.Name].length
+		const numProcessed = $scope.models[unit.name].length
 		let processed = false;
 		let count = 0;
 
-		for(let i = 0; i < unit.SeparateGear.length; i++) {
-			count += unit.SeparateGear[i].Number;
-			if(unit.SeparateGear[i].Default) {
+		for(let i = 0; i < unit.separateGear.length; i++) {
+			count += unit.separateGear[i].Number;
+			if(unit.separateGear[i].Default) {
 
-				defaultLoadout = unit.SeparateGear[i].Loadout;
+				defaultLoadout = unit.separateGear[i].Loadout;
 			}
 			if(count <= numProcessed) {
 				continue;
 			}
 			else {
-				model.Gear = model.Gear.concat(unit.SeparateGear[i].Loadout);
+				model.Gear = model.gear.concat(unit.separateGear[i].Loadout);
 				processed = true;
 				break;
 			}
 		}
 
 		if(!processed) {
-			model.Gear = model.Gear.concat(defaultLoadout);
+			model.Gear = model.gear.concat(defaultLoadout);
 		}
 		return model;
 	}
@@ -764,39 +800,39 @@ app.controller('builderCtrl', function($scope, $http){
 	}
 
 	function addToScopeCurrentCount(unit, number) {
-		if(!$scope.currentUnitCount[unit.BaseName]) {
-			$scope.currentUnitCount[unit.BaseName] = 0;
+		if(!$scope.currentUnitCount[unit.baseName]) {
+			$scope.currentUnitCount[unit.baseName] = 0;
 		}
-		$scope.currentUnitCount[unit.BaseName] += number;
+		$scope.currentUnitCount[unit.baseName] += number;
 	}
 
 	function getNameCount(unit) {
-		if(!$scope.currentUnitCount[unit.BaseName]) {
-			$scope.currentUnitCount[unit.BaseName] = 0;
+		if(!$scope.currentUnitCount[unit.baseName]) {
+			$scope.currentUnitCount[unit.baseName] = 0;
 		}
-		return $scope.currentUnitCount[unit.BaseName];
+		return $scope.currentUnitCount[unit.baseName];
 	}
 
 	function getNextName(unit) {
-		return unit.BaseName + ' - Squad ' + (getNameCount(unit));
+		return unit.baseName + ' - Squad ' + (getNameCount(unit));
 	}
 
 	function addModel(unit) {
 		let model = cloneUnit(unit);
 		model.Name = getModelName(model, unit);
 		processGear(unit, model);
-		$scope.models[unit.Name].push(model);
+		$scope.models[unit.name].push(model);
 	}
 
 	function getModelName(model, unit) {
-		model.unitName = unit.Name;
-		const numModelsInSquad = $scope.models[unit.Name].length;
-		const numSquadNames = unit.SquadNames ? unit.SquadNames.length : 0;
-		if (unit.SquadNames == undefined || numSquadNames <= numModelsInSquad) {
-			return ret = model.Name + ' ' + ($scope.models[unit.Name].length + 1 - numSquadNames);
+		model.unitName = unit.name;
+		const numModelsInSquad = $scope.models[unit.name].length;
+		const numSquadNames = unit.squadNames ? unit.squadNames.length : 0;
+		if (unit.squadNames == undefined || numSquadNames <= numModelsInSquad) {
+			return ret = model.name + ' ' + ($scope.models[unit.name].length + 1 - numSquadNames);
 		}
 		else {
-			return ret = unit.SquadNames[numModelsInSquad];
+			return ret = unit.squadNames[numModelsInSquad];
 		}
 	}
 
