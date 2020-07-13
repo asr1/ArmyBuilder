@@ -10,6 +10,7 @@ app.controller('builderCtrl', function($scope, $http){
 	let cache = {}; // Cache for network calls to db
 	$scope.buffer = 5; //Padding for addSpaces
 	$scope.myArmyV2 = [];
+	$scope.longestTotalLength = 0;
 
 	/*Initialize default game and factions.
 	 * Gets all games from the database,
@@ -114,6 +115,51 @@ app.controller('builderCtrl', function($scope, $http){
 		return longestUnit;
 	}
 
+	/* Takes a unit and fetches its abilities 
+	 * from the database or cache. Returns the
+	 * provided unit with all abilities as a property
+	*/
+	async function getAbilitiesForUnit(unit) {
+		const cacheKey = generateCacheKey("getAbilitiesForUnit", [unit.id]);
+		response = getFromCache(cacheKey);
+
+		if(response === undefined) {
+			const webResponse = await $http.post('src/php/getAbilitiesForUnit.php?unitId='+unit.id);
+			response = webResponse.data;
+			storeToCache(cacheKey, response);
+		}
+		unit.abilities = response;
+		$scope.$apply();
+		return unit;
+	}
+
+	/* Gets all factions based on the provided
+	 * Game. Modifies $scope.factions. 
+	 */
+	const getFactionsAsync = async function(game) {
+		if(!game) { return; }
+		if($scope.factions[game.id] === undefined) {
+			const response = await $http.post('src/php/getFactionsForGame.php?gameId='+game.id);
+			$scope.factions[game.id] = response.data;
+		}
+		return $scope.factions[game.id];
+	}
+
+	/* Adds all provided units to myArmy
+	 * Modifies $scope.myArmyV2 and makes
+	 * Calls to database to populate unit 
+	 * details.
+	 */
+	$scope.addUnitsV2 = function(units) {
+		$scope.selectedUnits = [];
+		if (!units || units.length == 0) {return;}
+
+		units.forEach( (unit) => {
+			unit = getAbilitiesForUnit(unit);
+		});
+		$scope.myArmyV2 = $scope.myArmyV2.concat(units);
+	}
+
 	//OLD
 
 	$scope.selFac = null;
@@ -132,88 +178,6 @@ app.controller('builderCtrl', function($scope, $http){
 
 	$scope.allFacs = new Set();
 
-	$scope.getGear = function(id) {
-		return $scope.gear[id -1];
-	}
-
-	//Deprecated, can remove
-	$scope.getAbility = function(id) {
-		return $scope.abilities[id -1];
-	}
-
-	$scope.getPower = function(id) {
-		return $scope.powers[id -1];
-	}
-
-	$scope.getAddon = function(id) {
-		return $scope.addons[id -1];
-	}
-
-	$scope.itemAbilityExists = function(item) {
-		return $scope.getGear(item).Ability != "";
-	} 
-
-	$scope.unitHasGear = function(unit) {
-		return unit.gear.length > 0;
-	}
-
-	$scope.unitAbilityExists = function(unit) {
-		console.log("Abilities test", unit);
-		return unit.abilities.length > 0;
-	}
-
-	$scope.powerExists = function(unit) {
-		return unit.powers != undefined;
-	}
-
-	$scope.unitAddonExists = function(unit) {
-		let ret = false;	
-		if (unit.addOns.length === 0) {
-			ret = false;
-		}
-		unit.addOns.forEach( (id) => {
-			const addon = $scope.getAddon(id);
-			if(addon.Level === "Unit") {
-				ret = true;
-			}
-		});
-		return ret;
-	}
-
-	$scope.modelAddonExists = function(unit) {
-		let ret = false;
-		if (unit.addOns.length === 0) {
-			return false;
-		}
-		unit.addOns.forEach( (id) => {
-			const addon = $scope.getAddon(id);
-			if(addon.Level === "Model") {
-				ret = true;
-			}
-		});
-		return ret;
-	}
-
-	$scope.longestTotalLength = 0;
-
-
-	$scope.processUnits = function() {
-			$scope.availUnits = [];
-			if(Array.isArray($scope.selFac)) {
-				for(let i = 0; i < $scope.selFac.length; i++) {
-					$scope.availUnits = $scope.availUnits.concat($scope.selFac[i].Units);
-					$scope.allFacs.add($scope.selFac[i]);
-				}
-			}
-			$scope.availUnits.forEach((unit) => {
-				if(unit.name.length > $scope.longestUnitNameLength) {
-					$scope.longestUnitNameLength = unit.name.length;
-					$scope.longestTotalLength = unit.name.length + unit.cost.toString().length + $scope.buffer;
-				}
-			});
-			updateEnabledUnits();
-	}
-
 	$scope.shouldDisableDownloadButton = function() {
 		return $scope.myArmyArray.length <= 0;
 	}
@@ -231,39 +195,9 @@ app.controller('builderCtrl', function($scope, $http){
 		$scope.apply;
 	}
 
+	//May need this once I add file support? Unclear
 	$scope.getOptionsName = function(unit) {
 		return unit.baseName ? unit.baseName : unit.name;
-	}
-
-	/* Adds all units to myArmy
-	 * Modifies $scope.myArmyV2.
-	 */
-	$scope.addUnitsV2 = function(units) {
-		$scope.selectedUnits = [];
-		if (!units || units.length == 0) {return;}
-
-		units.forEach( (unit) => {
-			unit = getAbilitiesForUnit(unit);
-		});
-		$scope.myArmyV2 = $scope.myArmyV2.concat(units);
-	}
-
-	/* Takes a unit and fetches its abilities 
-	 * from the database or cache. Returns the
-	 * provided unit with all abilities as a property
-	*/
-	async function getAbilitiesForUnit(unit) {
-		const cacheKey = generateCacheKey("getAbilitiesForUnit", [unit.id]);
-		response = getFromCache(cacheKey);
-
-		if(response === undefined) {
-			const webResponse = await $http.post('src/php/getAbilitiesForUnit.php?unitId='+unit.id);
-			response = webResponse.data;
-			storeToCache(cacheKey, response);
-		}
-		unit.abilities = response;
-		$scope.$apply();
-		return unit;
 	}
 
 	$scope.addUnits = function(units){
@@ -418,15 +352,6 @@ app.controller('builderCtrl', function($scope, $http){
 		a.download = fileName;
 		a.click();
 		URL.revokeObjectURL(downloadFile) 
-	}
-
-	const getFactionsAsync = async function(game) {
-		if(!game) { return; }
-		if($scope.factions[game.id] === undefined) {
-			const response = await $http.post('src/php/getFactionsForGame.php?gameId='+game.id);
-			$scope.factions[game.id] = response.data;
-		}
-		return $scope.factions[game.id];
 	}
 
 	//"Private" functions not exposed to HTML
@@ -618,7 +543,6 @@ app.controller('builderCtrl', function($scope, $http){
 			});
 			return text;
 		}
-
 
 		getGameFromName(name) {
 			var ret = undefined;
