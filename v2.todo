@@ -1,6 +1,8 @@
 Addon Support
 	Model
 	Unit
+	Mutexes
+	Cost
 \# Model support
 \# Gear Support
 File download
@@ -10,3 +12,6 @@ Allow adding the same unit twice - possible cloning issue.
 Total cost
 Powers support
 Mixed units (with 1 captain and 3 lieutenants, for example)
+
+
+Tools/Builder
