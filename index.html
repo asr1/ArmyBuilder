@@ -79,11 +79,11 @@
 							<div class="level2Item" ng-repeat="ability in unit.abilities">
 								<span class="abilityName">{{ability.name}}: </span><span>{{ability.text}}</span>
 							</div>
-						<!-- <h5 ng-show="unitAddonExists(unit)" class="Subheading">Unit Add Ons</h5> -->
-						<!-- <div class="level2Item" ng-repeat="addon in unit.addOns track by $index"> -->
-							<!-- <span ng-show="getAddon(addon).Level == 'Unit'"><span><input id="{{getAddOnId(true, unit.name, $index)}}" ng-disabled="shouldDisableUnitAddOn(unit, addon)" ng-model="checked" ng-click="setAddOnCost(checked, unit, addon, null,$index)" type="checkbox"></input> </span><span>{{getAddon(addon).Text}}</span><span> Cost: {{calculateAddOnCost(getAddon(addon), unit)}}</span></span> -->
-						<!-- </div> -->
-						<!-- <h5 class="Subheading">Models: ({{models[unit.name].length}})</h5> -->
+						<h5 ng-show="unit.addons && unit.addons.length" class="Subheading">Unit Add Ons</h5>
+						<div class="level2Item" ng-repeat="addon in unit.addons track by $index">
+							<span ng-show="addon.level == 'unit'"><span><input id="{{getAddOnId(true, unit.name, $index)}}" ng-disabled="shouldDisableUnitAddOn(unit, addon)" ng-model="checked" ng-click="setAddOnCost(checked, unit, addon, null,$index)" type="checkbox"></input> </span><span>{{getAddon(addon).Text}}</span><span> Cost: {{calculateAddOnCost(getAddon(addon), unit)}}</span></span>
+						</div>
+						<h5 class="Subheading">Models: ({{unit.numberOfModels}})</h5>
 						<!-- <div ng-repeat="model in models[unit.name] track by $index"> -->
 							<!-- <p class="modelName">{{model.Name}}</p> -->
 							<!-- <div class="modelBody"> -->

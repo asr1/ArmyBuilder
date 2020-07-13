@@ -129,6 +129,24 @@ app.controller('builderCtrl', function($scope, $http){
 			storeToCache(cacheKey, response);
 		}
 		unit.abilities = response;
+		return unit;
+	}
+
+	/* Takes a unit and fetches its addons 
+	 * from the database or cache. Returns the
+	 * provided unit with all addons as a property
+	*/
+	async function getAddonsForUnit(unit) {
+		const cacheKey = generateCacheKey("getAddonsForUnit", [unit.id]);
+		response = getFromCache(cacheKey);
+		console.log(unit);
+
+		if(response === undefined) {
+			const webResponse = await $http.post('src/php/getAddonsForUnit.php?unitId='+unit.id);
+			response = webResponse.data;
+			storeToCache(cacheKey, response);
+		}
+		unit.addons = response;
 		$scope.$apply();
 		return unit;
 	}
@@ -150,12 +168,13 @@ app.controller('builderCtrl', function($scope, $http){
 	 * Calls to database to populate unit 
 	 * details.
 	 */
-	$scope.addUnitsV2 = function(units) {
+	$scope.addUnitsV2 = async function(units) {
 		$scope.selectedUnits = [];
 		if (!units || units.length == 0) {return;}
 
-		units.forEach( (unit) => {
-			unit = getAbilitiesForUnit(unit);
+		units.forEach( async (unit) => {
+			unit = await getAbilitiesForUnit(unit);
+			unit = await getAddonsForUnit(unit); // Add new ones above this line. $scope.Apply() is triggered here. Can't delay until afterward without $digest conflicts.
 		});
 		$scope.myArmyV2 = $scope.myArmyV2.concat(units);
 	}
