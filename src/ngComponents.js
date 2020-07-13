@@ -11,6 +11,7 @@ app.controller('builderCtrl', function($scope, $http){
 	$scope.buffer = 5; //Padding for addSpaces
 	$scope.myArmyV2 = [];
 	$scope.longestTotalLength = 0;
+	const AddonTypesEnum = {"ReplaceItem":1, "IncreaseNumberOfModels":2, "Direct": 3, "AddItem": 4};
 
 	/*Initialize default game and factions.
 	 * Gets all games from the database,
@@ -147,7 +148,6 @@ app.controller('builderCtrl', function($scope, $http){
 			storeToCache(cacheKey, response);
 		}
 		unit.addons = response;
-		$scope.$apply();
 		return unit;
 	}
 
@@ -161,22 +161,6 @@ app.controller('builderCtrl', function($scope, $http){
 			$scope.factions[game.id] = response.data;
 		}
 		return $scope.factions[game.id];
-	}
-
-	/* Adds all provided units to myArmy
-	 * Modifies $scope.myArmyV2 and makes
-	 * Calls to database to populate unit 
-	 * details.
-	 */
-	$scope.addUnitsV2 = async function(units) {
-		$scope.selectedUnits = [];
-		if (!units || units.length == 0) {return;}
-
-		units.forEach( async (unit) => {
-			unit = await getAbilitiesForUnit(unit);
-			unit = await getAddonsForUnit(unit); // Add new ones above this line. $scope.Apply() is triggered here. Can't delay until afterward without $digest conflicts.
-		});
-		$scope.myArmyV2 = $scope.myArmyV2.concat(units);
 	}
 
 	//OLD
@@ -219,7 +203,45 @@ app.controller('builderCtrl', function($scope, $http){
 		return unit.baseName ? unit.baseName : unit.name;
 	}
 
-	$scope.addUnits = function(units){
+	/* Adds all provided units to myArmy
+	 * Modifies $scope.myArmyV2 and makes
+	 * Calls to database to populate unit 
+	 * details.
+	 */
+	$scope.addUnitsV2 = async function(units) {
+		$scope.selectedUnits = [];
+		if (!units || units.length == 0) {return;}
+
+		units.forEach( async (unit) => {
+			//Set basename. Needed for save/load
+			unit.baseName = unit.baseName ? unit.baseName : unit.name;
+			addToScopeCurrentCount(unit, 1);
+			
+			// Initialize models
+			if($scope.models[unit.name] == undefined) {
+				$scope.models[unit.name] = [];
+			}
+			if($scope.models[unit.name].length) {
+				unit.name = getNextName(unit);
+				$scope.models[unit.name] = [];
+			}
+			
+			//V2 work. Update model details.
+			unit = await getAbilitiesForUnit(unit);
+			unit = await getAddonsForUnit(unit);
+			
+			if(!unit.startingNumberOfModels) {
+				unit.startingNumberOfModels = unit.numberOfModels;
+			}
+			let numUnits = unit.startingNumberOfModels;
+			for(let i = 0; i < numUnits; i++) {
+				addModelV2(unit);
+			}
+		});
+		$scope.myArmyV2 = $scope.myArmyV2.concat(units);
+	}
+
+	$scope.addUnits = function(units) {
 		$scope.selectedUnits = [];
 		if (!units || units.length == 0) {return;}
 
@@ -245,6 +267,7 @@ app.controller('builderCtrl', function($scope, $http){
 			}
 
 		});
+		///???? Next three lines.
 		units.reduce((set, elem) => set.add(cloneUnit(elem)), $scope.myArmy);
 		$scope.myArmyArray = Array.from($scope.myArmy); 
 		updateEnabledUnits();
@@ -270,15 +293,14 @@ app.controller('builderCtrl', function($scope, $http){
 		return result;
 	}
 
-	$scope.shouldDisableUnitAddOn = function(unit, id) {		
+	$scope.shouldDisableUnitAddOn = function(unit, addon) {		
 		if(!$scope.enabledAddOns[unit.name]) {return false;}
-		const addOn = $scope.getAddon(id);
-		if(!addOn.Mutex) {
+		if(!addon.Mutex) {
 			return false;
 		}
 		let shouldDisable = false;
 
-		addOn.Mutex.forEach( (conflictId) => {
+		addon.Mutex.forEach( (conflictId) => {
 			if($scope.enabledAddOns[unit.name][conflictId]) {
 				shouldDisable = true;
 			}
@@ -292,18 +314,22 @@ app.controller('builderCtrl', function($scope, $http){
 	}
 
 	$scope.calculateAddOnCost = function(addOn, unit) {
-		switch(addOn.Type) {
-			case "Direct": 
-				return addOn.Cost
+		console.log(addOn);
+		switch(addOn.typeid) {
+			case AddonTypesEnum.Direct: 
+				return addOn.cost
 			break;
-			case "ReplaceItem":
-				return $scope.getGear(addOn.Add).Cost - $scope.getGear(addOn.Remove).Cost;
+			//TODO
+			case AddonTypesEnum.ReplaceItem:
+				//return $scope.getGear(addOn.Add).cost - $scope.getGear(addOn.Remove).Cost;
 			break;
-			case "IncreaseModelNum":
-				return (unit.cost + calculateModelGearCost(unit.gear)) * addOn.Amount;
+			//TODO
+			case AddonTypesEnum.IncreaseNumberOfModels:
+			//	return (unit.cost + calculateModelGearCost(unit.gear)) * addOn.Amount;
 			break;
-			case "AddItem":
-				return $scope.getGear(addOn.Add).Cost;
+			//TODO
+			case AddonTypesEnum.AddItem:
+			//	return $scope.getGear(addOn.Add).Cost;
 			break;
 		}
 	}
@@ -312,9 +338,8 @@ app.controller('builderCtrl', function($scope, $http){
 		return isUnitLevel ? name + ' unit add on&' + index : name + ' model add on&' + index;
 	}
 
-	$scope.setAddOnCost = function(isChecked, unit, addOnId, model, idx) {
-		registerAddOnStatus(addOnId, isChecked, unit.name, model, idx);
-		const addOn = $scope.getAddon(addOnId);
+	$scope.setAddOnCost = function(isChecked, unit, addOn, model, idx) {
+		registerAddOnStatus(addOn.id, isChecked, unit.name, model, idx);
 		switch(addOn.Type) {
 			case "Direct": 
 				isChecked ?
@@ -646,7 +671,7 @@ app.controller('builderCtrl', function($scope, $http){
 
 	function calculateModelGearCost(gearIndexes) {
 		let total = 0;
-		gearIndexes.forEach((idx) => total += $scope.getGear(idx).Cost);
+		//gearIndexes.forEach((idx) => total += $scope.getGear(idx).Cost);
 		return total;
 	}
 
@@ -665,19 +690,26 @@ app.controller('builderCtrl', function($scope, $http){
 		return total;
 	}
 
-	function cloneUnit(unit) {
+	/* Takes a unit and returns a deep copy
+	 * of that unit. Unfortunately this is 
+	 * done by manually iterating over each
+	 * field.
+	 */
+	function cloneUnitV2(unit) {
 		let copy = {};
-		copy.name = unit.name
-		copy.baseName = unit.baseName
-		copy.numberOfModels = unit.numberOfModels
-		copy.startingNumberOfModels = unit.startingNumberOfModels
-		copy.cost = unit.cost
-		copy.separateGear = unit.separateGear;
-		copy.powers = unit.powers;
+		console.log("clone", unit);
 		copy.abilities = unit.abilities.slice(0);
-		copy.addOns = unit.addOns.slice(0);
-		copy.gear = unit.gear.slice(0);
-		copy.squadNames = unit.squadNames;
+		copy.addons = unit.addons.slice(0);
+		copy.baseName = unit.baseName;
+		copy.cost = unit.cost;
+		copy.id = unit.id;
+		copy.name = unit.name;
+		copy.numberOfModels = unit.numberOfModels;
+		copy.squadNames = unit.squadNames; // Used for units with mixed models
+		copy.startingNumberOfModels = unit.startingNumberOfModels;
+		// copy.separateGear = unit.separateGear;
+		// copy.powers = unit.powers;
+		// copy.gear = unit.gear.slice(0);
 		return copy;
 	}
 
@@ -742,6 +774,12 @@ app.controller('builderCtrl', function($scope, $http){
 		}
 	}
 
+	/* Updates the number of each unit that is
+	 * currently in existence. Not entirely sure
+	 * why this is necessary, but porting over for
+	 * now. I believe this an attempt to allowing
+	 * The same unit to be added multiple times.
+	 */
 	function addToScopeCurrentCount(unit, number) {
 		if(!$scope.currentUnitCount[unit.baseName]) {
 			$scope.currentUnitCount[unit.baseName] = 0;
@@ -749,6 +787,8 @@ app.controller('builderCtrl', function($scope, $http){
 		$scope.currentUnitCount[unit.baseName] += number;
 	}
 
+	/* Returns the current count for each unit.
+	 */
 	function getNameCount(unit) {
 		if(!$scope.currentUnitCount[unit.baseName]) {
 			$scope.currentUnitCount[unit.baseName] = 0;
@@ -756,10 +796,22 @@ app.controller('builderCtrl', function($scope, $http){
 		return $scope.currentUnitCount[unit.baseName];
 	}
 
+	/* Given a unit, returns the next name sequentially.
+	 * This was originally added to support adding the
+	 * same unit multiple times.
+	 */
 	function getNextName(unit) {
 		return unit.baseName + ' - Squad ' + (getNameCount(unit));
 	}
+	
+	function addModelV2(unit) {
+		let model = cloneUnitV2(unit);
+		model.Name = getModelName(model, unit);
+		$scope.models[unit.name].push(model);
+		$scope.$apply(); // Has to be here for last step in AddUnitsV2 to avoid $digest conflict.
+	}
 
+	//Deprecated, can remove
 	function addModel(unit) {
 		let model = cloneUnit(unit);
 		model.Name = getModelName(model, unit);
@@ -770,11 +822,14 @@ app.controller('builderCtrl', function($scope, $http){
 	function getModelName(model, unit) {
 		model.unitName = unit.name;
 		const numModelsInSquad = $scope.models[unit.name].length;
+		
+		//Handle mixed units, where there is (for example) one captain and 3 lieutenants
+		//First the normal case.... (Flame Squad 1...n)
 		const numSquadNames = unit.squadNames ? unit.squadNames.length : 0;
 		if (unit.squadNames == undefined || numSquadNames <= numModelsInSquad) {
 			return ret = model.name + ' ' + ($scope.models[unit.name].length + 1 - numSquadNames);
 		}
-		else {
+		else {//TODO this will have to be handled differently going forward. DB changes will also be necessary
 			return ret = unit.squadNames[numModelsInSquad];
 		}
 	}
