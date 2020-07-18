@@ -11,7 +11,7 @@ app.controller('builderCtrl', function($scope, $http){
 	$scope.buffer = 5; //Padding for addSpaces
 	$scope.myArmyV2 = [];
 	$scope.longestTotalLength = 0;
-	const AddonTypesEnum = {"ReplaceItem":1, "IncreaseNumberOfModels":2, "Direct": 3, "AddItem": 4};
+	const AddonTypesEnum = {ReplaceItem:1, IncreaseNumberOfModels:2, Direct: 3, AddItem: 4};
 
 	/*Initialize default game and factions.
 	 * Gets all games from the database,
@@ -97,9 +97,7 @@ app.controller('builderCtrl', function($scope, $http){
 	$scope.addSpaces= function(inputName){
 		const count = 2*($scope.longestUnitNameLength - inputName.length) + $scope.buffer; 
 		let result = "";
-		console.log(inputName);
 		let num = $scope.longestTotalLength - inputName.length;
-		console.log(num);
 		return String.fromCharCode(160).repeat(num);
 	};
 	
@@ -335,7 +333,7 @@ app.controller('builderCtrl', function($scope, $http){
 	}
 
 	$scope.calculateAddOnCost = function(addOn, unit) {
-		console.log(addOn);
+		console.log("addon", addOn);
 		switch(addOn.typeid) {
 			case AddonTypesEnum.Direct: 
 				return addOn.cost
@@ -344,9 +342,8 @@ app.controller('builderCtrl', function($scope, $http){
 			case AddonTypesEnum.ReplaceItem:
 				//return $scope.getGear(addOn.Add).cost - $scope.getGear(addOn.Remove).Cost;
 			break;
-			//TODO
 			case AddonTypesEnum.IncreaseNumberOfModels:
-			//	return (unit.cost + calculateModelGearCost(unit.gear)) * addOn.Amount;
+				return (unit.cost + calculateModelGearCostV2(unit.gear)) * addOn.amount;
 			break;
 			//TODO
 			case AddonTypesEnum.AddItem:
@@ -355,20 +352,27 @@ app.controller('builderCtrl', function($scope, $http){
 		}
 	}
 
+	/* Generates the addon id. Used for reference when saving and loading.
+	 * Addon id is a combination of the unit or model, its name, and its
+	 * position in the army (for units) or among the unit (for models).
+	 */
 	$scope.getAddOnId = function(isUnitLevel, name, index) {
 		return isUnitLevel ? name + ' unit add on&' + index : name + ' model add on&' + index;
 	}
 
+	/* Called when an addon is selected or deselected. 
+	 * Modifies the unit to perform the addon in question.
+	 */
 	$scope.setAddOnCost = function(isChecked, unit, addOn, model, idx) {
 		registerAddOnStatus(addOn.id, isChecked, unit.name, model, idx);
-		switch(addOn.Type) {
-			case "Direct": 
+		switch(addOn.typeid) {
+			case AddonTypesEnum.Direct: 
 				isChecked ?
 					$scope.addOnCosts[unit] += addOn.Cost
 					:
 					$scope.addOnCosts[unit] -= addOn.Cost;
 			break;
-			case "ReplaceItem":
+			case AddonTypesEnum.ReplaceItem: 
 				if(isChecked) {
 					replaceItem(model, addOn.Remove, addOn.Add, unit);
 				}                            
@@ -376,7 +380,7 @@ app.controller('builderCtrl', function($scope, $http){
 					replaceItem(model, addOn.Add, addOn.Remove, unit);
 				}
 			break;
-			case "AddItem":
+			case AddonTypesEnum.AddItem: 
 				if(isChecked) {
 					replaceItem(model, addOn.Remove, addOn.Add, unit);
 				}                            
@@ -384,7 +388,7 @@ app.controller('builderCtrl', function($scope, $http){
 					replaceItem(model, addOn.Add, addOn.Remove, unit);
 				}
 			break;
-			case "IncreaseModelNum":
+			case AddonTypesEnum.IncreaseNumberOfModels:
 				if(isChecked) {
 					increaseNumberOfModels(unit, addOn.Amount);
 				}
@@ -694,6 +698,29 @@ app.controller('builderCtrl', function($scope, $http){
 		let total = 0;
 		//gearIndexes.forEach((idx) => total += $scope.getGear(idx).Cost);
 		return total;
+	}
+	
+	/* Calculates the total cost of gear for a unit
+	 * Takes in an array of gear
+	 * Returns an integer total cost of gear
+	 */
+	function calculateModelGearCostV2(gearArr) {
+		if(!gearArr || gearArr.length === 0) { return; }
+		return gearArr.reduce( (currentValue, gear) => currentValue + gear.cost, 0);
+	}
+
+	function testCalculateModelGearCostV2() {
+		let arr1 = [
+			{ 'cost' : 15 },
+			{ 'cost' : 10 }
+		];
+		let arr2 = [
+			{ 'cost' : 15 },
+			{ 'cost' : 11 },
+			{ 'cost' : 0 }
+		];
+		console.assert(calculateModelGearCostV2(arr1) === 25, "arr1 should equal 25, was %d", calculateModelGearCostV2(arr1));
+		console.assert(calculateModelGearCostV2(arr2) === 26, "arr2 should equal 26, was %d", calculateModelGearCostV2(arr2));
 	}
 
 	function updateEnabledUnits() {
