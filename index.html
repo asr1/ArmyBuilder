@@ -66,9 +66,8 @@
 			<button ng-click="addUnitsV2(selectedUnits)" type="button" id="addButton" class="btn btn-default btn-sm">
 				Add   <span class="glyphicon glyphicon-plus-sign"></span>
 			</button>
-			{{myArmyV2}}
 			<hr>
-			<span><h3 class="centered">Total Army Cost: {{calculateArmyCost()}}</h3></span>
+			<span><h3 class="centered">Total Army Cost: {{calculateArmyCostV2()}}</h3></span>
 			<div class="section">
 				<div class="unit" ng-repeat="unit in myArmyV2 track by $index">
 					<div class="unitHeader">

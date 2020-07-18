@@ -165,7 +165,6 @@ app.controller('builderCtrl', function($scope, $http){
 			storeToCache(cacheKey, response);
 		}
 		unit.gear = response;
-		console.log("Gear", unit);
 		return unit;
 	}
 
@@ -260,6 +259,7 @@ app.controller('builderCtrl', function($scope, $http){
 		$scope.myArmyV2 = $scope.myArmyV2.concat(units);
 	}
 
+	//Deprecated
 	$scope.addUnits = function(units) {
 		$scope.selectedUnits = [];
 		if (!units || units.length == 0) {return;}
@@ -292,11 +292,14 @@ app.controller('builderCtrl', function($scope, $http){
 		updateEnabledUnits();
 	}
 	 
-	$scope.calculateArmyCost = function(){
-		let cost = 0;
-		$scope.myArmyArray.forEach((unit) => cost += $scope.calculateUnitCost(unit));
+	 /* Calculates the cost of the entire army.
+	  * Returns the cost of each unit in the army.
+	  */
+	 $scope.calculateArmyCostV2 = function() {
+		 let cost = 0;
+		 $scope.myArmyV2.forEach((unit) => cost += $scope.calculateUnitCostV2(unit));
 		return cost;
-	}
+	 }
 
 	$scope.setChosenPower = function(isChecked, unitName, power, modelName, powerOptionIndex, checkboxIndex) {
 		initializeChosenPowers(unitName, modelName, powerOptionIndex);
@@ -328,12 +331,16 @@ app.controller('builderCtrl', function($scope, $http){
 		return shouldDisable;
 	}
 
-	$scope.calculateUnitCost = function(unit) {
+	/* Calculates the cost of a given unit.
+	 * Returns a number that represents the cost 
+	 * For one unit, including gear and addOns.
+	 */
+	$scope.calculateUnitCostV2 = function(unit) {
 		return unit.numberOfModels * unit.cost + calculateUnitGearCost(unit) + getAddOnCost(unit);
 	}
 
 	$scope.calculateAddOnCost = function(addOn, unit) {
-		console.log("addon", addOn);
+		// console.log("addon", addOn);
 		switch(addOn.typeid) {
 			case AddonTypesEnum.Direct: 
 				return addOn.cost
@@ -368,11 +375,12 @@ app.controller('builderCtrl', function($scope, $http){
 		switch(addOn.typeid) {
 			case AddonTypesEnum.Direct: 
 				isChecked ?
-					$scope.addOnCosts[unit] += addOn.Cost
+					$scope.addOnCosts[unit] += addOn.cost
 					:
-					$scope.addOnCosts[unit] -= addOn.Cost;
+					$scope.addOnCosts[unit] -= addOn.cost;
 			break;
 			case AddonTypesEnum.ReplaceItem: 
+			//TODO
 				if(isChecked) {
 					replaceItem(model, addOn.Remove, addOn.Add, unit);
 				}                            
@@ -380,6 +388,7 @@ app.controller('builderCtrl', function($scope, $http){
 					replaceItem(model, addOn.Add, addOn.Remove, unit);
 				}
 			break;
+			//TODO
 			case AddonTypesEnum.AddItem: 
 				if(isChecked) {
 					replaceItem(model, addOn.Remove, addOn.Add, unit);
@@ -388,12 +397,13 @@ app.controller('builderCtrl', function($scope, $http){
 					replaceItem(model, addOn.Add, addOn.Remove, unit);
 				}
 			break;
+			//TODO
 			case AddonTypesEnum.IncreaseNumberOfModels:
 				if(isChecked) {
-					increaseNumberOfModels(unit, addOn.Amount);
+					increaseNumberOfModels(unit, addOn.amount);
 				}
 				else {
-					increaseNumberOfModels(unit, -addOn.Amount);
+					increaseNumberOfModels(unit, -addOn.amount);
 				}
 			break;
 		}
@@ -646,20 +656,27 @@ app.controller('builderCtrl', function($scope, $http){
 		return line === HEADER_FIRST_LINE;
 	}
 
+	/* Increase number of models.
+	 * Used for add-ons that add additional models
+	 * MOdifies global state including $scope.myArmyV2
+	 * Takes in a unit to add models of and the amount to add.
+	 * If amount is negative, removes models instead, pop()ing.
+	 */
 	function increaseNumberOfModels(unit, amount) {
-		$scope.myArmyArray.forEach((elem) => {
-			if(elem.Name == unit.name) {
-				if(!elem.StartingNumberOfModels) {
-					elem.StartingNumberOfModels = elem.NumberOfModels;
+		console.log("increase unit", unit);
+		$scope.myArmyV2.forEach((elem) => {
+			if(elem.name == unit.name) {
+				if(!elem.startingNumberOfModels) {
+					elem.startingNumberOfModels = elem.numberOfModels;
 				}
-				elem.NumberOfModels += amount;
+				elem.numberOfModels += amount;
 
 			}
 		});
 		if(amount > 0){
 			while(amount--)
 			{
-				addModel(unit);
+				addModelV2(unit);
 			}
 		}
 		else {
@@ -687,6 +704,10 @@ app.controller('builderCtrl', function($scope, $http){
 		});
 	}
 
+	/* Returns all addon costs for 
+	 * a provided unit. Relies on 
+	 * global $scope.addOnCosts.
+	 */
 	 function getAddOnCost(unit) {
 		if($scope.addOnCosts[unit] == undefined) {
 			$scope.addOnCosts[unit] = 0;
@@ -694,6 +715,7 @@ app.controller('builderCtrl', function($scope, $http){
 		return $scope.addOnCosts[unit];
 	}
 
+	// Deprecated
 	function calculateModelGearCost(gearIndexes) {
 		let total = 0;
 		//gearIndexes.forEach((idx) => total += $scope.getGear(idx).Cost);
@@ -729,11 +751,16 @@ app.controller('builderCtrl', function($scope, $http){
 		});
 	}
 
+	/* Calculate unit gear cost
+	 * Takes in a unit, returns the total cost of
+	 * all gear for all models that are part of that
+	 * unit.
+	 */
 	function calculateUnitGearCost(unit) {
 		if($scope.models[unit.name] == undefined) { return 0; }
 		let total = 0;
 		$scope.models[unit.name].forEach( (model) => {
-			total += calculateModelGearCost(model.Gear)
+			total += calculateModelGearCostV2(model.gear)
 		});
 		return total;
 	}
@@ -854,9 +881,11 @@ app.controller('builderCtrl', function($scope, $http){
 	
 	function addModelV2(unit) {
 		let model = cloneUnitV2(unit);
-		model.Name = getModelName(model, unit);
+		model.name = getModelName(model, unit);
 		$scope.models[unit.name].push(model);
-		$scope.$apply(); // Has to be here for last step in AddUnitsV2 to avoid $digest conflict.
+		if (!$scope.$$phase) { // Anti-pattern. Means $scope.Apply() isn't high enough in call stack.
+			$scope.$apply(); // Has to be here for last step in AddUnitsV2 to avoid $digest conflict.
+		}
 	}
 
 	//Deprecated, can remove

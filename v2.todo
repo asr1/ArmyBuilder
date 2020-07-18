@@ -1,15 +1,23 @@
 Addon Support
-	Model
-	Unit
+	Model level implementation
+	Unit level implementation
+		Direct
+		ReplaceItem
+		\# IncreaseNumberOfModels
+		AddItem
 	Mutexes
 	Cost
+		\# Direct
+		ReplaceItem
+		\# IncreaseNumberOfModels
+		AddItem
 \# Model support
 \# Gear Support
 File download
 File upload
 Remove from army
 Allow adding the same unit twice - possible cloning issue. (issue in add spaces)
-Total cost
+\# Total cost
 Powers support
 Mixed units (with 1 captain and 3 lieutenants, for example)
 
