@@ -202,17 +202,34 @@ app.controller('builderCtrl', function($scope, $http){
 		return $scope.myArmyArray.length <= 0;
 	}
 
-	$scope.removeFromArmy = function(unit){
-		$scope.myArmy.delete(unit);
-		$scope.myArmyArray = Array.from($scope.myArmy);
-		$scope.models[unit.name].forEach(model =>
+	/* Remove from Army
+	 * Removes a provided unit from army.
+	 * Also removes all models and resets
+	 * state of addons and powers.
+	 * Many side effects, including modifying
+	 * $scope.myArmyV2
+	*/
+	$scope.removeFromArmyV2 = function(unitToRemove){
+		// Get index
+		let idxToRemove = -1;
+		$scope.myArmyV2.forEach( (unit, idx) => {
+			if(unit.name === unitToRemove.name) {
+				idxToRemove = idx;
+			}
+		});
+		
+		// Remove from army
+		if(idxToRemove >= 0) {
+			$scope.myArmyV2.splice(idxToRemove);
+		}
+		
+		// Deregister
+		$scope.models[unitToRemove.name].forEach(model =>
 			deregisterAddOnStatus(model.Name));
 
-		$scope.models[unit.name] = [];
-		$scope.chosenPowers[unit.name] = [];
-		updateEnabledUnits();
-		deregisterAddOnStatus(unit.name)
-		$scope.apply;
+		$scope.models[unitToRemove.name] = [];
+		$scope.chosenPowers[unitToRemove.name] = [];
+		deregisterAddOnStatus(unitToRemove.name)
 	}
 
 	//May need this once I add file support? Unclear
@@ -745,6 +762,7 @@ app.controller('builderCtrl', function($scope, $http){
 		console.assert(calculateModelGearCostV2(arr2) === 26, "arr2 should equal 26, was %d", calculateModelGearCostV2(arr2));
 	}
 
+	//Deprecated
 	function updateEnabledUnits() {
 		$scope.availUnits.forEach((unit) => {
 			unit.disabled = $scope.models[unit.name] != undefined && $scope.models[unit.name].length > 0;
