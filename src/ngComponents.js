@@ -98,6 +98,7 @@ app.controller('builderCtrl', function($scope, $http){
 		const count = 2*($scope.longestUnitNameLength - inputName.length) + $scope.buffer; 
 		let result = "";
 		let num = $scope.longestTotalLength - inputName.length;
+		num = Math.abs(num); //TODO KLUDGE find out why it's sometimes negative (like add 2 primaris then remove one).
 		return String.fromCharCode(160).repeat(num);
 	};
 	
@@ -220,7 +221,7 @@ app.controller('builderCtrl', function($scope, $http){
 		
 		// Remove from army
 		if(idxToRemove >= 0) {
-			$scope.myArmyV2.splice(idxToRemove);
+			$scope.myArmyV2.splice(idxToRemove, 1);
 		}
 		
 		// Deregister
@@ -232,8 +233,12 @@ app.controller('builderCtrl', function($scope, $http){
 		deregisterAddOnStatus(unitToRemove.name)
 	}
 
-	//May need this once I add file support? Unclear
-	$scope.getOptionsName = function(unit) {
+	/* Returns a unit's base name if it exists, 
+	 * or the units name otherwise. Necessary for
+	 * Adding and removing units, so we don't add 
+	 * "space marines squad 4 squad 2" or similar.
+	 */
+	$scope.getUnitBaseName = function(unit) {
 		return unit.baseName ? unit.baseName : unit.name;
 	}
 
@@ -242,7 +247,7 @@ app.controller('builderCtrl', function($scope, $http){
 	 * Calls to database to populate unit 
 	 * details.
 	 */
-	$scope.addUnitsV2 = async function(units) {
+	$scope.addUnitsV2 = function(units) {
 		$scope.selectedUnits = [];
 		if (!units || units.length == 0) {return;}
 
@@ -272,8 +277,10 @@ app.controller('builderCtrl', function($scope, $http){
 			for(let i = 0; i < numUnits; i++) {
 				addModelV2(unit);
 			}
+			$scope.myArmyV2.push(cloneUnitV2(unit));
+			console.log("My army v2", $scope.myArmyV2);
+			$scope.$apply();
 		});
-		$scope.myArmyV2 = $scope.myArmyV2.concat(units);
 	}
 
 	//Deprecated
@@ -357,6 +364,7 @@ app.controller('builderCtrl', function($scope, $http){
 	}
 
 	$scope.calculateAddOnCost = function(addOn, unit) {
+		if(!addOn || !unit) { return; }
 		// console.log("addon", addOn);
 		switch(addOn.typeid) {
 			case AddonTypesEnum.Direct: 
@@ -791,11 +799,12 @@ app.controller('builderCtrl', function($scope, $http){
 	function cloneUnitV2(unit) {
 		let copy = {};
 		console.log("clone", unit);
+		console.log("abilities", unit.abilities);
 		copy.abilities = unit.abilities.slice(0);
 		copy.addons = unit.addons.slice(0);
 		copy.baseName = unit.baseName;
-		copy.cost = unit.cost;
 		copy.gear = unit.gear.slice(0);
+		copy.cost = unit.cost;
 		copy.id = unit.id;
 		copy.name = unit.name;
 		copy.numberOfModels = unit.numberOfModels;
