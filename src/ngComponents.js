@@ -12,7 +12,6 @@ app.controller('builderCtrl', function($scope, $http){
 	$scope.myArmyV2 = [];
 	$scope.longestTotalLength = 0;
 	const AddonTypesEnum = {ReplaceItem:1, IncreaseNumberOfModels:2, Direct: 3, AddItem: 4};
-	$scope.waitingForGear = {}; // Kludge to avoid race condition without proper mutexes.
 
 	/*Initialize default game and factions.
 	 * Gets all games from the database,
@@ -24,8 +23,16 @@ app.controller('builderCtrl', function($scope, $http){
 			$scope.games = data.data;
 			$scope.selectedGame = $scope.games[0];
 			$scope.updateavailableFactions($scope.selectedGame);
+			
+			// Store all gear locally. When getting each individual gear,
+			// Issues arose because Angular tried to refresh before the
+			// First async could resolve. Lack of proper mutexes demands
+			// This approach.
+			const gearResponse = await $http.post('src/php/getAllGear.php');
+			$scope.gear = gearResponse.data;
 		});
 	})();
+
 
 	/* Sets availableFactions equal to all factions associated 
 	 * To the provided game.
@@ -72,7 +79,6 @@ app.controller('builderCtrl', function($scope, $http){
 	 * data if present, or undefined otherwise.
 	*/
 	function getFromCache(cacheKey) {
-
 		return cache[cacheKey];
 	}
 	
@@ -172,22 +178,10 @@ app.controller('builderCtrl', function($scope, $http){
 	}
 
 	/* Takes gear id and fetches the associated gear
-	 * from the database or cache. Returns the
-	 * associated gear.
+	 * from the local cache.
 	*/
-	async function getGearById(id) {
-		const cacheKey = generateCacheKey("getGearById", [id]);
-		if($scope.waitingForGear[cacheKey]) { return 0; }
-		response = getFromCache(cacheKey);
-		if(response === undefined) {
-			$scope.waitingForGear[cacheKey] = true; // Reduces network calls while this is being called in a loop
-			const webResponse = await $http.post('src/php/getGearById.php?id='+id);
-			response = webResponse.data[0];
-			storeToCache(cacheKey, response);
-			$scope.waitingForGear[cacheKey] = false;
-		}
-		console.log("Gear ", response);
-		return response;
+	function getGearById(id) {
+		return $scope.gear.filter( item => item.id === id )[0];
 	}
 
 	/* Gets all factions based on the provided
@@ -299,7 +293,6 @@ app.controller('builderCtrl', function($scope, $http){
 				addModelV2(unit);
 			}
 			$scope.myArmyV2.push(cloneUnitV2(unit));
-			console.log("My army v2", $scope.myArmyV2);
 			if(idx === units.length -1) {
 				$scope.$apply();
 			}
@@ -387,9 +380,8 @@ app.controller('builderCtrl', function($scope, $http){
 	}
 
 
-	$scope.calculateAddOnCost = async function(addOn, unit) {
+	$scope.calculateAddOnCost = function(addOn, unit) {
 		if(!addOn || !unit) { return; }
-		console.log("addOn", addOn);
 		const cacheKey = generateCacheKey("calculateAddOnCost", [addOn.id, unit.id]);
 		let response = getFromCache(cacheKey);
 		if(response === undefined) {
@@ -397,25 +389,20 @@ app.controller('builderCtrl', function($scope, $http){
 				case AddonTypesEnum.Direct: 
 					response = addOn.cost
 				break;
-				//TODO
 				case AddonTypesEnum.ReplaceItem:
-					let addGear = await getGearById(addOn.itemIdToAdd);
-					let removeGear = await getGearById(addOn.itemIdToRemove);
-					console.log("add", addGear);
-					console.log("Remove", removeGear);
+					let addGear = getGearById(addOn.itemIdToAdd);
+					let removeGear = getGearById(addOn.itemIdToRemove);
 					response = addGear.cost - removeGear.cost;
 				break;
 				case AddonTypesEnum.IncreaseNumberOfModels:
 					response = (unit.cost + calculateModelGearCostV2(unit.gear)) * addOn.amount;
 				break;
-				//TODO
 				case AddonTypesEnum.AddItem:
-				//	response = $scope.getGear(addOn.Add).Cost;
+					response = getGearById(addOn.itemIdToRemove).cost;
 				break;
 			}
 			storeToCache(cacheKey, response);
 		}
-		
 		return response;
 	}
 
@@ -440,24 +427,21 @@ app.controller('builderCtrl', function($scope, $http){
 					$scope.addOnCosts[unit] -= addOn.cost;
 			break;
 			case AddonTypesEnum.ReplaceItem: 
-			//TODO
 				if(isChecked) {
-					replaceItem(model, addOn.Remove, addOn.Add, unit);
-				}                            
-				else {                       
-					replaceItem(model, addOn.Add, addOn.Remove, unit);
+					replaceItem(model, addOn.itemIdToRemove, addOn.itemIdToAdd, unit);
+				}
+				else {
+					replaceItem(model, addOn.itemIdToAdd, addOn.itemIdToRemove, unit);
 				}
 			break;
-			//TODO
 			case AddonTypesEnum.AddItem: 
 				if(isChecked) {
-					replaceItem(model, addOn.Remove, addOn.Add, unit);
-				}                            
-				else {                       
-					replaceItem(model, addOn.Add, addOn.Remove, unit);
+					replaceItem(model, addOn.itemIdToRemove, addOn.itemIdToRemove, unit);
+				}
+				else {
+					replaceItem(model, addOn.itemIdToRemove, addOn.itemIdToRemove, unit);
 				}
 			break;
-			//TODO
 			case AddonTypesEnum.IncreaseNumberOfModels:
 				if(isChecked) {
 					increaseNumberOfModels(unit, addOn.amount);
@@ -747,19 +731,30 @@ app.controller('builderCtrl', function($scope, $http){
 		}
 	}
 
-	function replaceItem(model, oldItem, newItem, unit) {
+	/* Replaces an item on a given model.
+	 * (removes an optional item and adds another).
+	 * Takes in model, the model to replace, 
+	 * oldITemId, the id of the item to remove 
+	 *     or null, in the case of Add Item
+	 * newItemId, the id of the item to add
+	 * unit, the unit that the model belongs to.
+	 * Relies on and modifies global scope ($scope.models).
+	 */
+	function replaceItem(model, oldItemId, newItemId, unit) {
 		$scope.models[unit.name].forEach((soldier) => {
-			if(soldier.Name == model.Name) {// Find the right guy
+			if(soldier.name == model.name) {// Find the right buckaroo
 				let toRemove = -1;
-				soldier.Gear.forEach((item, idx) => {
-					if(item === oldItem) {
+				soldier.gear.forEach((item, idx) => {
+					if(item.id === oldItemId) {
 						toRemove = idx;
 					}
 				});
 				if(toRemove !== -1) {
-					soldier.Gear.splice(toRemove, 1);
+					soldier.gear.splice(toRemove, 1);
 				}
-				soldier.Gear.push(newItem);
+				// Separate splice becuase this is used for add and remove
+				const newItem = getGearById(newItemId);
+				soldier.gear.splice(toRemove, 0, newItem);
 			}
 		});
 	}
@@ -836,8 +831,6 @@ app.controller('builderCtrl', function($scope, $http){
 	 */
 	function cloneUnitV2(unit, isModelLevel) {
 		let copy = {};
-		console.log("clone", unit);
-		console.log("abilities", unit.abilities);
 		copy.abilities = unit.abilities.slice(0);
 		copy.addons = unit.addons.slice(0);
 		copy.baseName = unit.baseName;
@@ -952,7 +945,6 @@ app.controller('builderCtrl', function($scope, $http){
 	}
 	
 	function addModelV2(unit) {
-		console.log("model", unit);
 		let model = cloneUnitV2(unit, true);
 		model.name = getModelName(model, unit);
 		$scope.models[unit.name].push(model);

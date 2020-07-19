@@ -1,16 +1,17 @@
 Addon Support
-	Model level implementation
-	Unit level implementation
-		Direct
-		ReplaceItem
-		\# IncreaseNumberOfModels
-		AddItem
-	Mutexes
-	Cost
+	\# Model level implementation
+		\# ReplaceItem
+		\# AddItem
 		\# Direct
-		ReplaceItem
+	\# Unit level implementation
+		\# Direct
 		\# IncreaseNumberOfModels
-		AddItem
+	Mutexes
+	\# Cost
+		\# Direct
+		\# ReplaceItem
+		\# IncreaseNumberOfModels
+		\# AddItem
 \# Model support
 \# Gear Support
 File download
