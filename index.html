@@ -105,9 +105,8 @@
 									<div ng-show="item.ability && item.ability.length" class="subtext"><br>{{item.ability}}</div>
 								</div>
 							<!-- TODO below this line -->
-								<h6 ng-show="modelAddonExists(unit)" class="Subheading">Model Add Ons</h6>
+								<h6 ng-show="model.addons && model.addons.length" class="Subheading">Model Add Ons</h6>
 								<div class="level2Item" ng-repeat="addon in model.addons track by $index">
-									<span ng-show="getAddon(addon).Level =='Model'">
 										<span>
 											<input
 												id="{{getAddOnId(false, model.Name, $index)}}"
@@ -116,9 +115,8 @@
 												type="checkbox">
 											</input>
 										</span>
-										<span>{{getAddon(addon).Text}}</span>
-										<span> Cost: {{calculateAddOnCost(getAddon(addon), unit)}}</span>
-									</span>
+										<span>{{addon.text}}</span>
+										<span> Cost: {{calculateAddOnCost(addon, unit)}}</span>
 								</div>
 								<!-- <h6 ng-show="powerExists(unit)" class="Subheading">Psychic Powers</h6> -->
 								<!-- <div class="level2Item" ng-repeat="power in model.Powers.Known"> -->

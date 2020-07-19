@@ -12,6 +12,7 @@ app.controller('builderCtrl', function($scope, $http){
 	$scope.myArmyV2 = [];
 	$scope.longestTotalLength = 0;
 	const AddonTypesEnum = {ReplaceItem:1, IncreaseNumberOfModels:2, Direct: 3, AddItem: 4};
+	$scope.waitingForGear = {}; // Kludge to avoid race condition without proper mutexes.
 
 	/*Initialize default game and factions.
 	 * Gets all games from the database,
@@ -71,9 +72,10 @@ app.controller('builderCtrl', function($scope, $http){
 	 * data if present, or undefined otherwise.
 	*/
 	function getFromCache(cacheKey) {
+
 		return cache[cacheKey];
 	}
-
+	
 	/* Updates the cache with new data.
 	 */
 	function storeToCache(cacheKey, data) {
@@ -169,6 +171,25 @@ app.controller('builderCtrl', function($scope, $http){
 		return unit;
 	}
 
+	/* Takes gear id and fetches the associated gear
+	 * from the database or cache. Returns the
+	 * associated gear.
+	*/
+	async function getGearById(id) {
+		const cacheKey = generateCacheKey("getGearById", [id]);
+		if($scope.waitingForGear[cacheKey]) { return 0; }
+		response = getFromCache(cacheKey);
+		if(response === undefined) {
+			$scope.waitingForGear[cacheKey] = true; // Reduces network calls while this is being called in a loop
+			const webResponse = await $http.post('src/php/getGearById.php?id='+id);
+			response = webResponse.data[0];
+			storeToCache(cacheKey, response);
+			$scope.waitingForGear[cacheKey] = false;
+		}
+		console.log("Gear ", response);
+		return response;
+	}
+
 	/* Gets all factions based on the provided
 	 * Game. Modifies $scope.factions. 
 	 */
@@ -251,7 +272,7 @@ app.controller('builderCtrl', function($scope, $http){
 		$scope.selectedUnits = [];
 		if (!units || units.length == 0) {return;}
 
-		units.forEach( async (unit) => {
+		units.forEach( async (unit, idx) => {
 			//Set basename. Needed for save/load
 			unit.baseName = unit.baseName ? unit.baseName : unit.name;
 			addToScopeCurrentCount(unit, 1);
@@ -279,7 +300,9 @@ app.controller('builderCtrl', function($scope, $http){
 			}
 			$scope.myArmyV2.push(cloneUnitV2(unit));
 			console.log("My army v2", $scope.myArmyV2);
-			$scope.$apply();
+			if(idx === units.length -1) {
+				$scope.$apply();
+			}
 		});
 	}
 
@@ -363,25 +386,37 @@ app.controller('builderCtrl', function($scope, $http){
 		return unit.numberOfModels * unit.cost + calculateUnitGearCost(unit) + getAddOnCost(unit);
 	}
 
-	$scope.calculateAddOnCost = function(addOn, unit) {
+
+	$scope.calculateAddOnCost = async function(addOn, unit) {
 		if(!addOn || !unit) { return; }
-		// console.log("addon", addOn);
-		switch(addOn.typeid) {
-			case AddonTypesEnum.Direct: 
-				return addOn.cost
-			break;
-			//TODO
-			case AddonTypesEnum.ReplaceItem:
-				//return $scope.getGear(addOn.Add).cost - $scope.getGear(addOn.Remove).Cost;
-			break;
-			case AddonTypesEnum.IncreaseNumberOfModels:
-				return (unit.cost + calculateModelGearCostV2(unit.gear)) * addOn.amount;
-			break;
-			//TODO
-			case AddonTypesEnum.AddItem:
-			//	return $scope.getGear(addOn.Add).Cost;
-			break;
+		console.log("addOn", addOn);
+		const cacheKey = generateCacheKey("calculateAddOnCost", [addOn.id, unit.id]);
+		let response = getFromCache(cacheKey);
+		if(response === undefined) {
+			switch(addOn.typeid) {
+				case AddonTypesEnum.Direct: 
+					response = addOn.cost
+				break;
+				//TODO
+				case AddonTypesEnum.ReplaceItem:
+					let addGear = await getGearById(addOn.itemIdToAdd);
+					let removeGear = await getGearById(addOn.itemIdToRemove);
+					console.log("add", addGear);
+					console.log("Remove", removeGear);
+					response = addGear.cost - removeGear.cost;
+				break;
+				case AddonTypesEnum.IncreaseNumberOfModels:
+					response = (unit.cost + calculateModelGearCostV2(unit.gear)) * addOn.amount;
+				break;
+				//TODO
+				case AddonTypesEnum.AddItem:
+				//	response = $scope.getGear(addOn.Add).Cost;
+				break;
+			}
+			storeToCache(cacheKey, response);
 		}
+		
+		return response;
 	}
 
 	/* Generates the addon id. Used for reference when saving and loading.
@@ -795,8 +830,11 @@ app.controller('builderCtrl', function($scope, $http){
 	 * of that unit. Unfortunately this is 
 	 * done by manually iterating over each
 	 * field.
+	 * If IsModelLevel is true, filters addons 
+	 * such that only model-level addons are 
+	 * present. Otherwise, all add-ons exist.
 	 */
-	function cloneUnitV2(unit) {
+	function cloneUnitV2(unit, isModelLevel) {
 		let copy = {};
 		console.log("clone", unit);
 		console.log("abilities", unit.abilities);
@@ -812,6 +850,13 @@ app.controller('builderCtrl', function($scope, $http){
 		copy.startingNumberOfModels = unit.startingNumberOfModels;
 		// copy.separateGear = unit.separateGear;
 		// copy.powers = unit.powers;
+		
+		if(isModelLevel) {
+			copy.addons = copy.addons.filter( (addon) => {
+				return addon.level === 'model'
+			});
+		}
+		
 		return copy;
 	}
 
@@ -907,7 +952,8 @@ app.controller('builderCtrl', function($scope, $http){
 	}
 	
 	function addModelV2(unit) {
-		let model = cloneUnitV2(unit);
+		console.log("model", unit);
+		let model = cloneUnitV2(unit, true);
 		model.name = getModelName(model, unit);
 		$scope.models[unit.name].push(model);
 		if (!$scope.$$phase) { // Anti-pattern. Means $scope.Apply() isn't high enough in call stack.

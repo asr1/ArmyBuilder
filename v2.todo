@@ -16,7 +16,7 @@ Addon Support
 File download
 File upload
 \# Remove from army
-Allow adding the same unit twice - possible cloning issue. (issue in add spaces)
+\# Allow adding the same unit twice - possible cloning issue. (issue in add spaces)
 \# Total cost
 Powers support
 Mixed units (with 1 captain and 3 lieutenants, for example)
