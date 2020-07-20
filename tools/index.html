@@ -25,74 +25,139 @@
 		</div>
 
 <div class="col-md-12">
-<div class="banner">
-<div>
-<div class="block">
-	<label class="title-label">Game:</label class="title-label">
-	<json-picker new-model="factionModel" type="string" output="game" existing-data="games"></json-picker>
-</div>
-{{game}}
+	<div class="col-md-6">
+	<div class="banner">
+	<div>
+		<div class="block">
+			<label class="title-label">Game:</label class="title-label">
+			<json-picker new-model="factionModel" type="string" output="game" existing-data="games"></json-picker>
+		</div>
+		{{game}}
 
-<div class="block">
-	<label class="title-label">Faction:</label class="title-label">
-	<json-picker new-model="factionModel" type="string" output="faction" existing-data="selectedGame.Factions"></json-picker>
-</div>
+		<div class="block">
+			<label class="title-label">Faction:</label class="title-label">
+			<json-picker new-model="factionModel" type="string" output="faction" existing-data="selectedGame.Factions"></json-picker>
+		</div>
 
-<div class="block">
-	<label class="title-label">Name:</label class="title-label">
-	<input ng-model="myUnit.Name"></input>
-</div>
+		<div class="block">
+			<label class="title-label">Name:</label class="title-label">
+			<input ng-model="myUnit.Name"></input>
+		</div>
 
-<div class="block">		
-	<label class="title-label">Number of Models:</label class="title-label">
-	<input type="number" ng-model="myUnit.NumberOfModels"></input>
-</div>
+		<div class="block">		
+			<label class="title-label">Number of Models:</label>
+			<input type="number" ng-model="myUnit.NumberOfModels"></input>
+		</div>
 
-<div class="block">		
-	<label class="title-label">Cost:</label class="title-label">
-	<input type="number" ng-model="myUnit.Cost"></input>
-</div>
+		<div class="block">		
+			<label class="title-label">Cost:</label class="title-label">
+			<input type="number" ng-model="myUnit.Cost"></input>
+		</div>
 
-<div class="block">		
-	<label class="title-label">Abilities:</label class="title-label">
-	<json-picker new-model="abilityModel" type="array" output="myUnit.Abilities" existing-data="abilities"></json-picker>
-</div>
+		<div class="block">		
+			<label class="title-label">Abilities:</label class="title-label">
+			<json-picker new-model="abilityModel" type="array" output="myUnit.Abilities" existing-data="abilities"></json-picker>
+		</div>
 
-<div class="block">	
-	<label class="title-label">AddOns:</label class="title-label">
-		<json-picker new-model="addOnModel" type="array" output="myUnit.AddOns" existing-data="addons" options="addOnOptions"></json-picker>
-</div>
-		
-<div class="block">	
-	<label class="title-label">Gear</label class="title-label">
-	<json-picker new-model="gearModel" type="array" output="myUnit.Gear" existing-data="gear"></json-picker>
-</div>
-		
-<div class="block">	
-	<label class="title-label">Powers (known):</label class="title-label">
-	<json-picker new-model="powerModel" type="array" output="myUnit.Powers.Known" existing-data="powers"></json-picker>
-</div>
+		<div class="block">	
+			<label class="title-label">AddOns:</label class="title-label">
+				<json-picker new-model="addOnModel" type="array" output="myUnit.AddOns" existing-data="addons" options="addOnOptions"></json-picker>
+		</div>
+				
+		<div class="block">	
+			<label class="title-label">Gear</label class="title-label">
+			<json-picker new-model="gearModel" type="array" output="myUnit.Gear" existing-data="gear"></json-picker>
+		</div>
+				
+		<div class="block">	
+			<label class="title-label">Powers (known):</label class="title-label">
+			<json-picker new-model="powerModel" type="array" output="myUnit.Powers.Known" existing-data="powers"></json-picker>
+		</div>
 
-<div class="block">		
-	<label class="title-label">Powers (options (amount)):</label class="title-label">
-	<input ng-model="myUnit.Powers.Options.Amount"></input>
-</div>
+		<div class="block">		
+			<label class="title-label">Powers (options (amount)):</label class="title-label">
+			<input ng-model="myUnit.Powers.Options.Amount"></input>
+		</div>
 
-<div class="block">	
-	<label class="title-label">Powers (options):</label class="title-label">
-	<json-picker new-model="powerModel" type="array" output="myUnit.Powers.Options.From" existing-data="powers"></json-picker>
-</div>
+		<div class="block">	
+			<label class="title-label">Powers (options):</label class="title-label">
+			<json-picker new-model="powerModel" type="array" output="myUnit.Powers.Options.From" existing-data="powers"></json-picker>
+		</div>
+	</div>
 
-<br>
-<button ng-click="postResults()">Add new Model</button>
+	<br>
+	<button class="bottomButton" ng-click="postResults()">Add new Model</button>
+	</div>
 </div>
-</div>
-</div>
+	<div class="col-md-6" id="column-two">
+		<div name="add-game" class="banner">
+		<!-- Game -->
+			<div>
+				<span>Add new game</Span><br>
+				<label class="title-label">Name</label>
+				<input type="text" ng-model="newGameName"></input>
+				<button ng-click="addNewGame(newGameName)">Add</button>
+			</div>
+			<div>
+				<span>Existing games:</span>
+				<ul>
+					<li ng-repeat="game in allGamesV2">{{game.name}}</li>
+				</ul>
+			</div>
+		</div>
+		<!-- Faction -->
+		<div name="add-faction" class="banner">
+			<div>
+				<span>Add new faction</Span><br>
+				<label class="title-label">Select a game</label>
+				<select
+					ng-model="selectedGameIdForAddFaction"
+					ng-change="updateFactionsForGameAsync(selectedGameIdForAddFaction)"
+					ng-options="game.id as game.name for game in allGamesV2"
+				>
+				</select>
+				<br>
+				<label class="title-label">Name</label>
+				<input type="text" ng-model="newFactionName"></input>
+				<br>
+				<button ng-click="addNewFaction(selectedGameIdForAddFaction, newFactionName)">Add</button>
+			</div>
+			<div>
+				<span>Existing factions:</span>
+				<ul>
+					<li ng-repeat="faction in factionsForCurrentGameInAddFactions">{{faction.name}}</li>
+				</ul>
+			</div>
+		</div>
+		<!-- Abilities -->
+		<div name="add-abilities" ng-init="showAbilities=false" class="banner">
+		<span>Add new ability</Span><br>
+		<button ng-click="showAbilities = !showAbilities">{{showAbilities ? "hide" : "show"}}</button>
+		<div ng-show="showAbilities">
+			<div>
+				<label class="title-label">Name</label>
+				<input type="text" ng-model="newAbilityName"></input>
+				<br>
+				<label class="title-label">Text</label>
+				<textarea type="text" ng-model="newAbilityText"></textarea>
+				<br>
+				<button ng-click="addNewAbility(newAbilityName, newAbilityText)">Add</button>
+			</div>
+			<div>
+				<span>Existing abilities:</span>
+				<ul>
+					<li ng-repeat="ability in allAbilitiesV2">{{ability.name}}</li>
+				</ul>
+			</div>
+		</div>
+		</div>
+	</div>
+</div> 
 		<!--Load JS files-->
 		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 		<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.4/angular.js"></script>
-		<script src="js/ngComponents.js"></script>
+		<script src="js/dataBuilder.js"></script>
 		<script src="//cdnjs.cloudflare.com/ajax/libs/angular-filter/0.5.15/angular-filter.min.js"></script>
 	</body>
 </html>

@@ -130,6 +130,137 @@ app.component('jsonPicker', {
 });
 
 app.controller('builderCtrl', function($scope, $http){
+	
+	$scope.allGamesV2 = [];
+	$scope.factionsForCurrentGameInAddFactions = [];
+	$scope.allAbilitiesV2 = [];
+	
+	
+	/* Immediately invoked function
+	 * Initializes games and factions
+	 */
+	(async function initialize()
+	{
+		await updateGamesAsync();
+		await updateAbilitiesAsync();
+		// $scope.currentGame = $scope.allGamesV2[0];
+		// await UpdateFactionsForGameAsync($scope.currentGame.id);
+		
+	})();
+	
+	/* Gets all games from database
+	 */
+	async function getGamesAsync() {
+		const response = await $http.post('../src/php/getGames.php');
+		return response.data;
+	}
+
+	/* UpdategamesAsync 
+	 * Gets all games from database
+	 * And modifies $scope to contain updates.
+	*/
+	async function updateGamesAsync() {
+		$scope.allGamesV2 = await getGamesAsync();
+		$scope.$apply();
+	}
+
+	/* Gets all factions for a given gameid from database
+	 */
+	async function getFactionsForGame(gameId) {
+		if(!gameId) { return };
+		const response = await $http.post('../src/php/getFactionsForGame.php?gameId='+gameId);
+		return response.data;
+	}
+	
+	/* UpdateFactionsAsync 
+	 * Gets all games from database
+	 * And modifies $scope to contain updates.
+	*/
+	$scope.updateFactionsForGameAsync = async function(gameId) {
+		$scope.factionsForCurrentGameInAddFactions = await getFactionsForGame(gameId);
+		$scope.$apply();
+	}
+	
+	/* addNewGame. Takes in the name of 
+	 * the game to add. Adds it to the
+	 * database if there isn't already a 
+	 * game with that name. 
+	*/
+	$scope.addNewGame = async function(name) {
+		if(!name) { return; }
+		if($scope.allGamesV2.findIndex( (game) => game.name === name) !== -1) { return; } // Game already exists
+		$scope.allGamesV2.push( {'name' : name} );
+		await $http.post('php/addGame.php?name='+name);
+		await updateGamesAsync();
+	}
+
+	/* addNewFaction. Takes in the id of 
+	 * the game  and the name of the faction 
+	 * to add. Adds it to the database if
+	 * there isn't already a faction with that name. 
+	*/
+	$scope.addNewFaction = async function(gameId, factionName) {
+		if(!factionName || !gameId) { return; }
+		await $scope.updateFactionsForGameAsync(gameId);
+		if($scope.factionsForCurrentGameInAddFactions.findIndex( (faction) => faction.name === factionName) !== -1) { return; } // Faction already exists
+		$scope.factionsForCurrentGameInAddFactions.push( {'name' : factionName} );
+		await $http.post('php/addFaction.php?gameId='+gameId+'&name='+factionName);
+		await $scope.updateFactionsForGameAsync(gameId);
+	}
+
+	/* Gets all abilities from database
+	 */
+	async function getAbilitiesAsync() {
+		const response = await $http.post('php/getAllAbilities.php');
+		return response.data;
+	}
+	
+	/* updateAbilitiesAsync 
+	 * Gets all abilities from database
+	 * And modifies $scope to contain the data.
+	*/
+	async function updateAbilitiesAsync() {
+		$scope.allAbilitiesV2 = await getAbilitiesAsync();
+		$scope.$apply();
+	}
+	
+	/* addNewAbility. Takes in the name of 
+	 * the ability  and the text of the ability 
+	 * to add. Adds it to the database if
+	 * there isn't already an ability with that name. 
+	*/
+	$scope.addNewAbility = async function(name, text) {
+		console.log(name);
+		console.log(text);
+		if(!name || !text) { return; }
+		if($scope.allAbilitiesV2.findIndex( (ability) => ability.name === name) !== -1) { return; } // Ability already exists
+		$scope.allAbilitiesV2.push( {'name' : name} );
+		await $http.post('php/addAbility.php?name='+name+'&text='+text);
+		await updateAbilitiesAsync();
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	// Old
 	$scope.game = "Warhammer 40k 8th Edition";
 	$scope.faction = { Name: "Space Marines"};
 	$scope.addOnOptions = {
@@ -261,7 +392,7 @@ app.controller('builderCtrl', function($scope, $http){
 		  $scope.buildFile();
 		
 		  $http.post(
-          'scripts/processFile.php',
+          'php/processFile.php',
           {squads: {games: $scope.games}, items: {gear: $scope.gear}, addons: {addons: $scope.addons}, abilities: {abilities: $scope.abilities}, powers: {powers: $scope.powers}}, function(data) {
 				console.log(data);
 			}
@@ -280,22 +411,6 @@ app.controller('builderCtrl', function($scope, $http){
 	$scope.factionModel = factionModel;
 	$scope.myUnit = new unitModel("Test", 1, 1, [], [], [], {Known: [], Options: {Amount: 0, From: []}});
 	
-	$http.get('../data/squads.json').then(function(res){
-		$scope.games = res.data[Object.keys(res.data)[0]];
-		$scope.selectedGame = $scope.games[0];
-	});
-	$http.get('../data/items.json').then(function(res){
-		$scope.gear = res.data[Object.keys(res.data)[0]];
-	});
-	$http.get('../data/abilities.json').then(function(res){
-		$scope.abilities = res.data[Object.keys(res.data)[0]];
-	});
-	$http.get('../data/addons.json').then(function(res){
-		$scope.addons = res.data[Object.keys(res.data)[0]];
-	});
-	$http.get('../data/powers.json').then(function(res){
-		$scope.powers = res.data[Object.keys(res.data)[0]];
-	});
 	
 	$scope.getGear = function(id) {
 		return $scope.gear[id -1];

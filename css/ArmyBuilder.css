@@ -39,6 +39,7 @@ div.banner {
 	border-color:	red;
 	border-width: 1px;
 	padding-top:20px;
+	padding-bottom:10px;
 	padding-left:15px;
 	width:470px;
 	border-radius: 25px;
@@ -192,7 +193,13 @@ p.modelName {
 	color:#DBDBDB;
 }
 
+.banner + .banner {
+	margin-top: 5px;
+}
 
+.bottomButton {
+	margin-bottom: 8px;
+}
 
 .remove {
 	color:red;
