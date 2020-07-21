@@ -129,27 +129,55 @@
 				</ul>
 			</div>
 		</div>
-		<!-- Abilities -->
-		<div name="add-abilities" ng-init="showAbilities=false" class="banner">
-		<span>Add new ability</Span><br>
-		<button ng-click="showAbilities = !showAbilities">{{showAbilities ? "hide" : "show"}}</button>
-		<div ng-show="showAbilities">
-			<div>
-				<label class="title-label">Name</label>
-				<input type="text" ng-model="newAbilityName"></input>
-				<br>
-				<label class="title-label">Text</label>
-				<textarea type="text" ng-model="newAbilityText"></textarea>
-				<br>
-				<button ng-click="addNewAbility(newAbilityName, newAbilityText)">Add</button>
-			</div>
-			<div>
-				<span>Existing abilities:</span>
-				<ul>
-					<li ng-repeat="ability in allAbilitiesV2">{{ability.name}}</li>
-				</ul>
+		<!-- Gear -->
+		<div name="add-gear" ng-init="showGear=false" class="banner">
+			<span>Add new gear</Span><br>
+			<button ng-click="showGear = !showGear">{{showGear ? "hide" : "show"}}</button>
+			<div ng-show="showGear">
+				<div>
+					<label class="title-label">Name</label>
+					<input type="text" ng-model="newGearName"></input>
+					<br>
+					<label class="title-label">Cost</label>
+					<input type="number" ng-model="newGearCost"></input>
+					<br>
+					<label class="title-label">Type</label>
+					<select
+						ng-model="selectedGearRange"
+						ng-options="range.id as range.rangeType for range in allGearRanges"
+						>
+					</select>
+					<button ng-click="addNewGear(newGearName, newGearCost, selectedGearRange)">Add</button>
+				</div>
+				<div>
+					<span>Existing gear:</span>
+					<ul>
+						<li ng-repeat="gear in allGearV2">{{gear.name}}</li>
+					</ul>
+				</div>
 			</div>
 		</div>
+		<!-- Abilities -->
+		<div name="add-abilities" ng-init="showAbilities=false" class="banner">
+			<span>Add new ability</Span><br>
+			<button ng-click="showAbilities = !showAbilities">{{showAbilities ? "hide" : "show"}}</button>
+			<div ng-show="showAbilities">
+				<div>
+					<label class="title-label">Name</label>
+					<input type="text" ng-model="newAbilityName"></input>
+					<br>
+					<label class="title-label">Text</label>
+					<textarea type="text" ng-model="newAbilityText"></textarea>
+					<br>
+					<button ng-click="addNewAbility(newAbilityName, newAbilityText)">Add</button>
+				</div>
+				<div>
+					<span>Existing abilities:</span>
+					<ul>
+						<li ng-repeat="ability in allAbilitiesV2">{{ability.name}}</li>
+					</ul>
+				</div>
+			</div>
 		</div>
 	</div>
 </div> 

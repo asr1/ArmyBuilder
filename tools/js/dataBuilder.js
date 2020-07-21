@@ -134,6 +134,8 @@ app.controller('builderCtrl', function($scope, $http){
 	$scope.allGamesV2 = [];
 	$scope.factionsForCurrentGameInAddFactions = [];
 	$scope.allAbilitiesV2 = [];
+	$scope.allGearV2 = [];
+	$scope.allGearRanges = [];
 	
 	
 	/* Immediately invoked function
@@ -143,9 +145,9 @@ app.controller('builderCtrl', function($scope, $http){
 	{
 		await updateGamesAsync();
 		await updateAbilitiesAsync();
-		// $scope.currentGame = $scope.allGamesV2[0];
-		// await UpdateFactionsForGameAsync($scope.currentGame.id);
-		
+		await updateGearAsync();
+		$scope.allGearV2.sort((a,b) => a.name <= b.name ? -1 : 1);
+		await updateGearRangesAsync();
 	})();
 	
 	/* Gets all games from database
@@ -230,8 +232,6 @@ app.controller('builderCtrl', function($scope, $http){
 	 * there isn't already an ability with that name. 
 	*/
 	$scope.addNewAbility = async function(name, text) {
-		console.log(name);
-		console.log(text);
 		if(!name || !text) { return; }
 		if($scope.allAbilitiesV2.findIndex( (ability) => ability.name === name) !== -1) { return; } // Ability already exists
 		$scope.allAbilitiesV2.push( {'name' : name} );
@@ -239,7 +239,56 @@ app.controller('builderCtrl', function($scope, $http){
 		await updateAbilitiesAsync();
 	}
 	
+	/* Gets all gear from database
+	 */
+	async function getGearAsync() {
+		const response = await $http.post('../src/php/getAllGear.php');
+		return response.data;
+	}
 	
+	/* updateGearAsync 
+	 * Gets all gear from database
+	 * And modifies $scope to contain the data.
+	*/
+	async function updateGearAsync() {
+		$scope.allGearV2 = await getGearAsync();
+		$scope.$apply();
+	}
+	
+	/* Gets all gear ranges from database
+	 */
+	async function getGearRangesAsync() {
+		const response = await $http.post('php/getGearRanges.php');
+		return response.data;
+	}
+	
+	/* updateGearRangesAsync 
+	 * Gets all gear ranges from database
+	 * And modifies $scope to contain the data.
+	*/
+	async function updateGearRangesAsync() {
+		$scope.allGearRanges = await getGearRangesAsync();
+		$scope.$apply();
+	}
+	
+	/* addNewGear. Takes in the name, cost, and
+	 * rangeTypeId (1 for melee, 2 for ranged, etc)
+	 * to add. Adds it to the database if
+	 * there isn't already a gear with that name. 
+	*/
+	$scope.addNewGear = async function(name, cost, rangeId) {
+		if(!name || !rangeId || (!cost && cost !== 0) ) { return; }
+		if($scope.allGearV2.findIndex( (gear) => gear.name === name) !== -1) { return; } // Gear already exists
+		console.log($scope.allGearV2.findIndex( (gear) => gear.name === name));
+		$scope.allGearV2.push( {'name' : name} );
+		await $http.post('php/addGear.php?name='+name+'&cost='+cost+'&rangeId='+rangeId);
+		//TODO:
+		// get the gear id from the above call
+		// Add gear Abilities
+		// Add call to map gear ability to gear
+		// Same for gear keywords?? We don't use this on army builder (yet)
+		await updateGearAsync();
+	}
 	
 	
 	
