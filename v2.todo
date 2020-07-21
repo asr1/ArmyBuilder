@@ -24,3 +24,24 @@ Mixed units (with 1 captain and 3 lieutenants, for example)
 
 
 Tools/Builder ("Databuilder")
+	Gear
+		Add gear Abilities
+		Add call to map gear ability to gear
+		Same for gear keywords?? We don't use this on army builder (yet)
+	\# Abilities
+	Add-ons
+		ReplaceItem
+		AddItem
+		Direct
+		IncreaseNumberOfModels
+		Mutexes
+	\# Abilities
+	Powers
+	Units
+	
+	
+	
+	
+	
+	
+	
