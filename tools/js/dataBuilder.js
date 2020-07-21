@@ -132,7 +132,7 @@ app.component('jsonPicker', {
 app.controller('builderCtrl', function($scope, $http){
 	
 	$scope.allGamesV2 = [];
-	$scope.factionsForCurrentGameInAddFactions = [];
+	$scope.currentFactions = [];
 	$scope.allAbilitiesV2 = [];
 	$scope.allGearV2 = [];
 	$scope.allGearRanges = [];
@@ -179,7 +179,7 @@ app.controller('builderCtrl', function($scope, $http){
 	 * And modifies $scope to contain updates.
 	*/
 	$scope.updateFactionsForGameAsync = async function(gameId) {
-		$scope.factionsForCurrentGameInAddFactions = await getFactionsForGame(gameId);
+		$scope.currentFactions = await getFactionsForGame(gameId);
 		$scope.$apply();
 	}
 	
@@ -204,8 +204,8 @@ app.controller('builderCtrl', function($scope, $http){
 	$scope.addNewFaction = async function(gameId, factionName) {
 		if(!factionName || !gameId) { return; }
 		await $scope.updateFactionsForGameAsync(gameId);
-		if($scope.factionsForCurrentGameInAddFactions.findIndex( (faction) => faction.name === factionName) !== -1) { return; } // Faction already exists
-		$scope.factionsForCurrentGameInAddFactions.push( {'name' : factionName} );
+		if($scope.currentFactions.findIndex( (faction) => faction.name === factionName) !== -1) { return; } // Faction already exists
+		$scope.currentFactions.push( {'name' : factionName} );
 		await $http.post('php/addFaction.php?gameId='+gameId+'&name='+factionName);
 		await $scope.updateFactionsForGameAsync(gameId);
 	}

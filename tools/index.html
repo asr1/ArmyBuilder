@@ -26,6 +26,47 @@
 
 <div class="col-md-12">
 	<div class="col-md-6">
+	
+	<div class="banner">
+		<div class="block">
+				<label class="title-label">Game:</label class="title-label">
+				<select
+					ng-model="gameForNewUnit"
+					ng-change="updateFactionsForGameAsync(gameForNewUnit.id)"
+					ng-options="game as game.name for game in allGamesV2"
+				>
+				</select>
+		</div>
+		<div class="block">
+				<label class="title-label">Faction:</label class="title-label">
+				<select
+					ng-model="factionForNewUnit"
+					ng-options="faction as faction.name for faction in currentFactions"
+				>
+				</select>
+		</div>
+		<div class="block">
+				<label class="title-label">Name:</label class="title-label">
+				<input ng-model="newUnitName"></input>
+		</div>
+		<div class="block">		
+			<label class="title-label">Cost:</label class="title-label">
+			<input type="number" ng-model="newUnitCost"></input>
+		</div>
+		<!-- TODO below this point -->
+		<div class="block">	
+			<label class="title-label">Gear</label class="title-label">
+			<json-picker new-model="gearModel" type="array" output="myUnit.Gear" existing-data="gear"></json-picker>
+		</div>
+
+
+		<br><br>
+		<div>
+			<p>You are adding <b>{{newUnitName}}</b> into <b>{{factionForNewUnit.name}}</b> for <b>{{gameForNewUnit.name}}</b></p>
+			<p><b>{{newUnitName}}</b> will cost <b>{{newUnitCost}}</b> and will have the following gear:</p>
+		</div>
+	</div>
+	
 	<div class="banner">
 	<div>
 		<div class="block">
@@ -88,6 +129,8 @@
 	<br>
 	<button class="bottomButton" ng-click="postResults()">Add new Model</button>
 	</div>
+
+	
 </div>
 	<div class="col-md-6" id="column-two">
 		<div name="add-game" class="banner">
@@ -125,7 +168,7 @@
 			<div>
 				<span>Existing factions:</span>
 				<ul>
-					<li ng-repeat="faction in factionsForCurrentGameInAddFactions">{{faction.name}}</li>
+					<li ng-repeat="faction in currentFactions">{{faction.name}}</li>
 				</ul>
 			</div>
 		</div>
