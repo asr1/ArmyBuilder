@@ -137,6 +137,10 @@ app.controller('builderCtrl', function($scope, $http){
 	$scope.allGearV2 = [];
 	$scope.allGearRanges = [];
 	$scope.allAddonsV2 = [];
+	$scope.allAddonTypes = [];
+	$scope.allAddonLevels = [];
+	$scope.AddonTypesEnum = {ReplaceItem:1, IncreaseNumberOfModels:2, Direct: 3, AddItem: 4};
+
 	
 	
 	/* Immediately invoked function
@@ -149,6 +153,9 @@ app.controller('builderCtrl', function($scope, $http){
 		await updateGearAsync();
 		$scope.allGearV2.sort((a,b) => a.name <= b.name ? -1 : 1);
 		await updateGearRangesAsync();
+		await updateAddonTypesAsync();
+		await updateAddonsAsync();
+		await updateAddonLevelsAsync();
 	})();
 	
 	/* Gets all games from database
@@ -290,6 +297,103 @@ app.controller('builderCtrl', function($scope, $http){
 		// Same for gear keywords?? We don't use this on army builder (yet)
 		await updateGearAsync();
 	}
+	
+	/* Gets all addonTypes from database
+	 */
+	async function getAddonTypesAsync() {
+		const response = await $http.post('php/getAddonTypes.php');
+		return response.data;
+	}
+	
+	/* updateAddonTypesAsync 
+	 * Gets all addon types from database
+	 * And modifies $scope to contain the data.
+	*/
+	async function updateAddonTypesAsync() {
+		$scope.allAddonTypes = await getAddonTypesAsync();
+		$scope.allAddonTypes.map( (type) => {type.name = type.name.charAt(0).toUpperCase() + type.name.slice(1)});
+		$scope.$apply();
+	}
+	
+	/* Gets all addons from database
+	 */
+	async function getAddonsAsync() {
+		const response = await $http.post('php/getAllAddons.php');
+		return response.data;
+	}
+	
+	/* updateAddonsAsync 
+	 * Gets all Addons from database
+	 * And modifies $scope to contain the data.
+	*/
+	async function updateAddonsAsync() {
+		$scope.allAddonsV2 = await getAddonsAsync();
+		$scope.$apply();
+	}
+	
+	/* addNewAddon. Takes in the text, cost, typeid,
+	 * (1 for replace item, 2 for add models, etc),
+	 * Level id (1 for mode, 2 for unit),
+	 * item id to add, item id to remove, 
+	 * and amount if applicable of the addon
+	 * to add. Adds it to the database if
+	 * there isn't already an addon with that text. 
+	*/
+	$scope.addNewAddon = async function(text, cost, typeId, levelId, addItemId, removeItemId, amount) {
+		if(!text || !typeId || !levelId) { return; }
+		if(typeId === $scope.AddonTypesEnum.IncreaseNumberOfModels && !amount) { return; }
+		if(typeId === $scope.AddonTypesEnum.AddItem && !addItemId) { return; }
+		if(typeId === $scope.AddonTypesEnum.ReplaceItem && (!addItemId || !removeItemId)) { return; }
+		if(typeId === $scope.AddonTypesEnum.Direct && !cost) { return; }
+		console.log("RUNNING");
+		
+		for(let i = 0; i < arguments.length; i++) {
+			if(!arguments[i]) {
+				arguments[i] = null;
+			}
+		}
+		
+		if($scope.allAddonsV2.findIndex( (addon) => addon.text === text) !== -1) { return; } // addon already exists
+		$scope.allAddonsV2.push( {'text' : text} );
+		
+		$http({
+		  method: 'POST',
+		  url: 'php/addNewAddon.php?cost='+cost+'&typeId='+typeId+'&levelId='+levelId+'&addItemId='+addItemId+'&removeItemId='+removeItemId+'&amount='+amount+'&text='+text,
+		  data: JSON.stringify({text})
+		})
+		.then(async function (success) {
+		  console.log("Success");
+		  console.log(success);
+		  await updateAddonsAsync();
+		}, function (error) {
+		  console.log(error);
+		});
+		
+
+	}
+	
+	/* Gets all addonLevels from database
+	 */
+	async function getAddonLevelsAsync() {
+		const response = await $http.post('php/getAddonLevels.php');
+		return response.data;
+	}
+	
+	/* updateAddonLevelsAsync 
+	 * Gets all addon types from database
+	 * And modifies $scope to contain the data.
+	*/
+	async function updateAddonLevelsAsync() {
+		$scope.allAddonLevels = await getAddonLevelsAsync();
+		$scope.allAddonLevels.map( (level) => {level.name = level.name.charAt(0).toUpperCase() + level.name.slice(1)});
+		$scope.$apply();
+	}
+	
+	
+	
+	
+	
+	
 	
 	
 	

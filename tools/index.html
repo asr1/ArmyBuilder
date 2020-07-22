@@ -260,6 +260,66 @@
 				</div>
 			</div>
 		</div>
+		<!-- Addons -->
+		<div name="add-addons" ng-init="showAddons=false" class="banner">
+			<span>Add new addon</Span><br>
+			<button ng-click="showAddons = !showAddons">{{showAddons ? "hide" : "show"}}</button>
+			<div ng-show="showAddons">
+				<div>
+					<div>
+						<label class="title-label">Text</label>
+						<textarea type="text" ng-model="newAddonText"></textarea>
+					</div>
+					<div>
+						<label class="title-label">Cost</label>
+						<input type="number" ng-model="newAddonCost"></input>
+					</div>
+					<div>
+						<label class="title-label">Level</label>
+						<select
+							ng-model="newAddOnLevel"
+							ng-options="level.id as level.name for level in allAddonLevels"
+							>
+						</select>
+					</div>
+					<div>
+						<label class="title-label">Type</label>
+						<select
+							ng-model="selectedAddonTypeId"
+							ng-options="addon.id as addon.name for addon in allAddonTypes"
+							>
+						</select>
+						<div ng-show="selectedAddonTypeId === AddonTypesEnum.IncreaseNumberOfModels">
+							<label class="title-label">Amount</label>
+							<input type="number" ng-model="newAddonAmount"></input>
+						</div>
+						<div ng-show="selectedAddonTypeId === AddonTypesEnum.ReplaceItem">
+							<label class="title-label">Item to remove</label>
+							<select
+								ng-model="addonItemToRemove"
+								ng-options="item.id as item.name for item in allGearV2"
+								>
+							</select>
+						</div>
+						<div ng-show="selectedAddonTypeId === AddonTypesEnum.ReplaceItem || selectedAddonTypeId === AddonTypesEnum.AddItem">
+							<label class="title-label">Item to add</label>
+							<select
+								ng-model="addonItemToAdd"
+								ng-options="item.id as item.name for item in allGearV2"
+								>
+							</select>
+						</div>
+					</div>
+					<button ng-click="addNewAddon(newAddonText, newAddonCost, selectedAddonTypeId, newAddOnLevel, addonItemToAdd, addonItemToRemove, newAddonAmount)">Add</button>
+				</div>
+				<div>
+					<span>Existing addons:</span>
+					<ul>
+						<li ng-repeat="addon in allAddonsV2">{{addon.text}}</li>
+					</ul>
+				</div>
+			</div>
+		</div>
 	</div>
 </div> 
 		<!--Load JS files-->
