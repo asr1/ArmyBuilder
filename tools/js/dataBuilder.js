@@ -136,6 +136,7 @@ app.controller('builderCtrl', function($scope, $http){
 	$scope.allAbilitiesV2 = [];
 	$scope.allGearV2 = [];
 	$scope.allGearRanges = [];
+	$scope.allAddonsV2 = [];
 	
 	
 	/* Immediately invoked function

@@ -53,17 +53,55 @@
 			<label class="title-label">Cost:</label class="title-label">
 			<input type="number" ng-model="newUnitCost"></input>
 		</div>
-		<!-- TODO below this point -->
-		<div class="block">	
+		<div class="block" ng-init="myModelGear=[]">	
 			<label class="title-label">Gear</label class="title-label">
-			<json-picker new-model="gearModel" type="array" output="myUnit.Gear" existing-data="gear"></json-picker>
+			<select
+					ng-model="gearForNewUnit"
+					ng-options="gear as gear.name for gear in allGearV2"
+				>
+			</select>
+			<button ng-click="myModelGear.push(gearForNewUnit)">Add gear</button>
 		</div>
-
+		<div class="block" ng-init="myModelAbilities=[]">	
+			<label class="title-label">Abilities</label class="title-label">
+			<select
+					ng-model="abilitiesForNewUnit"
+					ng-options="ability as ability.name for ability in allAbilitiesV2"
+				>
+			</select>
+			<button ng-click="myModelAbilities.push(abilitiesForNewUnit)">Add ability</button>
+		</div>
+		<!-- <div class="block" ng-init="myModelAddOns=[]">	 -->
+			<!-- <label class="title-label">Add ons</label class="title-label"> -->
+			<!-- <select -->
+					<!-- ng-model="addonsForNewUnit" -->
+					<!-- ng-options="addon as addon.name for addon in allAddonsV2" -->
+				<!-- > -->
+			<!-- </select> -->
+			<!-- <button ng-click="myModelAddOns.push(addonsForNewUnit)">Add add on</button> -->
+		<!-- </div> -->
 
 		<br><br>
 		<div>
 			<p>You are adding <b>{{newUnitName}}</b> into <b>{{factionForNewUnit.name}}</b> for <b>{{gameForNewUnit.name}}</b></p>
 			<p><b>{{newUnitName}}</b> will cost <b>{{newUnitCost}}</b> and will have the following gear:</p>
+			<ul>
+				<li ng-repeat="gear in myModelGear track by $index">{{gear.name}}
+					<button ng-click="myModelGear.splice($index, 1)">X</button>
+				</li>
+			</ul>
+			<p>and will have the following abilities:</p>
+			<ul>
+				<li ng-repeat="ability in myModelAbilities track by $index">{{ability.name}}
+					<button ng-click="myModelAbilities.splice($index, 1)">X</button>
+				</li>
+			</ul>
+			<!-- <p>and will have the following add ons:</p> -->
+			<!-- <ul> -->
+				<!-- <li ng-repeat="addon in myModelAddOns track by $index">{{addon.name}} -->
+					<!-- <button ng-click="myModelAddOns.splice($index, 1)">X</button> -->
+				<!-- </li> -->
+			<!-- </ul> -->
 		</div>
 	</div>
 	
