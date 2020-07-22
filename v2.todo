@@ -30,10 +30,10 @@ Tools/Builder ("Databuilder")
 		Same for gear keywords?? We don't use this on army builder (yet)
 	\# Abilities
 	Add-ons
-		ReplaceItem
-		AddItem
-		Direct
-		IncreaseNumberOfModels
+		\# ReplaceItem
+		\# AddItem
+		\# Direct
+		\# IncreaseNumberOfModels
 		Mutexes
 	\# Abilities
 	Powers
