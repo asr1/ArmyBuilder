@@ -335,17 +335,18 @@ app.controller('builderCtrl', function($scope, $http){
 	 * (1 for replace item, 2 for add models, etc),
 	 * Level id (1 for mode, 2 for unit),
 	 * item id to add, item id to remove, 
-	 * and amount if applicable of the addon
+	 * amount (if applicable), and number of times
+	 * the addon can be taken of the addon
 	 * to add. Adds it to the database if
 	 * there isn't already an addon with that text. 
 	*/
-	$scope.addNewAddon = async function(text, cost, typeId, levelId, addItemId, removeItemId, amount) {
+	$scope.addNewAddon = async function(text, cost, typeId, levelId, addItemId, removeItemId, amount, maxTimesTaken) {
 		if(!text || !typeId || !levelId) { return; }
 		if(typeId === $scope.AddonTypesEnum.IncreaseNumberOfModels && !amount) { return; }
 		if(typeId === $scope.AddonTypesEnum.AddItem && !addItemId) { return; }
 		if(typeId === $scope.AddonTypesEnum.ReplaceItem && (!addItemId || !removeItemId)) { return; }
 		if(typeId === $scope.AddonTypesEnum.Direct && !cost) { return; }
-		console.log("RUNNING");
+		if(!maxTimesTaken) { maxTimesTaken = 1; }
 		
 		for(let i = 0; i < arguments.length; i++) {
 			if(!arguments[i]) {
@@ -358,7 +359,7 @@ app.controller('builderCtrl', function($scope, $http){
 		
 		$http({
 		  method: 'POST',
-		  url: 'php/addNewAddon.php?cost='+cost+'&typeId='+typeId+'&levelId='+levelId+'&addItemId='+addItemId+'&removeItemId='+removeItemId+'&amount='+amount+'&text='+text,
+		  url: 'php/addNewAddon.php?cost='+cost+'&typeId='+typeId+'&levelId='+levelId+'&addItemId='+addItemId+'&removeItemId='+removeItemId+'&amount='+amount+'&text='+text+'&times='+maxTimesTaken,
 		  data: JSON.stringify({text})
 		})
 		.then(async function (success) {

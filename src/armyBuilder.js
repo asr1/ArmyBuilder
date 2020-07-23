@@ -63,6 +63,17 @@ app.controller('builderCtrl', function($scope, $http){
 		$scope.$apply();
 	}
 
+	/* changeAddonTimes (unit, addon, timesTaken)
+	 * Takes in the unit, the addon, and the  
+	 * number of times that unit will taken the
+	 * addon. Also applies the addon timesTaken
+	 * times, and increases the cost of the unit 
+	 * accordingly.
+	*/
+	$scope.changeAddonTimes = function (unit, addon, timesTaken) {
+		//TODO
+	}
+
 	/* Takes in a list of units
 	 * and sets $scope.longestUnitNameLength
 	 * based on the longest unit name.

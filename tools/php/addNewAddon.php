@@ -8,10 +8,11 @@ $levelId        = $_GET['levelId'];
 $addItemId      = $_GET['addItemId'];
 $removeItemId   = $_GET['removeItemId'];
 $amount         = $_GET['amount'];
+$times         = $_GET['times'];
 
  
-$query =  $mysqli->prepare("insert into addons (text, cost, typeid, addonLevelId, itemIdToAdd, itemIdToRemove, amount) values (?, ?, ?, ?, ?, ?, ?)");
-$query->bind_param("siiiiii", $text, $cost, $typeId, $levelId, $addItemId, $removeItemId, $amount);
+$query =  $mysqli->prepare("insert into addons (text, cost, typeid, addonLevelId, itemIdToAdd, itemIdToRemove, amount, times) values (?, ?, ?, ?, ?, ?, ?, ?)");
+$query->bind_param("siiiiiii", $text, $cost, $typeId, $levelId, $addItemId, $removeItemId, $amount, $times);
 $query->execute();
 $result = $query->get_result();
 $arr = array();

@@ -43,6 +43,7 @@ create table if not exists addons (
 	itemIdToAdd int,
 	amount int,
 	addonLevelId int,
+	times int default 1, --The max number of times an addon can be taken
 	primary key (id)
 );
 

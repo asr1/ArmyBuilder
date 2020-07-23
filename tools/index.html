@@ -310,7 +310,11 @@
 							</select>
 						</div>
 					</div>
-					<button ng-click="addNewAddon(newAddonText, newAddonCost, selectedAddonTypeId, newAddOnLevel, addonItemToAdd, addonItemToRemove, newAddonAmount)">Add</button>
+					<div>
+							<label class="title-label">How many times can you take this addon?</label>
+							<input type="number" ng-model="newAddonTimes"></input>
+					</div>
+					<button ng-click="addNewAddon(newAddonText, newAddonCost, selectedAddonTypeId, newAddOnLevel, addonItemToAdd, addonItemToRemove, newAddonAmount, newAddonTimes)">Add</button>
 				</div>
 				<div>
 					<span>Existing addons:</span>

@@ -82,16 +82,22 @@
 						<div class="level2Item" ng-repeat="addon in unit.addons track by $index">
 							<span ng-show="addon.level == 'unit'">
 								<span>
-									<input
-										type="checkbox"
-										id="{{getAddOnId(true, unit.name, $index)}}"
-										ng-disabled="shouldDisableUnitAddOn(unit, addon)"
-										ng-model="checked"
-										ng-click="setAddOnCost(checked, unit, addon, null,$index)">
-									</input>
+									<span>
+										<input
+											type="checkbox"
+											id="{{getAddOnId(true, unit.name, $index)}}"
+											ng-disabled="shouldDisableUnitAddOn(unit, addon)"
+											ng-model="checked"
+											ng-click="setAddOnCost(checked, unit, addon, null,$index)">
+										</input>
+									</span>
 								</span>
 								<span>{{addon.text}}</span>
 								<span> Cost: {{calculateAddOnCost(addon, unit)}}</span>
+								<div ng-show="checked">
+									<label>Times taken</label>
+									<input ng-init="timesTaken = 1" ng-change="changeAddonTimes(unit, addon, timesTaken)" style="width:40" ng-model="timesTaken" type="number" max="{{addon.times}}" min="1" ></input> TODO IN PROGRESS
+								</div>
 							</span>
 						</div>
 						<h5 class="Subheading">Models: ({{unit.numberOfModels}})</h5>
