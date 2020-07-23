@@ -139,6 +139,7 @@ app.controller('builderCtrl', function($scope, $http){
 	$scope.allAddonsV2 = [];
 	$scope.allAddonTypes = [];
 	$scope.allAddonLevels = [];
+	$scope.allPowersV2 = [];
 	$scope.AddonTypesEnum = {ReplaceItem:1, IncreaseNumberOfModels:2, Direct: 3, AddItem: 4};
 
 	
@@ -151,11 +152,11 @@ app.controller('builderCtrl', function($scope, $http){
 		await updateGamesAsync();
 		await updateAbilitiesAsync();
 		await updateGearAsync();
-		$scope.allGearV2.sort((a,b) => a.name <= b.name ? -1 : 1);
 		await updateGearRangesAsync();
 		await updateAddonTypesAsync();
 		await updateAddonsAsync();
 		await updateAddonLevelsAsync();
+		await updatePowersAsync();
 	})();
 	
 	/* Gets all games from database
@@ -257,9 +258,11 @@ app.controller('builderCtrl', function($scope, $http){
 	/* updateGearAsync 
 	 * Gets all gear from database
 	 * And modifies $scope to contain the data.
-	*/
+	 * THen sorts the same
+	 */
 	async function updateGearAsync() {
 		$scope.allGearV2 = await getGearAsync();
+		$scope.allGearV2.sort((a,b) => a.name <= b.name ? -1 : 1);
 		$scope.$apply();
 	}
 	
@@ -390,9 +393,33 @@ app.controller('builderCtrl', function($scope, $http){
 		$scope.$apply();
 	}
 	
+	/* Gets all powers from database
+	 */
+	async function getPowersAsync() {
+		const response = await $http.post('php/getAllPowers.php');
+		return response.data;
+	}
 	
+	/* updatePowersAsync 
+	 * Gets all powers from database
+	 * And modifies $scope to contain the data.
+	*/
+	async function updatePowersAsync() {
+		$scope.allPowersV2 = await getAddonsAsync();
+		$scope.$apply();
+	}
 	
-	
+	/* addNewPower. Takes in the name and text
+	 * of the power to add. Adds it to the database 
+	 * if there isn't already a power with that name. 
+	*/
+	$scope.addNewPower = async function(name, text) {
+		if(!name || !text) { return; }
+		if($scope.allPowersV2.findIndex( (power) => power.name === name) !== -1) { return; } // Power already exists
+		$scope.allPowersV2.push( {'name' : name} );
+		await $http.post('php/addPower.php?name='+name+'&text='+text);
+		await updatePowersAsync();
+	}
 	
 	
 	

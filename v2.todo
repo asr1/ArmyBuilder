@@ -3,6 +3,7 @@ Addon Support
 		\# ReplaceItem
 		\# AddItem
 		\# Direct
+		Multiple
 	\# Unit level implementation
 		\# Direct
 		\# IncreaseNumberOfModels
@@ -34,9 +35,12 @@ Tools/Builder ("Databuilder")
 		\# AddItem
 		\# Direct
 		\# IncreaseNumberOfModels
+		\# Multiple
 		Mutexes
 	\# Abilities
 	Powers
+		\# Single powers
+		Powers with tables
 	Units
 	
 	

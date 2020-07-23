@@ -128,6 +128,8 @@ create table if not exists powers (
 	primary key (id)
 );
 
+--Some powers have an ability that summons
+--One effect out of a table of multiple.
 create table if not exists power_table (
 	id int not null auto_increment,
 	setId int,
