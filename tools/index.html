@@ -53,6 +53,10 @@
 			<label class="title-label">Cost:</label class="title-label">
 			<input type="number" ng-model="newUnitCost"></input>
 		</div>
+		<div class="block">		
+			<label class="title-label">Number of models:</label class="title-label">
+			<input type="number" ng-model="numberOfModels"></input>
+		</div>
 		<div class="block" ng-init="myModelGear=[]">	
 			<label class="title-label">Gear</label class="title-label">
 			<select
@@ -80,6 +84,15 @@
 			</select>
 			<button ng-click="myModelAddOns.push(addonsForNewUnit)">Add add on</button>
 		</div>
+		<div class="block" ng-init="myModelPowers=[]">	
+			<label class="title-label">Add ons</label class="title-label">
+			<select
+					ng-model="powerForUnit"
+					ng-options="power as power.name for power in allPowersV2"
+				>
+			</select>
+			<button ng-click="myModelPowers.push(powerForUnit)">Add add on</button>
+		</div>
 
 		<br><br>
 		<div>
@@ -102,71 +115,17 @@
 					<button ng-click="myModelAddOns.splice($index, 1)">X</button>
 				</li>
 			</ul>
+			<p>and will have the following powers:</p>
+			<ul>
+				<li ng-repeat="addon in myModelPowers track by $index">{{power.name}}
+					<button ng-click="myModelPowers.splice($index, 1)">X</button>
+				</li>
+			</ul>
+			<button ng-click="addUnit(newUnitName, numberOfModels, newUnitCost, factionForNewUnit.id,
+									  myModelGear, myModelAbilities, myModelAddOns, myModelPowers) ">Add unit</button>
 		</div>
 	</div>
 	
-	<div class="banner">
-	<div>
-		<div class="block">
-			<label class="title-label">Game:</label class="title-label">
-			<json-picker new-model="factionModel" type="string" output="game" existing-data="games"></json-picker>
-		</div>
-		{{game}}
-
-		<div class="block">
-			<label class="title-label">Faction:</label class="title-label">
-			<json-picker new-model="factionModel" type="string" output="faction" existing-data="selectedGame.Factions"></json-picker>
-		</div>
-
-		<div class="block">
-			<label class="title-label">Name:</label class="title-label">
-			<input ng-model="myUnit.Name"></input>
-		</div>
-
-		<div class="block">		
-			<label class="title-label">Number of Models:</label>
-			<input type="number" ng-model="myUnit.NumberOfModels"></input>
-		</div>
-
-		<div class="block">		
-			<label class="title-label">Cost:</label class="title-label">
-			<input type="number" ng-model="myUnit.Cost"></input>
-		</div>
-
-		<div class="block">		
-			<label class="title-label">Abilities:</label class="title-label">
-			<json-picker new-model="abilityModel" type="array" output="myUnit.Abilities" existing-data="abilities"></json-picker>
-		</div>
-
-		<div class="block">	
-			<label class="title-label">AddOns:</label class="title-label">
-				<json-picker new-model="addOnModel" type="array" output="myUnit.AddOns" existing-data="addons" options="addOnOptions"></json-picker>
-		</div>
-				
-		<div class="block">	
-			<label class="title-label">Gear</label class="title-label">
-			<json-picker new-model="gearModel" type="array" output="myUnit.Gear" existing-data="gear"></json-picker>
-		</div>
-				
-		<div class="block">	
-			<label class="title-label">Powers (known):</label class="title-label">
-			<json-picker new-model="powerModel" type="array" output="myUnit.Powers.Known" existing-data="powers"></json-picker>
-		</div>
-
-		<div class="block">		
-			<label class="title-label">Powers (options (amount)):</label class="title-label">
-			<input ng-model="myUnit.Powers.Options.Amount"></input>
-		</div>
-
-		<div class="block">	
-			<label class="title-label">Powers (options):</label class="title-label">
-			<json-picker new-model="powerModel" type="array" output="myUnit.Powers.Options.From" existing-data="powers"></json-picker>
-		</div>
-	</div>
-
-	<br>
-	<button class="bottomButton" ng-click="postResults()">Add new Model</button>
-	</div>
 
 	
 </div>

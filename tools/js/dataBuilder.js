@@ -422,6 +422,22 @@ app.controller('builderCtrl', function($scope, $http){
 	}
 	
 	
+	/* addUnit. Takes in the name, number of models,
+	 * cost and factionid of the unit to add.
+	 * Adds it to the database.
+	 * Then uses that id to associate gear, abilites, 
+	 * addons, and powers.
+	*/
+	$scope.addUnit = async function(name, numModels, cost, factionId,
+									gearArr, abilArr, addonArr, powerArr) {
+		if(!name || !numModels || !factionId || (!cost && cost !== 0)) { return; }
+		const newUnitId = await $http.post('php/addUnit.php?name='+name+'&numModels='+numModels+'&cost='+cost+'&factionId='+factionId);
+		
+		//TODO for each gear add entry to unit_to_gear
+		//TODO for each ability add entry to unit_to_ability
+		//TOOD for each addon add entry to unit_to_addon
+		//TODO for each known power add entry to unit_to power
+	}
 	
 	
 	

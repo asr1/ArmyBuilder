@@ -39,9 +39,16 @@ Tools/Builder ("Databuilder")
 		Mutexes
 	\# Abilities
 	Powers
-		\# Single powers
-		Powers with tables
+		\# known powers
+		Powers with effect tables
+		Powers from set
 	Units
+		unit data
+		gear
+		abilities
+		addons
+		powers (known)
+		powers (options)
 	
 	
 	
