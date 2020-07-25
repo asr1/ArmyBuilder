@@ -299,13 +299,17 @@ app.controller('builderCtrl', function($scope, $http){
 	}
 	
 	/* addUnit. Takes in the name, number of models,
-	 * cost and factionid of the unit to add.
+	 * cost and factionid of the unit to add
 	 * Adds it to the database.
 	 * Then uses that id to associate gear, abilites, 
-	 * addons, and powers.
+	 * addons, and powerSets, which is an arry of
+	 * objects with 2 properties; amount - the number
+	 * of powers a unit gets from a set, and from - the
+	 * set (including setId) that the unit chooses from.
+	 * These are used to populate the tables approprirately.
 	*/
 	$scope.addUnit = async function(name, numModels, cost, factionId,
-									gearArr, abilArr, addonArr, powerArr) {
+									gearArr, abilArr, addonArr, powerArr, powerSets) {
 		if(!name || !numModels || !factionId || (!cost && cost !== 0)) { return; }
 		const response = await $http.post('php/addUnit.php?name='+name+'&numModels='+numModels+'&cost='+cost+'&factionId='+factionId);
 		const newUnitId = response.data;
@@ -314,11 +318,31 @@ app.controller('builderCtrl', function($scope, $http){
 		await mapUnitToAbility(newUnitId, abilArr);
 		await mapAddonToUnit(newUnitId, addonArr);
 		await addKnownPowers(newUnitId, powerArr);
+		
+		
+	}
+	
+	
+	/* mapUnitToPowerSets. Takes in the unit id and 
+	 * array of powerSets, where a powerSet is an object
+	 * with 2 properties; amount - the number
+	 * of powers a unit gets from a set, and from - the
+	 * set (including setId) that the unit chooses from. 
+	 * Adds each mapping to the databse
+	*/
+	async function mapUnitToPowerSets(unitId, powerSetArr) {
+		if(!unitId || !powerSetArr || !powerSetArr.length) { return; }
+		
+		let promises = [];
+		powerSetArr.forEach((set) => {
+			promises.push($http.post('php/mapUnitToPowerSet.php?unitId='+unitId+'&setId='+set.from.setId+'&amount='+set.amount));
+		});
+		await Promise.all(promises);
 	}
 	
 	/* addUnitToGear. Takes in the unit id and 
 	 * array of gear to add. Adds each mapping 
-	 * the databse
+	 * to the databse
 	*/
 	async function addUnitToGear(unitId, gearArr) {
 		if(!unitId || !gearArr || !gearArr.length) { return; }
@@ -331,7 +355,7 @@ app.controller('builderCtrl', function($scope, $http){
 	}
 
 	/* mapUnitToAbility. Takes in the unit id and 
-	 * array of abilities to add. Adds each mapping 
+	 * array of abilities to add. Adds each mapping to
 	 * the databse
 	*/
 	async function mapUnitToAbility(unitId, abilArr) {
@@ -345,7 +369,7 @@ app.controller('builderCtrl', function($scope, $http){
 	}
 
 	/* mapAddonToAbility. Takes in the unit id and 
-	 * array of addons to add. Adds each mapping 
+	 * array of addons to add. Adds each mapping to
 	 * the databse
 	*/
 	async function mapAddonToUnit(unitId, addonArr) {
@@ -359,7 +383,7 @@ app.controller('builderCtrl', function($scope, $http){
 	}
 
 	/* addKnownPowers. Takes in the unit id and 
-	 * array of powers to add. Adds each mapping 
+	 * array of powers to add. Adds each mapping to
 	 * the databse
 	*/
 	async function addKnownPowers(unitId, powerArr) {

@@ -85,13 +85,26 @@
 			<button ng-click="myModelAddOns.push(addonsForNewUnit)">Add add on</button>
 		</div>
 		<div class="block" ng-init="myModelPowers=[]">	
-			<label class="title-label">Powers</label class="title-label">
+			<label class="title-label">Known powers</label class="title-label">
 			<select
 					ng-model="powerForUnit"
 					ng-options="power as power.name for power in allPowersV2"
 				>
 			</select>
 			<button ng-click="myModelPowers.push(powerForUnit)">Add power</button>
+		</div>
+		<div class="block" ng-init="myModelSets=[]">
+			<label class="title-label">Knows how many powers</label class="title-label">
+				<input type="number" style="width:50" ng-model="numPowers"></input>
+			<div>
+				<label class="title-label">From what set?</label class="title-label">
+				<select
+						ng-model="setForUnit"
+						ng-options="set as set.setName for set in allPowerSetsV2"
+					>
+				</select>
+			</div>
+			<button ng-click="myModelSets.push({'amount': numPowers, 'from': setForUnit})">Add set</button>
 		</div>
 
 		<br><br>
@@ -121,8 +134,14 @@
 					<button ng-click="myModelPowers.splice($index, 1)">X</button>
 				</li>
 			</ul>
+			<p>and will know this many powers from this set</p>
+			<ul>
+				<li ng-repeat="set in myModelSets track by $index">{{set.amount}} from {{set.from.setName}}
+					<button ng-click="myModelSets.splice($index, 1)">X</button>
+				</li>
+			</ul>
 			<button ng-click="addUnit(newUnitName, numberOfModels, newUnitCost, factionForNewUnit.id,
-									  myModelGear, myModelAbilities, myModelAddOns, myModelPowers) ">Add unit</button>
+									  myModelGear, myModelAbilities, myModelAddOns, myModelPowers, myModelSets) ">Add unit</button>
 		</div>
 	</div>
 	

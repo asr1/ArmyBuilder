@@ -3,11 +3,11 @@ Addon Support
 		\# ReplaceItem
 		\# AddItem
 		\# Direct
-		Multiple
+		Multiple (can take this addon 20 times)
 	\# Unit level implementation
 		\# Direct
 		\# IncreaseNumberOfModels
-	Mutexes
+	Mutexes (Can take x or y)
 	\# Cost
 		\# Direct
 		\# ReplaceItem
@@ -41,14 +41,14 @@ Tools/Builder ("Databuilder")
 	Powers
 		\# known powers
 		Powers with effect tables
-		Powers from set
+		\# Powers from set
 	Units
 		\# unit data
 		\# gear
 		\# abilities
 		\# addons
 		\# powers (known)
-		powers (options)
+		\# powers (options)
 	
 Data correction:
 	Intercessor squad should have 1 sergeant and 4 intercessors
