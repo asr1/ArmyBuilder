@@ -405,7 +405,7 @@ app.controller('builderCtrl', function($scope, $http){
 	 * And modifies $scope to contain the data.
 	*/
 	async function updatePowersAsync() {
-		$scope.allPowersV2 = await getAddonsAsync();
+		$scope.allPowersV2 = await getPowersAsync();
 		$scope.$apply();
 	}
 	

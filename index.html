@@ -94,7 +94,7 @@
 								</span>
 								<span>{{addon.text}}</span>
 								<span> Cost: {{calculateAddOnCost(addon, unit)}}</span>
-								<div ng-show="checked">
+								<div ng-show="checked && addon.times > 1">
 									<label>Times taken</label>
 									<input ng-init="timesTaken = 1" ng-change="changeAddonTimes(unit, addon, timesTaken)" style="width:40" ng-model="timesTaken" type="number" max="{{addon.times}}" min="1" ></input> TODO IN PROGRESS
 								</div>
