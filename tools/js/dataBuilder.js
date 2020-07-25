@@ -318,8 +318,7 @@ app.controller('builderCtrl', function($scope, $http){
 		await mapUnitToAbility(newUnitId, abilArr);
 		await mapAddonToUnit(newUnitId, addonArr);
 		await addKnownPowers(newUnitId, powerArr);
-		
-		
+		await mapUnitToPowerSets(newUnitId, powerSets);
 	}
 	
 	
