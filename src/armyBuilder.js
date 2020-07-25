@@ -170,6 +170,45 @@ app.controller('builderCtrl', function($scope, $http){
 		unit.addons = response;
 		return unit;
 	}
+	
+	/* Takes a unit and fetches its powers 
+	 * from the database or cache. Returns the
+	 * provided unit with all powers as a property
+	*/
+	async function getKnownPowersForUnit(unit) {
+		const cacheKey = generateCacheKey("getPowersForUnit", [unit.id]);
+		response = getFromCache(cacheKey);
+
+		if(response === undefined) {
+			const webResponse = await $http.post('src/php/getPowersForUnit.php?unitId='+unit.id);
+			response = webResponse.data;
+			storeToCache(cacheKey, response);
+		}
+		unit.powers = unit.powers ? unit.powers : {};
+		unit.powers.known = response;
+		console.log(unit.powers);
+		return unit;
+	}
+
+	
+	/* Takes a unit and fetches its optional powers 
+	 * from the database or cache. Returns the
+	 * provided unit with all powers as a property
+	*/
+	async function getOptionalPowersForUnit(unit) {
+		const cacheKey = generateCacheKey("getOptionalPowersForUnit", [unit.id]);
+		response = getFromCache(cacheKey);
+
+		if(response === undefined) {
+			const webResponse = await $http.post('src/php/getOptionalPowersForUnit.php?unitId='+unit.id);
+			response = webResponse.data;
+			storeToCache(cacheKey, response);
+		}
+		unit.powers = unit.powers ? unit.powers : {};
+		unit.powers.options = response;
+		console.log(unit.powers);
+		return unit;
+	}
 
 	/* Takes a unit and fetches its gear 
 	 * from the database or cache. Returns the
@@ -295,6 +334,8 @@ app.controller('builderCtrl', function($scope, $http){
 			unit = await getAbilitiesForUnit(unit);
 			unit = await getAddonsForUnit(unit);
 			unit = await getGearForUnit(unit);
+			unit = await getKnownPowersForUnit(unit);
+			unit = await getOptionalPowersForUnit(unit);
 			
 			if(!unit.startingNumberOfModels) {
 				unit.startingNumberOfModels = unit.numberOfModels;
@@ -853,7 +894,7 @@ app.controller('builderCtrl', function($scope, $http){
 		copy.squadNames = unit.squadNames; // Used for units with mixed models
 		copy.startingNumberOfModels = unit.startingNumberOfModels;
 		// copy.separateGear = unit.separateGear;
-		// copy.powers = unit.powers;
+		copy.powers = unit.powers;
 		
 		if(isModelLevel) {
 			copy.addons = copy.addons.filter( (addon) => {

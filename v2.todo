@@ -21,6 +21,9 @@ File upload
 \# Allow adding the same unit twice - possible cloning issue. (issue in add spaces)
 \# Total cost
 Powers support
+	\# Known
+	Options
+		Need to retrieve them the same way we get them -- first the set name, then the options in the set.
 Mixed units (with 1 captain and 3 lieutenants, for example)
 
 
@@ -59,6 +62,7 @@ Data correction:
 	Plague Marines missing (need mutex addon support)
 		Also need full mixed squad approach
 	
+bug where if click factions too quickly we get scope.$apply issue. Easy fix.
 \# Remove legacy code
 	
 	

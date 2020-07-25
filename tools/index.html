@@ -130,7 +130,7 @@
 			</ul>
 			<p>and will have the following powers:</p>
 			<ul>
-				<li ng-repeat="power in myModelPowers track by $index">{{power.name}}
+				<li ng-repeat="power in myModelPowers track by $index">{{power.name}} {{power}}
 					<button ng-click="myModelPowers.splice($index, 1)">X</button>
 				</li>
 			</ul>

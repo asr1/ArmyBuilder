@@ -390,7 +390,7 @@ app.controller('builderCtrl', function($scope, $http){
 		
 		let promises = [];
 		powerArr.forEach((power) => {
-			promises.push($http.post('php/mapPowerToUnit.php?unitId='+unitId+'&addonId='+power.id));
+			promises.push($http.post('php/mapPowerToUnit.php?unitId='+unitId+'&powerId='+power.id));
 		});
 		await Promise.all(promises);
 	}
