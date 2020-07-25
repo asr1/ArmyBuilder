@@ -431,15 +431,70 @@ app.controller('builderCtrl', function($scope, $http){
 	$scope.addUnit = async function(name, numModels, cost, factionId,
 									gearArr, abilArr, addonArr, powerArr) {
 		if(!name || !numModels || !factionId || (!cost && cost !== 0)) { return; }
-		const newUnitId = await $http.post('php/addUnit.php?name='+name+'&numModels='+numModels+'&cost='+cost+'&factionId='+factionId);
+		const response = await $http.post('php/addUnit.php?name='+name+'&numModels='+numModels+'&cost='+cost+'&factionId='+factionId);
+		const newUnitId = response.data;
 		
-		//TODO for each gear add entry to unit_to_gear
-		//TODO for each ability add entry to unit_to_ability
-		//TOOD for each addon add entry to unit_to_addon
-		//TODO for each known power add entry to unit_to power
+		await addUnitToGear(newUnitId, gearArr);
+		await mapUnitToAbility(newUnitId, abilArr);
+		await mapAddonToUnit(newUnitId, addonArr);
+		await addKnownPowers(newUnitId, powerArr);
 	}
 	
-	
+	/* addUnitToGear. Takes in the unit id and 
+	 * array of gear to add. Adds each mapping 
+	 * the databse
+	*/
+	async function addUnitToGear(unitId, gearArr) {
+		if(!unitId || !gearArr || !gearArr.length) { return; }
+		
+		let promises = [];
+		gearArr.forEach((gear) => {
+			promises.push($http.post('php/mapGearToUnit.php?unitId='+unitId+'&gearId='+gear.id));
+		});
+		await Promise.all(promises);
+	}
+
+	/* mapUnitToAbility. Takes in the unit id and 
+	 * array of abilities to add. Adds each mapping 
+	 * the databse
+	*/
+	async function mapUnitToAbility(unitId, abilArr) {
+		if(!unitId || !abilArr || !abilArr.length) { return; }
+		
+		let promises = [];
+		abilArr.forEach((ability) => {
+			promises.push($http.post('php/mapAbilityToUnit.php?unitId='+unitId+'&abilityId='+ability.id));
+		});
+		await Promise.all(promises);
+	}
+
+	/* mapAddonToAbility. Takes in the unit id and 
+	 * array of addons to add. Adds each mapping 
+	 * the databse
+	*/
+	async function mapAddonToUnit(unitId, addonArr) {
+		if(!unitId || !addonArr || !addonArr.length) { return; }
+		
+		let promises = [];
+		addonArr.forEach((addon) => {
+			promises.push($http.post('php/mapAddonToUnit.php?unitId='+unitId+'&addonId='+addon.id));
+		});
+		await Promise.all(promises);
+	}
+
+	/* addKnownPowers. Takes in the unit id and 
+	 * array of powers to add. Adds each mapping 
+	 * the databse
+	*/
+	async function addKnownPowers(unitId, powerArr) {
+		if(!unitId || !powerArr || !powerArr.length) { return; }
+		
+		let promises = [];
+		powerArr.forEach((power) => {
+			promises.push($http.post('php/mapPowerToUnit.php?unitId='+unitId+'&addonId='+power.id));
+		});
+		await Promise.all(promises);
+	}
 	
 	
 	

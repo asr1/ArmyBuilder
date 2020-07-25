@@ -71,7 +71,7 @@
 			<div class="section">
 				<div class="unit" ng-repeat="unit in myArmyV2 track by $index">
 					<div class="unitHeader">
-						<span class="glyphicon glyphicon-remove remove" title="Remove" ng-click="removeFromArmyV2(unit)">  </span><span>  {{unit.name}}</span><span><b> {{calculateUnitCost(unit)}}</b></span>
+						<span class="glyphicon glyphicon-remove remove" title="Remove" ng-click="removeFromArmyV2(unit)">  </span><span>  {{unit.name}}</span><span><b> {{calculateArmyCostV2(unit)}}</b></span>
 					</div>
 					<div class="level2Item">
 						<h6 class="Subheading">Abilities</h6>
