@@ -117,7 +117,7 @@
 			</ul>
 			<p>and will have the following powers:</p>
 			<ul>
-				<li ng-repeat="addon in myModelPowers track by $index">{{power.name}}
+				<li ng-repeat="power in myModelPowers track by $index">{{power.name}}
 					<button ng-click="myModelPowers.splice($index, 1)">X</button>
 				</li>
 			</ul>
@@ -307,6 +307,43 @@
 				</div>
 			</div>
 		</div>
+		<!-- Power sets -->
+		<div name="add-power-set" ng-init="showPowerSet=false" class="banner">
+			<span>Add new power set</Span><br>
+			<button ng-click="showPowerSet = !showPowerSet">{{showPowerSet ? "hide" : "show"}}</button>
+			<div ng-show="showPowerSet">
+				<div class="block" ng-init="powerSetPowers=[]">	
+					<div>
+						<label class="title-label">Name</label>
+						<input type="text" ng-model="newPowerSetName"></input>
+					</div>
+					<label class="title-label">Powers</label class="title-label">
+					<select
+							ng-model="powerForSet"
+							ng-options="power as power.name for power in allPowersV2"
+						>
+					</select>
+					<button ng-click="powerSetPowers.push(powerForSet)">Add power</button>
+				</div>
+				<p>{{newPowerSetName}} will have the following powers:</p>
+				<ul>
+					<li ng-repeat="power in powerSetPowers track by $index">{{power.name}}
+						<button ng-click="powerSetPowers.splice($index, 1)">X</button>
+					</li>
+				</ul>
+				<div>
+					<span>Existing Power Sets:</span>
+					<ul>
+						<li ng-repeat="set in allPowerSetsV2">{{set.setName}}
+							<ul>
+								<li ng-repeat="power in set.powers">{{power.name}}</li>
+							</ul>
+						</li>
+					</ul>
+				</div>
+				<button ng-click="addNewPowerSet(newPowerSetName, powerSetPowers)">Add</button>
+			</div>
+		</div>	
 	</div>
 </div> 
 		<!--Load JS files-->

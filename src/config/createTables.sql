@@ -138,6 +138,8 @@ create table if not exists power_table (
 	primary key (id)
 );
 
+--This table is used when a unit directly knows
+--A power
 create table if not exists unit_to_known_powers (
 	id int not null auto_increment,
 	unitId int,
@@ -145,6 +147,8 @@ create table if not exists unit_to_known_powers (
 	primary key (id)
 );
 
+--This table is used when a unit can know one 
+--Power out of a set of multiple
 create table if not exists power_to_set (
 	id int not null auto_increment,
 	powerId int,
@@ -152,6 +156,9 @@ create table if not exists power_to_set (
 	primary key (id)
 );
 
+--This table is used when a unit knows a number of powers
+--Out of a set. Check the set against power_to_set 
+--And the number known is how many they can choose.
 create table if not exists unit_to_options_powers (
 	id int not null auto_increment,
 	unitId int,
@@ -159,4 +166,15 @@ create table if not exists unit_to_options_powers (
 	setId int,
 	primary key (id)
 );
+
+--Maps the name of a power set to its set id 
+--Set id is used in unit_to_options_powers
+--This is used with power_to_set and unit_to_options_powers
+--But just adds a name field.
+-- unit_to_set (1->many), set_to_power(1->many), set_to_name(1->1)
+--This would be better called set_to_name
+ create table if not exists power_sets (
+    setId int not null auto_increment,
+    setName varchar(50),
+    primary key (setId));
 

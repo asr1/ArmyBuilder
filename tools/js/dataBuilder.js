@@ -140,6 +140,7 @@ app.controller('builderCtrl', function($scope, $http){
 	$scope.allAddonTypes = [];
 	$scope.allAddonLevels = [];
 	$scope.allPowersV2 = [];
+	$scope.allPowerSetsV2 = [];
 	$scope.AddonTypesEnum = {ReplaceItem:1, IncreaseNumberOfModels:2, Direct: 3, AddItem: 4};
 
 	
@@ -157,6 +158,7 @@ app.controller('builderCtrl', function($scope, $http){
 		await updateAddonsAsync();
 		await updateAddonLevelsAsync();
 		await updatePowersAsync();
+		await updatePowerSetsAsync();
 	})();
 	
 	/* Gets all games from database
@@ -421,7 +423,6 @@ app.controller('builderCtrl', function($scope, $http){
 		await updatePowersAsync();
 	}
 	
-	
 	/* addUnit. Takes in the name, number of models,
 	 * cost and factionid of the unit to add.
 	 * Adds it to the database.
@@ -496,20 +497,52 @@ app.controller('builderCtrl', function($scope, $http){
 		await Promise.all(promises);
 	}
 	
+		
+	/* Gets all power sets from database
+	 */
+	async function getPowerSetsAsync() {
+		const response = await $http.post('php/getAllPowerSets.php');
+		const sets = response.data;
+		sets.forEach( async (set) => {
+			set.powers = await getPowersInSetAsync(set.setId);
+		});
+		return sets;
+	}
 	
+	/* updatePowerSetsAsync 
+	 * Gets all power sets from database
+	 * And modifies $scope to contain the data.
+	*/
+	async function updatePowerSetsAsync() {
+		$scope.allPowerSetsV2 = await getPowerSetsAsync();
+		$scope.$apply();
+	}
 	
+	/* Gets all powers in a set from database
+	 */
+	async function getPowersInSetAsync(setId) {
+		const response = await $http.post('php/getAllPowersInSet.php?setId='+setId);
+		return response.data;
+	}
 	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
+	/* addNewPowerSet. Takes in the name and array of
+	 * of the powers to add. Adds it to the database 
+	 * if there isn't already a powerSet with that name. 
+	*/
+	$scope.addNewPowerSet = async function(name, powerArr) {
+		if(!name || !powerArr || !powerArr.length) { return; }
+		if($scope.allPowerSetsV2.findIndex( (set) => set.name === name) !== -1) { return; } // Power set already exists
+		$scope.allPowerSetsV2.push( {'name' : name, 'powers': powerArr} );
+		const response = await $http.post('php/addPowerSet.php?name='+name);
+		const newSetId = response.data;
+		
+		const promises = [];
+		powerArr.forEach((power) => {
+			promises.push($http.post('php/mapPowerToSet.php?setId='+newSetId+'&powerId='+power.id)); //TODO
+		});
+		await Promise.all(promises);
+		await updatePowerSetsAsync();
+	}
 	
 	
 	
