@@ -43,15 +43,18 @@ Tools/Builder ("Databuilder")
 		Powers with effect tables
 		Powers from set
 	Units
-		unit data
-		gear
-		abilities
-		addons
-		powers (known)
+		\# unit data
+		\# gear
+		\# abilities
+		\# addons
+		\# powers (known)
 		powers (options)
 	
-	
-	
+Data correction:
+	Intercessor squad should have 1 sergeant and 4 intercessors
+	Inceptor Squad should have 1 seargeant and 2 inceptors
+	Hellblaster squad should have 1 seargent and 4 hellblasters
+	\# Lord of Contagion gear: plaguereaper not showing ability
 	
 	
 	

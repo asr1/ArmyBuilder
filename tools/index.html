@@ -50,7 +50,7 @@
 				<input ng-model="newUnitName"></input>
 		</div>
 		<div class="block">		
-			<label class="title-label">Cost:</label class="title-label">
+			<label class="title-label">Cost per model:</label class="title-label">
 			<input type="number" ng-model="newUnitCost"></input>
 		</div>
 		<div class="block">		
@@ -85,13 +85,13 @@
 			<button ng-click="myModelAddOns.push(addonsForNewUnit)">Add add on</button>
 		</div>
 		<div class="block" ng-init="myModelPowers=[]">	
-			<label class="title-label">Add ons</label class="title-label">
+			<label class="title-label">Powers</label class="title-label">
 			<select
 					ng-model="powerForUnit"
 					ng-options="power as power.name for power in allPowersV2"
 				>
 			</select>
-			<button ng-click="myModelPowers.push(powerForUnit)">Add add on</button>
+			<button ng-click="myModelPowers.push(powerForUnit)">Add power</button>
 		</div>
 
 		<br><br>

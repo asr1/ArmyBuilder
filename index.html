@@ -108,7 +108,7 @@
 								<div class="level2Item" ng-repeat="item in model.gear track by $index">
 									<span>{{item.name}}</span>
 									<span> Cost: {{item.cost}}</span>
-									<div ng-show="item.ability && item.ability.length" class="subtext"><br>{{item.ability}}</div>
+									<div ng-show="item.text && item.text.length" class="subtext"><br>{{item.text}}</div>
 								</div>
 								<h6 ng-show="model.addons && model.addons.length" class="Subheading">Model Add Ons</h6>
 								<div class="level2Item" ng-repeat="addon in model.addons track by $index">
