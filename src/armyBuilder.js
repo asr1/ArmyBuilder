@@ -169,12 +169,12 @@ app.controller('builderCtrl', function($scope, $http){
 	/* Takes a model and fetches its addons 
 	 * from the database or cache.
 	*/
-	async function getAddonsForModel(unit) {
-		const cacheKey = generateCacheKey("getAddonsForModel", [unit.id]);
+	async function getAddonsForModel(model) {
+		const cacheKey = generateCacheKey("getAddonsForModel", [model.id]);
 		response = getFromCache(cacheKey);
 
 		if(response === undefined) {
-			const webResponse = await $http.post('src/php/getAddonsForModel.php?unitId='+unit.id);
+			const webResponse = await $http.post('src/php/getAddonsForModel.php?modelId='+model.id);
 			response = webResponse.data;
 			storeToCache(cacheKey, response);
 		}
@@ -231,12 +231,12 @@ app.controller('builderCtrl', function($scope, $http){
 	 * from the database or cache. Returns the
 	 * provided unit with all gear as a property
 	*/
-	async function getGearForModel(unit) {
-		const cacheKey = generateCacheKey("getGearForModel", [unit.id]);
+	async function getGearForModel(model) {
+		const cacheKey = generateCacheKey("getGearForModel", [model.id]);
 		response = getFromCache(cacheKey);
 
 		if(response === undefined) {
-			const webResponse = await $http.post('src/php/getGearForModel.php?unitId='+unit.id);
+			const webResponse = await $http.post('src/php/getGearForModel.php?modelId='+model.id);
 			response = webResponse.data;
 			storeToCache(cacheKey, response);
 		}
@@ -355,19 +355,22 @@ app.controller('builderCtrl', function($scope, $http){
 			unit.powers = unit.powers ? unit.powers : {};
 			unit.powers.known = await getKnownPowersForUnit(unit);
 			unit.powers.options = await getOptionalPowersForUnit(unit);
-			
 			unit.models.forEach( async (model) => {
+				model.unitName = unit.name;
 				model.gear = await getGearForModel(model);
 				model.addons = await getAddonsForModel(model);
+				
+				if(!model.startingNumberOfModels) {
+					model.startingNumberOfModels = model.modelCount;
+				}
+				let numUnits = model.startingNumberOfModels;
+				for(let i = 0; i < numUnits; i++) {
+					addModelV2(model);
+				}
+				
 			});
+			console.log("Unit", unit);
 			
-			if(!unit.startingNumberOfModels) {
-				unit.startingNumberOfModels = unit.numberOfModels;
-			}
-			let numUnits = unit.startingNumberOfModels;
-			for(let i = 0; i < numUnits; i++) {
-				addModelV2(unit);
-			}
 			$scope.myArmyV2.push(cloneUnitV2(unit));
 			if(idx === units.length -1) {
 				$scope.$apply();
@@ -380,7 +383,7 @@ app.controller('builderCtrl', function($scope, $http){
 	  */
 	 $scope.calculateArmyCostV2 = function() {
 		 let cost = 0;
-		 $scope.myArmyV2.forEach((unit) => cost += $scope.calculateUnitCostV2(unit));
+		 $scope.myArmyV2.forEach((unit) => cost += $scope.calculateUnitCostV2(unit, false));
 		return cost;
 	 }
 
@@ -418,8 +421,18 @@ app.controller('builderCtrl', function($scope, $http){
 	 * Returns a number that represents the cost 
 	 * For one unit, including gear and addOns.
 	 */
-	$scope.calculateUnitCostV2 = function(unit) {
-		return unit.numberOfModels * unit.cost + calculateUnitGearCost(unit) + getAddOnCost(unit);
+	$scope.calculateUnitCostV2 = function(unit, useCache = true) {
+		const cacheKey = generateCacheKey("calculateUnitCostV2", [unit.id]);
+		let response = getFromCache(cacheKey);
+		if(!useCache || response === undefined) { //Don't cache before everything is loaded
+			const modelsCost = unit.numberOfModels * unit.costPerModel;
+			const unitGearCost = calculateUnitGearCost(unit);
+			const unitAddonCost = getAddOnCost(unit);
+			console.log("addonCost", unitAddonCost);
+			response = modelsCost + unitGearCost + unitAddonCost;
+			storeToCache(cacheKey, response);
+		}
+		return response;
 	}
 
 
@@ -852,18 +865,15 @@ app.controller('builderCtrl', function($scope, $http){
 	
 	//IN PROGRESS TODO
 	function cloneModel(model) {
-		copy.abilities = unit.abilities.slice(0);
-		copy.addons = unit.addons.slice(0);
-		copy.baseName = unit.baseName;
-		copy.gear = unit.gear.slice(0);
-		copy.cost = unit.cost;
-		copy.id = unit.id;
-		copy.name = unit.name;
-		copy.numberOfModels = unit.numberOfModels;
-		copy.squadNames = unit.squadNames; // Used for units with mixed models
-		copy.startingNumberOfModels = unit.startingNumberOfModels;
-		// copy.separateGear = unit.separateGear;
-		copy.powers = unit.powers;
+		let copy = {};
+		copy.addons = model.addons.slice(0);
+		copy.baseName = model.baseName; // Necessary?
+		copy.unitName = model.unitName;
+		copy.gear = model.gear.slice(0);
+		copy.id = model.id;
+		copy.name = model.name;
+		copy.squadNames = model.squadNames; // Necessary?
+		return copy;
 	}
 
 	/* Takes a unit and returns a deep copy
@@ -874,19 +884,22 @@ app.controller('builderCtrl', function($scope, $http){
 	 * such that only model-level addons are 
 	 * present. Otherwise, all add-ons exist.
 	 */
+	 //Deprecate me
 	function cloneUnitV2(unit, isModelLevel) {
 		let copy = {};
 		copy.abilities = unit.abilities.slice(0);
 		copy.addons = unit.addons.slice(0);
-		copy.baseName = unit.baseName;
-		copy.cost = unit.cost;
+		copy.baseName = unit.baseName; //Necessary?
+		copy.costPerModel = unit.costPerModel;
 		copy.id = unit.id;
 		copy.name = unit.name;
-		copy.numberOfModels = unit.numberOfModels;
-		copy.squadNames = unit.squadNames; // Used for units with mixed models
-		copy.startingNumberOfModels = unit.startingNumberOfModels;
+		copy.numberOfModels = unit.numberOfModels; //Necessary?
+		copy.squadNames = unit.squadNames; // Necessary?
+		copy.startingNumberOfModels = unit.startingNumberOfModels; //Necessary?
 		// copy.separateGear = unit.separateGear;
-		copy.powers = unit.powers;
+		copy.powers = unit.powers; //Need to deep copy? May have problems in future
+		copy.powers.known = unit.powers.known.slice(0);
+		copy.powers.options = unit.powers.options.slice(0);
 		
 		if(isModelLevel) {
 			copy.addons = copy.addons.filter( (addon) => {
@@ -987,28 +1000,28 @@ app.controller('builderCtrl', function($scope, $http){
 		return unit.baseName + ' - Squad ' + (getNameCount(unit));
 	}
 	
-	function addModelV2(unit) {
-		let model = cloneUnitV2(unit, true);
-		model.name = getModelName(model, unit);
-		$scope.models[unit.name].push(model);
+	function addModelV2(model) {
+		let newModel = cloneModel(model);
+		$scope.models[newModel.unitName].push(newModel);
+		newModel.name = getModelName(model);
 		if (!$scope.$$phase) { // Anti-pattern. Means $scope.Apply() isn't high enough in call stack.
 			$scope.$apply(); // Has to be here for last step in AddUnitsV2 to avoid $digest conflict.
 		}
 	}
 
-	function getModelName(model, unit) {
-		model.unitName = unit.name;
-		const numModelsInSquad = $scope.models[unit.name].length;
+	/* Takes in a model that knows its unit name
+	* Returns a name that's the model name plus
+	* the number of models in the squad.
+	* e.g. Plague Marine -> Plage Marine 1
+	* TODO:
+	* May be an easier way, as all models know 
+	* How many are to be in the sqad. Probably
+	* Can make it only call this if modelCount > 1.
+	*/
+	function getModelName(model) {
+		const numModelsInSquad = $scope.models[model.unitName].length;
+		return model.name + ' ' + numModelsInSquad;
 		
-		//Handle mixed units, where there is (for example) one captain and 3 lieutenants
-		//First the normal case.... (Flame Squad 1...n)
-		const numSquadNames = unit.squadNames ? unit.squadNames.length : 0;
-		if (unit.squadNames == undefined || numSquadNames <= numModelsInSquad) {
-			return ret = model.name + ' ' + ($scope.models[unit.name].length + 1 - numSquadNames);
-		}
-		else {//TODO this will have to be handled differently going forward. DB changes will also be necessary
-			return ret = unit.squadNames[numModelsInSquad];
-		}
 	}
 
 	function deregisterAddOnStatus(unitName) {

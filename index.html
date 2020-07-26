@@ -71,7 +71,7 @@
 			<div class="section">
 				<div class="unit" ng-repeat="unit in myArmyV2 track by $index">
 					<div class="unitHeader">
-						<span class="glyphicon glyphicon-remove remove" title="Remove" ng-click="removeFromArmyV2(unit)">  </span><span>  {{unit.name}}</span><span><b> {{calculateArmyCostV2(unit)}}</b></span>
+						<span class="glyphicon glyphicon-remove remove" title="Remove" ng-click="removeFromArmyV2(unit)">  </span><span>  {{unit.name}}</span><span><b> {{calculateUnitCostV2(unit)}}</b></span>
 					</div>
 					<div class="level2Item">
 						<h6 class="Subheading">Abilities</h6>
@@ -80,7 +80,7 @@
 							</div>
 						<h5 ng-show="unit.addons && unit.addons.length" class="Subheading">Unit Add Ons</h5>
 						<div class="level2Item" ng-repeat="addon in unit.addons track by $index">
-							<span ng-show="addon.level == 'unit'">
+							<span>
 								<span>
 									<span>
 										<input
@@ -104,7 +104,7 @@
 						<div ng-repeat="model in models[unit.name] track by $index">
 							<p class="modelName">{{model.name}}</p>
 							<div class="modelBody"> 
-								<h6 ng-show="unit.gear && unit.gear.length" class="Subheading">Gear</h6>
+								<h6 ng-show="model.gear && model.gear.length" class="Subheading">Gear</h6>
 								<div class="level2Item" ng-repeat="item in model.gear track by $index">
 									<span>{{item.name}}</span>
 									<span> Cost: {{item.cost}}</span>

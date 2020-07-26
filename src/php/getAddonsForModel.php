@@ -1,10 +1,10 @@
 <?php
 include('../config/sql_config.php');
 
-$unitId = $_GET['unitId'];
+$modelId = $_GET['modelId'];
  
-$query =  $mysqli->prepare("select * from model_to_addon left join addons on addonId = addons.id where unitId=?");
-$query->bind_param("i", $unitId);
+$query =  $mysqli->prepare("select * from model_to_addon left join addons on addonId = addons.id where modelId=?");
+$query->bind_param("i", $modelId);
 $query->execute();
 $result = $query->get_result();
 $arr = array();

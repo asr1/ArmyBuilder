@@ -16,6 +16,7 @@ create table if not exists units (
 	name varchar(50),
 	costPerModel int,
 	factionId int,
+	numberOfModels int,
 	primary key (id)
 );
 
@@ -43,6 +44,7 @@ create table if not exists addons (
 	amount int,
 	addonLevelId int, --Eventually remove this
 	times int default 1, --The max number of times an addon can be taken
+	modelIdToAdd int,
 	primary key (id)
 );
 

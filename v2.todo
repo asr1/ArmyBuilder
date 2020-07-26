@@ -65,6 +65,10 @@ Data correction:
 bug where if click factions too quickly we get scope.$apply issue. Easy fix.
 \# Remove legacy code
 
+Address TODOs
+
+\# Fix old data in DB
+
 Change model to be base entity instead of unit
 Update models to be singular named
 Update mappings 
