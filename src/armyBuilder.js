@@ -10,7 +10,6 @@ app.controller('builderCtrl', function($scope, $http){
 	let cache = {}; // Cache for network calls to db
 	$scope.buffer = 5; //Padding for addSpaces
 	$scope.myArmyV2 = [];
-	$scope.longestTotalLength = 0;
 	const AddonTypesEnum = {ReplaceItem:1, IncreaseNumberOfModels:2, Direct: 3, AddItem: 4};
 
 	/*Initialize default game and factions.
@@ -82,7 +81,6 @@ app.controller('builderCtrl', function($scope, $http){
 		if(!units || units.length === 0) { return; }
 		const longestUnit = findUnitWithLongestName(units);
 		$scope.longestUnitNameLength = longestUnit.name.length;
-		$scope.longestTotalLength = $scope.longestUnitNameLength + + longestUnit.cost.toString().length;
 	}		
 
 	/* Returns an entry from the cache
@@ -116,7 +114,7 @@ app.controller('builderCtrl', function($scope, $http){
 	$scope.addSpaces= function(inputName){
 		const count = 2*($scope.longestUnitNameLength - inputName.length) + $scope.buffer; 
 		let result = "";
-		let num = $scope.longestTotalLength - inputName.length;
+		let num = $scope.longestUnitNameLength - inputName.length;
 		num = Math.abs(num); //TODO KLUDGE find out why it's sometimes negative (like add 2 primaris then remove one).
 		return String.fromCharCode(160).repeat(num);
 	};
@@ -138,8 +136,7 @@ app.controller('builderCtrl', function($scope, $http){
 	}
 
 	/* Takes a unit and fetches its abilities 
-	 * from the database or cache. Returns the
-	 * provided unit with all abilities as a property
+	 * from the database or cache. 
 	*/
 	async function getAbilitiesForUnit(unit) {
 		const cacheKey = generateCacheKey("getAbilitiesForUnit", [unit.id]);
@@ -150,13 +147,11 @@ app.controller('builderCtrl', function($scope, $http){
 			response = webResponse.data;
 			storeToCache(cacheKey, response);
 		}
-		unit.abilities = response;
-		return unit;
+		return response;
 	}
 
 	/* Takes a unit and fetches its addons 
-	 * from the database or cache. Returns the
-	 * provided unit with all addons as a property
+	 * from the database or cache.
 	*/
 	async function getAddonsForUnit(unit) {
 		const cacheKey = generateCacheKey("getAddonsForUnit", [unit.id]);
@@ -167,13 +162,42 @@ app.controller('builderCtrl', function($scope, $http){
 			response = webResponse.data;
 			storeToCache(cacheKey, response);
 		}
-		unit.addons = response;
-		return unit;
+		return response;
+	}
+
+
+	/* Takes a model and fetches its addons 
+	 * from the database or cache.
+	*/
+	async function getAddonsForModel(unit) {
+		const cacheKey = generateCacheKey("getAddonsForModel", [unit.id]);
+		response = getFromCache(cacheKey);
+
+		if(response === undefined) {
+			const webResponse = await $http.post('src/php/getAddonsForModel.php?unitId='+unit.id);
+			response = webResponse.data;
+			storeToCache(cacheKey, response);
+		}
+		return response;
+	}
+
+	/* Takes a unit and fetches its models 
+	 * from the database or cache. 
+	*/
+	async function getModelsForUnit(unit) {
+		const cacheKey = generateCacheKey("getModelsForUnit", [unit.id]);
+		response = getFromCache(cacheKey);
+
+		if(response === undefined) {
+			const webResponse = await $http.post('src/php/getModelsForUnit.php?unitId='+unit.id);
+			response = webResponse.data;
+			storeToCache(cacheKey, response);
+		}
+		return response;
 	}
 	
 	/* Takes a unit and fetches its powers 
-	 * from the database or cache. Returns the
-	 * provided unit with all powers as a property
+	 * from the database or cache.
 	*/
 	async function getKnownPowersForUnit(unit) {
 		const cacheKey = generateCacheKey("getPowersForUnit", [unit.id]);
@@ -184,16 +208,12 @@ app.controller('builderCtrl', function($scope, $http){
 			response = webResponse.data;
 			storeToCache(cacheKey, response);
 		}
-		unit.powers = unit.powers ? unit.powers : {};
-		unit.powers.known = response;
-		console.log(unit.powers);
-		return unit;
+		return response;
 	}
 
 	
 	/* Takes a unit and fetches its optional powers 
-	 * from the database or cache. Returns the
-	 * provided unit with all powers as a property
+	 * from the database or cache.
 	*/
 	async function getOptionalPowersForUnit(unit) {
 		const cacheKey = generateCacheKey("getOptionalPowersForUnit", [unit.id]);
@@ -204,27 +224,23 @@ app.controller('builderCtrl', function($scope, $http){
 			response = webResponse.data;
 			storeToCache(cacheKey, response);
 		}
-		unit.powers = unit.powers ? unit.powers : {};
-		unit.powers.options = response;
-		console.log(unit.powers);
-		return unit;
+		return response;
 	}
 
 	/* Takes a unit and fetches its gear 
 	 * from the database or cache. Returns the
 	 * provided unit with all gear as a property
 	*/
-	async function getGearForUnit(unit) {
-		const cacheKey = generateCacheKey("getGearForUnit", [unit.id]);
+	async function getGearForModel(unit) {
+		const cacheKey = generateCacheKey("getGearForModel", [unit.id]);
 		response = getFromCache(cacheKey);
 
 		if(response === undefined) {
-			const webResponse = await $http.post('src/php/getGearForUnit.php?unitId='+unit.id);
+			const webResponse = await $http.post('src/php/getGearForModel.php?unitId='+unit.id);
 			response = webResponse.data;
 			storeToCache(cacheKey, response);
 		}
-		unit.gear = response;
-		return unit;
+		return response;
 	}
 
 	/* Takes gear id and fetches the associated gear
@@ -330,12 +346,20 @@ app.controller('builderCtrl', function($scope, $http){
 				$scope.models[unit.name] = [];
 			}
 			
+			
 			//V2 work. Update model details.
-			unit = await getAbilitiesForUnit(unit);
-			unit = await getAddonsForUnit(unit);
-			unit = await getGearForUnit(unit);
-			unit = await getKnownPowersForUnit(unit);
-			unit = await getOptionalPowersForUnit(unit);
+			unit.models = await getModelsForUnit(unit);
+			unit.abilities = await getAbilitiesForUnit(unit);
+			unit.addons = await getAddonsForUnit(unit);
+
+			unit.powers = unit.powers ? unit.powers : {};
+			unit.powers.known = await getKnownPowersForUnit(unit);
+			unit.powers.options = await getOptionalPowersForUnit(unit);
+			
+			unit.models.forEach( async (model) => {
+				model.gear = await getGearForModel(model);
+				model.addons = await getAddonsForModel(model);
+			});
 			
 			if(!unit.startingNumberOfModels) {
 				unit.startingNumberOfModels = unit.numberOfModels;
@@ -349,39 +373,6 @@ app.controller('builderCtrl', function($scope, $http){
 				$scope.$apply();
 			}
 		});
-	}
-
-	//Deprecated
-	$scope.addUnits = function(units) {
-		$scope.selectedUnits = [];
-		if (!units || units.length == 0) {return;}
-
-		// Add to array if not present in O(selUnit) instead of O(myArmy)
-		units.forEach( (unit) => {
-			unit.baseName = unit.baseName ? unit.baseName : unit.name;
-			addToScopeCurrentCount(unit, 1);
-			if($scope.models[unit.name] == undefined) {
-				$scope.models[unit.name] = [];
-			}
-
-			if($scope.models[unit.name].length) {
-				unit.name = getNextName(unit);
-				$scope.models[unit.name] = [];
-			}
-
-			if(!unit.startingNumberOfModels) {
-				unit.startingNumberOfModels = unit.numberOfModels;
-			}
-			let numUnits = unit.startingNumberOfModels;
-			for(let i = 0; i < numUnits; i++) {
-				addModel(unit);
-			}
-
-		});
-		///???? Next three lines.
-		units.reduce((set, elem) => set.add(cloneUnit(elem)), $scope.myArmy);
-		$scope.myArmyArray = Array.from($scope.myArmy); 
-		updateEnabledUnits();
 	}
 	 
 	 /* Calculates the cost of the entire army.
@@ -822,13 +813,6 @@ app.controller('builderCtrl', function($scope, $http){
 		return $scope.addOnCosts[unit];
 	}
 
-	// Deprecated
-	function calculateModelGearCost(gearIndexes) {
-		let total = 0;
-		//gearIndexes.forEach((idx) => total += $scope.getGear(idx).Cost);
-		return total;
-	}
-	
 	/* Calculates the total cost of gear for a unit
 	 * Takes in an array of gear
 	 * Returns an integer total cost of gear
@@ -852,13 +836,6 @@ app.controller('builderCtrl', function($scope, $http){
 		console.assert(calculateModelGearCostV2(arr2) === 26, "arr2 should equal 26, was %d", calculateModelGearCostV2(arr2));
 	}
 
-	//Deprecated
-	function updateEnabledUnits() {
-		$scope.availUnits.forEach((unit) => {
-			unit.disabled = $scope.models[unit.name] != undefined && $scope.models[unit.name].length > 0;
-		});
-	}
-
 	/* Calculate unit gear cost
 	 * Takes in a unit, returns the total cost of
 	 * all gear for all models that are part of that
@@ -871,6 +848,22 @@ app.controller('builderCtrl', function($scope, $http){
 			total += calculateModelGearCostV2(model.gear)
 		});
 		return total;
+	}
+	
+	//IN PROGRESS TODO
+	function cloneModel(model) {
+		copy.abilities = unit.abilities.slice(0);
+		copy.addons = unit.addons.slice(0);
+		copy.baseName = unit.baseName;
+		copy.gear = unit.gear.slice(0);
+		copy.cost = unit.cost;
+		copy.id = unit.id;
+		copy.name = unit.name;
+		copy.numberOfModels = unit.numberOfModels;
+		copy.squadNames = unit.squadNames; // Used for units with mixed models
+		copy.startingNumberOfModels = unit.startingNumberOfModels;
+		// copy.separateGear = unit.separateGear;
+		copy.powers = unit.powers;
 	}
 
 	/* Takes a unit and returns a deep copy
@@ -886,7 +879,6 @@ app.controller('builderCtrl', function($scope, $http){
 		copy.abilities = unit.abilities.slice(0);
 		copy.addons = unit.addons.slice(0);
 		copy.baseName = unit.baseName;
-		copy.gear = unit.gear.slice(0);
 		copy.cost = unit.cost;
 		copy.id = unit.id;
 		copy.name = unit.name;
@@ -967,10 +959,9 @@ app.controller('builderCtrl', function($scope, $http){
 	}
 
 	/* Updates the number of each unit that is
-	 * currently in existence. Not entirely sure
-	 * why this is necessary, but porting over for
-	 * now. I believe this an attempt to allowing
-	 * The same unit to be added multiple times.
+	 * currently in existence. This allows the 
+	 * same unit to be added multiple times while
+	 * keeping reasonable names.
 	 */
 	function addToScopeCurrentCount(unit, number) {
 		if(!$scope.currentUnitCount[unit.baseName]) {
@@ -1003,14 +994,6 @@ app.controller('builderCtrl', function($scope, $http){
 		if (!$scope.$$phase) { // Anti-pattern. Means $scope.Apply() isn't high enough in call stack.
 			$scope.$apply(); // Has to be here for last step in AddUnitsV2 to avoid $digest conflict.
 		}
-	}
-
-	//Deprecated, can remove
-	function addModel(unit) {
-		let model = cloneUnit(unit);
-		model.Name = getModelName(model, unit);
-		processGear(unit, model);
-		$scope.models[unit.name].push(model);
 	}
 
 	function getModelName(model, unit) {

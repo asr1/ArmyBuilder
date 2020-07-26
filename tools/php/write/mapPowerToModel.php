@@ -1,10 +1,11 @@
 <?php
-include('../config/sql_config.php');
+include('../../src/config/sql_config.php');
 
-$unitId = $_GET['unitId'];
+$modelId = $_GET['modelId'];
+$powerId = $_GET['powerId'];
  
-$query =  $mysqli->prepare("select * from unit_to_addon left join addons on addonId = addons.id where unitId=?");
-$query->bind_param("i", $unitId);
+$query =  $mysqli->prepare("insert into model_to_known_powers (modelId, powerId) values (?, ?)");
+$query->bind_param("ii", $modelId, $powerId);
 $query->execute();
 $result = $query->get_result();
 $arr = array();

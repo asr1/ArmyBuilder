@@ -14,8 +14,7 @@ create table if not exists games (
 create table if not exists units (
 	id int not null auto_increment,
 	name varchar(50),
-	numerOfModels int,
-	cost int,
+	costPerModel int,
 	factionId int,
 	primary key (id)
 );
@@ -42,7 +41,7 @@ create table if not exists addons (
 	itemIdToRemove int,
 	itemIdToAdd int,
 	amount int,
-	addonLevelId int,
+	addonLevelId int, --Eventually remove this
 	times int default 1, --The max number of times an addon can be taken
 	primary key (id)
 );
@@ -60,15 +59,16 @@ create table if not exists addon_types (
 	primary key (id)
 );
 
-create table if not exists addon_level (
-	id int not null auto_increment,
-	name varchar(20),
-	primary key (id)
-);
-
 create table if not exists unit_to_addon (
 	id int not null auto_increment,
 	unitId int,
+	addonId int,
+	primary key (id)
+);
+
+create table if not exists model_to_addon (
+	id int not null auto_increment,
+	modelId int,
 	addonId int,
 	primary key (id)
 );
@@ -113,9 +113,9 @@ create table if not exists gear_range (
 	primary key (id)
 );
 
-create table if not exists unit_to_gear (
+create table if not exists model_to_gear (
 	id int not null auto_increment,
-	unitId int,
+	modelId int,
 	gearId int,
 	primary key (id)
 );
@@ -140,7 +140,7 @@ create table if not exists power_table (
 
 --This table is used when a unit directly knows
 --A power
-create table if not exists unit_to_known_powers (
+create table if not exists model_to_known_powers (
 	id int not null auto_increment,
 	unitId int,
 	powerId int,
@@ -159,9 +159,9 @@ create table if not exists power_to_set (
 --This table is used when a unit knows a number of powers
 --Out of a set. Check the set against power_to_set 
 --And the number known is how many they can choose.
-create table if not exists unit_to_options_powers (
+create table if not exists model_to_options_powers (
 	id int not null auto_increment,
-	unitId int,
+	modelId int,
 	amount int,
 	setId int,
 	primary key (id)
@@ -169,12 +169,25 @@ create table if not exists unit_to_options_powers (
 
 --Maps the name of a power set to its set id 
 --Set id is used in unit_to_options_powers
---This is used with power_to_set and unit_to_options_powers
+--This is used with power_to_set and model_to_options_powers
 --But just adds a name field.
--- unit_to_set (1->many), set_to_power(1->many), set_to_name(1->1)
---This would be better called set_to_name
+-- unit_to_set (1->many), set_to_power(1->many), power_sets(1->1)
  create table if not exists power_sets (
     setId int not null auto_increment,
     setName varchar(50),
     primary key (setId));
+	
+create table if not exists models(
+    id int not null auto_increment,
+    name varchar(90),
+    primary key (id));
+
+
+create table if not exists unit_to_model(
+    id int not null auto_increment,
+    unitId int,
+    modelId int,
+    modelCount int, --How many copies of that model are in the unit
+    primary key (id));
+
 

@@ -1,9 +1,9 @@
 <?php
 include('../config/sql_config.php');
 
-$unitId = $_GET['unitId'];
-$query =  $mysqli->prepare("select * from unit_to_gear left join gear on gear.id = unit_to_gear.gearId left join gear_to_abilities on gear.id = gear_to_abilities.gearId left join gear_abilities on gear_abilities.id=abilityId where unitId=?");
-$query->bind_param("i", $unitId);
+$modelId = $_GET['modelId'];
+$query =  $mysqli->prepare("select * from model_to_gear left join gear on gear.id = model_to_gear.gearId left join gear_to_abilities on gear.id = gear_to_abilities.gearId left join gear_abilities on gear_abilities.id=abilityId where modelId=?");
+$query->bind_param("i", $modelId);
 $query->execute();
 $result = $query->get_result();
 $arr = array();

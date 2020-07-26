@@ -30,7 +30,7 @@
 
 		<p class="centered">OR</p>
 		<span>
-			Select a game: <select ng-model="selectedGame" ng-change="updateSelectedFactions(selectedGame)" ng-options="game.name for game in games"></select>
+			Select a game: <select ng-model="selectedGame" ng-options="game.name for game in games"></select>
 		</span>
 		<hr>
 		<div ng-if="selectedGame">

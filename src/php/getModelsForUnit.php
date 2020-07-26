@@ -1,11 +1,10 @@
 <?php
-include('../../src/config/sql_config.php');
+include('../config/sql_config.php');
 
 $unitId = $_GET['unitId'];
-$powerId = $_GET['powerId'];
  
-$query =  $mysqli->prepare("insert into unit_to_known_powers (unitId, powerId) values (?, ?)");
-$query->bind_param("ii", $unitId, $powerId);
+$query =  $mysqli->prepare("select * from units left join unit_to_model on units.id = unitId left join models on models.id = modelId where unitId=?");
+$query->bind_param("i", $unitId);
 $query->execute();
 $result = $query->get_result();
 $arr = array();

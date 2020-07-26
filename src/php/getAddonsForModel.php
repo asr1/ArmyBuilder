@@ -3,7 +3,7 @@ include('../config/sql_config.php');
 
 $unitId = $_GET['unitId'];
  
-$query =  $mysqli->prepare("select * from unit_to_addon left join addons on addonId = addons.id where unitId=?");
+$query =  $mysqli->prepare("select * from model_to_addon left join addons on addonId = addons.id where unitId=?");
 $query->bind_param("i", $unitId);
 $query->execute();
 $result = $query->get_result();
