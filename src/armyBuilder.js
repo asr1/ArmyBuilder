@@ -6,6 +6,8 @@ app.config(['$compileProvider',
 app.controller('builderCtrl', function($scope, $http){
 	const CURRENT_FILE_FORMAT_VERSION = 1.0
 	const HEADER_FIRST_LINE = "Army Builder";
+	
+	const getGearByModelIdCacheKey = "getGearByModelId"; 
 	$scope.factions = []; //An array of factions where the index is the gameId.
 	let cache = {}; // Cache for network calls to db
 	$scope.buffer = 5; //Padding for addSpaces
@@ -231,12 +233,12 @@ app.controller('builderCtrl', function($scope, $http){
 	 * from the database or cache. Returns the
 	 * provided unit with all gear as a property
 	*/
-	async function getGearForModel(model) {
-		const cacheKey = generateCacheKey("getGearForModel", [model.id]);
+	async function getGearByModelId(modelId) {
+		const cacheKey = generateCacheKey(getGearByModelIdCacheKey, [modelId]);
 		response = getFromCache(cacheKey);
 
 		if(response === undefined) {
-			const webResponse = await $http.post('src/php/getGearForModel.php?modelId='+model.id);
+			const webResponse = await $http.post('src/php/getGearForModel.php?modelId='+modelId);
 			response = webResponse.data;
 			storeToCache(cacheKey, response);
 		}
@@ -357,7 +359,7 @@ app.controller('builderCtrl', function($scope, $http){
 			unit.powers.options = await getOptionalPowersForUnit(unit);
 			unit.models.forEach( async (model) => {
 				model.unitName = unit.name;
-				model.gear = await getGearForModel(model);
+				model.gear = await getGearByModelId(model.id);
 				model.addons = await getAddonsForModel(model);
 				
 				if(!model.startingNumberOfModels) {
@@ -451,7 +453,15 @@ app.controller('builderCtrl', function($scope, $http){
 					response = addGear.cost - removeGear.cost;
 				break;
 				case AddonTypesEnum.IncreaseNumberOfModels:
-					response = (unit.cost + calculateModelGearCostV2(unit.gear)) * addOn.amount;
+					//Relies on the fact that we'e increasing the number of a model 
+					//That already exists. Extremely dependent on external state.
+					//Worth some time to investigate (non-async) approaches to this
+					//Problem that can be more pure.
+					const gearkey = generateCacheKey(getGearByModelIdCacheKey, [addOn.modelIdToAdd]);
+					gear = getFromCache(gearkey);
+					console.log(gear);//NOpe, race condition.
+					getGearByModelId(addOn.modelIdToAdd);
+					response = (unit.cost + calculateModelGearCostV2(gear)) * addOn.amount;
 				break;
 				case AddonTypesEnum.AddItem:
 					response = getGearById(addOn.itemIdToRemove).cost;
