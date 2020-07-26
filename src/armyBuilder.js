@@ -167,6 +167,16 @@ app.controller('builderCtrl', function($scope, $http){
 		return response;
 	}
 
+	//TODO
+	/* Takes in a unit and adds missing information
+	 * based on the addons. If a unit has an addon x of
+	 * type AddModel, then this sets x.model equal to the
+	 * model with its gear.
+	*/
+	async function processUnitAddons(unit) {
+		
+		return unit.addons
+	}
 
 	/* Takes a model and fetches its addons 
 	 * from the database or cache.
@@ -353,7 +363,8 @@ app.controller('builderCtrl', function($scope, $http){
 			unit.models = await getModelsForUnit(unit);
 			unit.abilities = await getAbilitiesForUnit(unit);
 			unit.addons = await getAddonsForUnit(unit);
-
+			unit.addons = await processUnitAddons(unit);
+			
 			unit.powers = unit.powers ? unit.powers : {};
 			unit.powers.known = await getKnownPowersForUnit(unit);
 			unit.powers.options = await getOptionalPowersForUnit(unit);
@@ -453,15 +464,18 @@ app.controller('builderCtrl', function($scope, $http){
 					response = addGear.cost - removeGear.cost;
 				break;
 				case AddonTypesEnum.IncreaseNumberOfModels:
-					//Relies on the fact that we'e increasing the number of a model 
-					//That already exists. Extremely dependent on external state.
-					//Worth some time to investigate (non-async) approaches to this
-					//Problem that can be more pure.
-					const gearkey = generateCacheKey(getGearByModelIdCacheKey, [addOn.modelIdToAdd]);
-					gear = getFromCache(gearkey);
-					console.log(gear);//NOpe, race condition.
-					getGearByModelId(addOn.modelIdToAdd);
-					response = (unit.cost + calculateModelGearCostV2(gear)) * addOn.amount;
+					// //Relies on the fact that we'e increasing the number of a model 
+					// //That already exists. Extremely dependent on external state.
+					// //Worth some time to investigate (non-async) approaches to this
+					// //Problem that can be more pure.
+					// const gearkey = generateCacheKey(getGearByModelIdCacheKey, [addOn.modelIdToAdd]);
+					// gear = getFromCache(gearkey);
+					// console.log(gear);//Nope, race condition.
+					(async function() { // WIll this work? // No
+						const gear = await getGearByModelId(addOn.modelIdToAdd);
+						//TODO unit.cost isn't correct either. We need the model's cost.
+						response = (unit.cost + calculateModelGearCostV2(gear)) * addOn.amount;
+					})();
 				break;
 				case AddonTypesEnum.AddItem:
 					response = getGearById(addOn.itemIdToRemove).cost;
