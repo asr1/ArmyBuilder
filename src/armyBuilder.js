@@ -167,14 +167,18 @@ app.controller('builderCtrl', function($scope, $http){
 		return response;
 	}
 
-	//TODO
 	/* Takes in a unit and adds missing information
 	 * based on the addons. If a unit has an addon x of
 	 * type AddModel, then this sets x.model equal to the
 	 * model with its gear.
 	*/
 	async function processUnitAddons(unit) {
-		
+		unit.addons.forEach( async (addon) => {
+			if(addon.typeid === AddonTypesEnum.IncreaseNumberOfModels) {
+				const response = await getGearByModelId(addon.modelIdToAdd);
+				addon.gear = response;
+			}
+		});
 		return unit.addons
 	}
 
@@ -463,19 +467,9 @@ app.controller('builderCtrl', function($scope, $http){
 					let removeGear = getGearById(addOn.itemIdToRemove);
 					response = addGear.cost - removeGear.cost;
 				break;
-				case AddonTypesEnum.IncreaseNumberOfModels:
-					// //Relies on the fact that we'e increasing the number of a model 
-					// //That already exists. Extremely dependent on external state.
-					// //Worth some time to investigate (non-async) approaches to this
-					// //Problem that can be more pure.
-					// const gearkey = generateCacheKey(getGearByModelIdCacheKey, [addOn.modelIdToAdd]);
-					// gear = getFromCache(gearkey);
-					// console.log(gear);//Nope, race condition.
-					(async function() { // WIll this work? // No
-						const gear = await getGearByModelId(addOn.modelIdToAdd);
-						//TODO unit.cost isn't correct either. We need the model's cost.
-						response = (unit.cost + calculateModelGearCostV2(gear)) * addOn.amount;
-					})();
+				case AddonTypesEnum.IncreaseNumberOfModels: 
+					console.log( "Burro", addOn);
+					response = (unit.costPerModel + calculateModelGearCostV2(addOn.gear)) * addOn.amount;
 				break;
 				case AddonTypesEnum.AddItem:
 					response = getGearById(addOn.itemIdToRemove).cost;
@@ -855,6 +849,7 @@ app.controller('builderCtrl', function($scope, $http){
 	 * Returns an integer total cost of gear
 	 */
 	function calculateModelGearCostV2(gearArr) {
+		console.log("Churro", gearArr);
 		if(!gearArr || gearArr.length === 0) { return; }
 		return gearArr.reduce( (currentValue, gear) => currentValue + gear.cost, 0);
 	}
