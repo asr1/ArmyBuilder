@@ -78,12 +78,11 @@ Update armybuilder to work with new
 update databuilder to build new
 
 
-
-Fix unit addons -- don't know cost.
-	Options:
-		1. After we get all unit Addons, process them, and if an addon needs gear, make an additonal call to get gear for that model and set addon.gear equal to the array of gear ids. Basically do an addon.model = getModelById. I actually prefer that approach.
-		2. 
-currently on 180.
+\# Fix unit addons -- don't know cost.
+	\# Options:
+		\# 1. After we get all unit Addons, process them, and if an addon needs gear, make an additonal call to get gear for that model and set addon.gear equal to the array of gear ids. Basically do an addon.model = getModelById. I actually prefer that approach.
+		\# 2. 
+\# currently on 180.
 
 
 	

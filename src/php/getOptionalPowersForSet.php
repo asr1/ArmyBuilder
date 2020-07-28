@@ -1,10 +1,10 @@
 <?php
 include('../config/sql_config.php');
 
-$unitId = $_GET['unitId'];
+$setId = $_GET['setId'];
  
-$query =  $mysqli->prepare(" select * from model_to_options_powers m2op left join power_to_set p2s on p2s.setId= m2op.setId left join powers on powers.id=powerId where unitId=?");
-$query->bind_param("i", $unitId);
+$query =  $mysqli->prepare("select * from power_to_set p2s left join powers on powers.id=powerId where setId=?");
+$query->bind_param("i", $setId);
 $query->execute();
 $result = $query->get_result();
 $arr = array();

@@ -123,19 +123,19 @@
 										<span>{{addon.text}}</span>
 										<span> Cost: {{calculateAddOnCost(addon, unit)}}</span>
 								</div>
-								<h6 ng-show="model.powers" class="Subheading">Psychic Powers</h6>
-								<div class="level2Item" ng-repeat="power in model.powers.known">
+								<h6 ng-show="unit.powers" class="Subheading">Psychic Powers</h6>
+								<div class="level2Item" ng-repeat="power in unit.powers.known">
 									<span>
 										<span class="skillName">{{power.name}}: </span>
 										<span>{{power.text}}</span></span>
 								</div>
-								<div class="level2Item" ng-repeat="option in model.powers.options track by $index">
+								<div class="level2Item" ng-repeat="option in unit.powers.options track by $index">
 									<span class="level2Item instructions">Choose {{option.amount}}:<br></span>
-									<div class="level2Item" ng-repeat="power in option.From">
+									<div class="level2Item" ng-repeat="power in option.from">
 										<span>
-											<input ng-model="checked" ng-click="setChosenPower(checked, unit.name, power, model.Name, $parent.$index, $index)" ng-disabled="ShouldDisablePower(unit.name, power, model.Name, $parent.$index, option.Amount, checked)" type="checkbox" id="{{getPowerId(model.Name, $parent.$index, $index)}}"></input>
-											<span class="skillName">{{getPower(power).Name}}: </span>
-											<span>{{getPower(power).Text}}</span></span>
+											<input ng-model="checked" ng-click="setChosenPower(checked, unit, power, model, $parent.$index, $index)" ng-disabled="ShouldDisablePower(unit.name, power, model.name, $parent.$index, option.amount, checked)" type="checkbox" id="{{getPowerId(model.name, $parent.$index, $index)}}"></input>
+											<span class="skillName">{{power.name}}: </span>
+											<span>{{power.text}}</span></span>
 										 </span>
 									</div>
 								</div>

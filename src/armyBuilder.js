@@ -178,6 +178,7 @@ app.controller('builderCtrl', function($scope, $http){
 				addon.model = await getModelByModelId(addon.modelIdToAdd);
 				addon.model.gear = await getGearByModelId(addon.modelIdToAdd);
 				addon.model.addons = await getAddonsForModel(addon.model);
+				addon.model.unitName = unit.name;
 			}
 		});
 		return unit.addons
@@ -246,17 +247,31 @@ app.controller('builderCtrl', function($scope, $http){
 
 	
 	/* Takes a unit and fetches its optional powers 
-	 * from the database or cache.
+	 * from the database or cache. Returns options
+	 * formatted so amount is at top level and 
+	 * items are below.
 	*/
 	async function getOptionalPowersForUnit(unit) {
 		const cacheKey = generateCacheKey("getOptionalPowersForUnit", [unit.id]);
 		response = getFromCache(cacheKey);
 
 		if(response === undefined) {
-			const webResponse = await $http.post('src/php/getOptionalPowersForUnit.php?unitId='+unit.id);
-			response = webResponse.data;
+			let webResponse = await $http.post('src/php/getOptionsPowersForUnit.php?unitId='+unit.id);
+			setArr = webResponse.data;
+			
+			for(i = 0; i < setArr.length; i++){
+				webResponse  = await $http.post('src/php/getOptionalPowersForSet.php?setId='+setArr[i].setId);
+				console.log(webResponse);
+				console.log("Ding");
+				setArr[i].from = webResponse.data; 
+			}
+			response = setArr;
 			storeToCache(cacheKey, response);
 		}
+		
+		console.log("");
+		console.log("Optional");
+		console.log(response);
 		return response;
 	}
 
@@ -421,13 +436,22 @@ app.controller('builderCtrl', function($scope, $http){
 		return cost;
 	 }
 
-	$scope.setChosenPower = function(isChecked, unitName, power, modelName, powerOptionIndex, checkboxIndex) {
-		initializeChosenPowers(unitName, modelName, powerOptionIndex);
+	/* SetChosenPower. Used to mark a power as taken form a certain options.
+	 * Together with ShouldDisablePower determines eligibility for powers to 
+	 * be taken. Possibly used to have more functionality re: downloading saved
+	 * RME files.
+	 */
+	$scope.setChosenPower = function(isChecked, unit, power, model, powerOptionIndex, checkboxIndex) {
+		initializeChosenPowers(unit.name, model.name, powerOptionIndex);
 		const amountToAdd = isChecked ? 1 : -1
-		$scope.chosenPowers[unitName][modelName][powerOptionIndex] += amountToAdd;
-		addPowerToUnit(unitName, power, modelName, powerOptionIndex, checkboxIndex);
+		$scope.chosenPowers[unit.name][model.name][powerOptionIndex] += amountToAdd;
+		addPowerToUnit(unit, power, model, powerOptionIndex, checkboxIndex); // Necessary? Not in current use, possibly need to revert (7/27/2020)
 	}
 
+	/* Should disable power. Together with setChosen power
+	 * determines if a checkbox should be disabled from the
+	 * HTML.
+	*/
 	$scope.ShouldDisablePower = function(unitName, power, modelName, powerOptionIndex, amountAllowed, checked) {
 		if(checked) { return false; }
 		initializeChosenPowers(unitName, modelName, powerOptionIndex);
@@ -483,7 +507,8 @@ app.controller('builderCtrl', function($scope, $http){
 					let removeGear = getGearById(addOn.itemIdToRemove);
 					response = addGear.cost - removeGear.cost;
 				break;
-				case AddonTypesEnum.IncreaseNumberOfModels: 
+				case AddonTypesEnum.IncreaseNumberOfModels:
+					console.log("Spleauk", addOn);
 					response = (unit.costPerModel + calculateModelGearCostV2(addOn.model.gear)) * addOn.amount;
 				break;
 				case AddonTypesEnum.AddItem:
@@ -531,9 +556,6 @@ app.controller('builderCtrl', function($scope, $http){
 				}
 			break;
 			case AddonTypesEnum.IncreaseNumberOfModels:
-				if (!addOn.model.unitName) {
-					addOn.model.unitName = unit.name;
-				}
 				if(isChecked) {
 					increaseNumberOfModels(addOn.model, addOn.amount);
 				}
@@ -601,22 +623,17 @@ app.controller('builderCtrl', function($scope, $http){
 		return arr;
 	}
 
-	function addPowerToUnit(unitName, power, modelName, parentIdx, powerIdx) {
-		const model = getModelFromUnit(unitName, modelName);
-		if(!model.SelectedPowers) { model.SelectedPowers = []; }
-		var id = $scope.getPowerId(modelName, parentIdx, powerIdx);
-		model.SelectedPowers.push(id);
+	/* Adds a power to a unit.
+	 *
+	 */
+	function addPowerToUnit(unit, power, model, parentIdx, powerIdx) {
+		if(!unit.selectedPowers) { unit.selectedPowers = []; }
+		//Possibly todo: remove get power ID here which may be necessary for file upload
+		// Seems like maybe selectedPowers is exlcusively used for interacting with javascript
+		// and using JQuery to check the boxes.
+		unit.selectedPowers.push(power.id);
 	}
 
-	function getModelFromUnit(unitName, modelName) {
-		let ret = undefined;
-		$scope.models[unitName].forEach( model => {
-			if (model.Name === modelName) { 
-				ret = model;
-			}
-		});
-		return ret;
-	}
 
 	function  getHeaderInformation() {
 		return HEADER_FIRST_LINE + "\n" + CURRENT_FILE_FORMAT_VERSION.toFixed(1);

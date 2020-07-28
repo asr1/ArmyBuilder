@@ -3,7 +3,7 @@ include('../config/sql_config.php');
 
 $unitId = $_GET['unitId'];
  
-$query =  $mysqli->prepare("select * from unit_to_known_powers left join powers on powerId = powers.id where unitId=?");
+$query =  $mysqli->prepare("select * from unit_to_options_powers where unitId=?");
 $query->bind_param("i", $unitId);
 $query->execute();
 $result = $query->get_result();
