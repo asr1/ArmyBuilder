@@ -175,8 +175,9 @@ app.controller('builderCtrl', function($scope, $http){
 	async function processUnitAddons(unit) {
 		unit.addons.forEach( async (addon) => {
 			if(addon.typeid === AddonTypesEnum.IncreaseNumberOfModels) {
-				const response = await getGearByModelId(addon.modelIdToAdd);
-				addon.gear = response;
+				addon.model = await getModelByModelId(addon.modelIdToAdd);
+				addon.model.gear = await getGearByModelId(addon.modelIdToAdd);
+				addon.model.addons = await getAddonsForModel(addon.model);
 			}
 		});
 		return unit.addons
@@ -194,6 +195,22 @@ app.controller('builderCtrl', function($scope, $http){
 			response = webResponse.data;
 			storeToCache(cacheKey, response);
 		}
+		return response;
+	}
+
+	/* Fetches a model
+	 * from the database or cache. 
+	*/
+	async function getModelByModelId(modelId) {
+		const cacheKey = generateCacheKey("getModelByModelId", [modelId]);
+		response = getFromCache(cacheKey);
+
+		if(response === undefined) {
+			const webResponse = await $http.post('src/php/getModelById.php?modelId='+modelId);
+			response = webResponse.data;
+			storeToCache(cacheKey, response);
+		}
+		console.log("aaaauro", response);
 		return response;
 	}
 
@@ -445,7 +462,6 @@ app.controller('builderCtrl', function($scope, $http){
 			const modelsCost = unit.numberOfModels * unit.costPerModel;
 			const unitGearCost = calculateUnitGearCost(unit);
 			const unitAddonCost = getAddOnCost(unit);
-			console.log("addonCost", unitAddonCost);
 			response = modelsCost + unitGearCost + unitAddonCost;
 			storeToCache(cacheKey, response);
 		}
@@ -468,14 +484,12 @@ app.controller('builderCtrl', function($scope, $http){
 					response = addGear.cost - removeGear.cost;
 				break;
 				case AddonTypesEnum.IncreaseNumberOfModels: 
-					console.log( "Burro", addOn);
-					response = (unit.costPerModel + calculateModelGearCostV2(addOn.gear)) * addOn.amount;
+					response = (unit.costPerModel + calculateModelGearCostV2(addOn.model.gear)) * addOn.amount;
 				break;
 				case AddonTypesEnum.AddItem:
 					response = getGearById(addOn.itemIdToRemove).cost;
 				break;
 			}
-			storeToCache(cacheKey, response);
 		}
 		return response;
 	}
@@ -517,11 +531,14 @@ app.controller('builderCtrl', function($scope, $http){
 				}
 			break;
 			case AddonTypesEnum.IncreaseNumberOfModels:
+				if (!addOn.model.unitName) {
+					addOn.model.unitName = unit.name;
+				}
 				if(isChecked) {
-					increaseNumberOfModels(unit, addOn.amount);
+					increaseNumberOfModels(addOn.model, addOn.amount);
 				}
 				else {
-					increaseNumberOfModels(unit, -addOn.amount);
+					increaseNumberOfModels(addOn.model, -addOn.amount);
 				}
 			break;
 		}
@@ -777,13 +794,12 @@ app.controller('builderCtrl', function($scope, $http){
 	/* Increase number of models.
 	 * Used for add-ons that add additional models
 	 * MOdifies global state including $scope.myArmyV2
-	 * Takes in a unit to add models of and the amount to add.
+	 * Takes in a model to add and the amount to add.
 	 * If amount is negative, removes models instead, pop()ing.
 	 */
-	function increaseNumberOfModels(unit, amount) {
-		console.log("increase unit", unit);
+	function increaseNumberOfModels(model, amount) {
 		$scope.myArmyV2.forEach((elem) => {
-			if(elem.name == unit.name) {
+			if(elem.name == model.unitName) {
 				if(!elem.startingNumberOfModels) {
 					elem.startingNumberOfModels = elem.numberOfModels;
 				}
@@ -791,16 +807,17 @@ app.controller('builderCtrl', function($scope, $http){
 
 			}
 		});
+		console.log("Dhurro", model);
 		if(amount > 0){
 			while(amount--)
 			{
-				addModelV2(unit);
+				addModelV2(model);
 			}
 		}
 		else {
 			amount *= -1;
 			for(let i = 0; i < amount; i++) {
-				$scope.models[unit.name].pop();
+				$scope.models[model.unitName].pop();
 			}
 		}
 	}
@@ -849,7 +866,6 @@ app.controller('builderCtrl', function($scope, $http){
 	 * Returns an integer total cost of gear
 	 */
 	function calculateModelGearCostV2(gearArr) {
-		console.log("Churro", gearArr);
 		if(!gearArr || gearArr.length === 0) { return; }
 		return gearArr.reduce( (currentValue, gear) => currentValue + gear.cost, 0);
 	}
@@ -884,6 +900,7 @@ app.controller('builderCtrl', function($scope, $http){
 	
 	//IN PROGRESS TODO
 	function cloneModel(model) {
+		console.log("model", model);
 		let copy = {};
 		copy.addons = model.addons.slice(0);
 		copy.baseName = model.baseName; // Necessary?
@@ -1021,6 +1038,7 @@ app.controller('builderCtrl', function($scope, $http){
 	
 	function addModelV2(model) {
 		let newModel = cloneModel(model);
+		console.log("burro", newModel);
 		$scope.models[newModel.unitName].push(newModel);
 		newModel.name = getModelName(model);
 		if (!$scope.$$phase) { // Anti-pattern. Means $scope.Apply() isn't high enough in call stack.
@@ -1039,6 +1057,9 @@ app.controller('builderCtrl', function($scope, $http){
 	*/
 	function getModelName(model) {
 		const numModelsInSquad = $scope.models[model.unitName].length;
+		console.log(numModelsInSquad);
+		console.log(model.name);
+		console.log("");
 		return model.name + ' ' + numModelsInSquad;
 		
 	}
