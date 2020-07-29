@@ -1,97 +1,25 @@
-Addon Support
-	\# Model level implementation
-		\# ReplaceItem
-		\# AddItem
-		\# Direct
-		Multiple (can take this addon 20 times)
-	\# Unit level implementation
-		\# Direct
-		\# IncreaseNumberOfModels
-	Mutexes (Can take x or y)
-	\# Cost
-		\# Direct
-		\# ReplaceItem
-		\# IncreaseNumberOfModels
-		\# AddItem
-\# Model support
-\# Gear Support
-File download
-File upload
-\# Remove from army
-\# Allow adding the same unit twice - possible cloning issue. (issue in add spaces)
-\# Total cost
-\# Powers support
-	\# Known
-	\# Options
-		\# Need to retrieve them the same way we get them -- first the set name, then the options in the set.
-\# Mixed units (with 1 captain and 3 lieutenants, for example)
+Arymbuilder
+	Addon Support
+			Multiple (can take this addon 20 times)
 
+		Mutexes (Can take x or y)
+	File download
+	File upload
 
 Tools/Builder ("Databuilder")
 	Gear
 		Add gear Abilities
 		Add call to map gear ability to gear
 		Same for gear keywords?? We don't use this on army builder (yet)
-	\# Abilities
 	Add-ons
-		\# ReplaceItem
-		\# AddItem
-		\# Direct
-		\# IncreaseNumberOfModels
-		\# Multiple
 		Mutexes
-	\# Abilities
 	Powers
-		\# known powers
 		Powers with effect tables
-		\# Powers from set
-	Units
-		\# unit data
-		\# gear
-		\# abilities
-		\# addons
-		\# powers (known)
-		\# powers (options)
-		add units
-			abilities
-			addons
-			powers (known)
-			powers (options)
-	Add model
-		\# Addons
-		\# gear
-	
+
 Data correction:
-	\# Intercessor squad should have 1 sergeant and 4 intercessors
-	\# Inceptor Squad should have 1 seargeant and 2 inceptors
-	\# Hellblaster squad should have 1 seargent and 4 hellblasters
-	\# Lord of Contagion gear: plaguereaper not showing ability
-	\# Malignant Plaguecaster missing (not enough powers support)
 	Plague Marines need mutex addon support
-		\# Also need full mixed squad approach
 	
 bug where if click factions too quickly we get scope.$apply issue. Easy fix.
-\# Remove legacy code
 
-Address TODOs
+Address TODOs in code
 	especially in getModelName
-
-\# Fix old data in DB
-
-\# Change model to be base entity instead of unit
-\# Update models to be singular named
-\# Update mappings 
-\# Update stored procs
-\# rename stored procs
-\# Update armybuilder to work with new
-\# update databuilder to build new
-
-
-\# Fix unit addons -- don't know cost.
-	\# Options:
-		\# 1. After we get all unit Addons, process them, and if an addon needs gear, make an additonal call to get gear for that model and set addon.gear equal to the array of gear ids. Basically do an addon.model = getModelById. I actually prefer that approach.
-		\# 2. 
-\# currently on 180.
-
-
-	
