@@ -2,11 +2,10 @@
 include('../../src/config/sql_config.php');
 
 $modelId = $_GET['modelId'];
-$amount = $_GET['amount'];
-$setId = $_GET['setId'];
+$addonId = $_GET['addonId'];
  
-$query =  $mysqli->prepare("insert into model_to_options_powers (modelId, amount, setId) values (?, ?, ?)");
-$query->bind_param("iii", $modelId, $amount, $setId);
+$query =  $mysqli->prepare("insert into model_to_addon (modelId, addonId) values (?, ?)");
+$query->bind_param("ii", $modelId, $addonId);
 $query->execute();
 $result = $query->get_result();
 $arr = array();

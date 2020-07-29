@@ -52,6 +52,14 @@ Tools/Builder ("Databuilder")
 		\# addons
 		\# powers (known)
 		\# powers (options)
+		add units
+			abilities
+			addons
+			powers (known)
+			powers (options)
+	Add model
+		Addons
+		gear
 	
 Data correction:
 	Intercessor squad should have 1 sergeant and 4 intercessors

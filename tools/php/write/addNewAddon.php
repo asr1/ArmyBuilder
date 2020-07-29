@@ -4,15 +4,15 @@ include('../../src/config/sql_config.php');
 $text           = $_GET['text'];
 $cost           = $_GET['cost'];
 $typeId         = $_GET['typeId'];
-$levelId        = $_GET['levelId'];
 $addItemId      = $_GET['addItemId'];
 $removeItemId   = $_GET['removeItemId'];
 $amount         = $_GET['amount'];
 $times         = $_GET['times'];
+$modelId         = $_GET['modelId'];
 
  
-$query =  $mysqli->prepare("insert into addons (text, cost, typeid, addonLevelId, itemIdToAdd, itemIdToRemove, amount, times) values (?, ?, ?, ?, ?, ?, ?, ?)");
-$query->bind_param("siiiiiii", $text, $cost, $typeId, $levelId, $addItemId, $removeItemId, $amount, $times);
+$query =  $mysqli->prepare("insert into addons (text, cost, typeid, itemIdToAdd, itemIdToRemove, amount, times, modelIdToAdd) values (?, ?, ?, ?, ?, ?, ?, ?)");
+$query->bind_param("siiiiiiii", $text, $cost, $typeId, $addItemId, $removeItemId, $amount, $times, $modelId);
 $query->execute();
 $result = $query->get_result();
 $arr = array();

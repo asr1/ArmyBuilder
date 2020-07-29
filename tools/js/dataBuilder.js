@@ -13,11 +13,10 @@ app.controller('builderCtrl', function($scope, $http){
 	$scope.allGearRanges = [];
 	$scope.allAddonsV2 = [];
 	$scope.allAddonTypes = [];
-	$scope.allAddonLevels = [];
 	$scope.allPowersV2 = [];
 	$scope.allPowerSetsV2 = [];
+	$scope.allModels = [];
 	$scope.AddonTypesEnum = {ReplaceItem:1, IncreaseNumberOfModels:2, Direct: 3, AddItem: 4};
-
 	
 	
 	/* Immediately invoked function
@@ -31,9 +30,9 @@ app.controller('builderCtrl', function($scope, $http){
 		await updateGearRangesAsync();
 		await updateAddonTypesAsync();
 		await updateAddonsAsync();
-		await updateAddonLevelsAsync();
 		await updatePowersAsync();
 		await updatePowerSetsAsync();
+		await updateModelsAsync();
 	})();
 	
 	/* Gets all games from database
@@ -78,7 +77,7 @@ app.controller('builderCtrl', function($scope, $http){
 		if(!name) { return; }
 		if($scope.allGamesV2.findIndex( (game) => game.name === name) !== -1) { return; } // Game already exists
 		$scope.allGamesV2.push( {'name' : name} );
-		await $http.post('php/addGame.php?name='+name);
+		await $http.post('php/write/addGame.php?name='+name);
 		await updateGamesAsync();
 	}
 
@@ -92,14 +91,14 @@ app.controller('builderCtrl', function($scope, $http){
 		await $scope.updateFactionsForGameAsync(gameId);
 		if($scope.currentFactions.findIndex( (faction) => faction.name === factionName) !== -1) { return; } // Faction already exists
 		$scope.currentFactions.push( {'name' : factionName} );
-		await $http.post('php/addFaction.php?gameId='+gameId+'&name='+factionName);
+		await $http.post('php/write/addFaction.php?gameId='+gameId+'&name='+factionName);
 		await $scope.updateFactionsForGameAsync(gameId);
 	}
 
 	/* Gets all abilities from database
 	 */
 	async function getAbilitiesAsync() {
-		const response = await $http.post('php/getAllAbilities.php');
+		const response = await $http.post('php/read/getAllAbilities.php');
 		return response.data;
 	}
 	
@@ -121,7 +120,7 @@ app.controller('builderCtrl', function($scope, $http){
 		if(!name || !text) { return; }
 		if($scope.allAbilitiesV2.findIndex( (ability) => ability.name === name) !== -1) { return; } // Ability already exists
 		$scope.allAbilitiesV2.push( {'name' : name} );
-		await $http.post('php/addAbility.php?name='+name+'&text='+text);
+		await $http.post('php/write/addAbility.php?name='+name+'&text='+text);
 		await updateAbilitiesAsync();
 	}
 	
@@ -146,7 +145,7 @@ app.controller('builderCtrl', function($scope, $http){
 	/* Gets all gear ranges from database
 	 */
 	async function getGearRangesAsync() {
-		const response = await $http.post('php/getGearRanges.php');
+		const response = await $http.post('php/read/getGearRanges.php');
 		return response.data;
 	}
 	
@@ -169,7 +168,7 @@ app.controller('builderCtrl', function($scope, $http){
 		if($scope.allGearV2.findIndex( (gear) => gear.name === name) !== -1) { return; } // Gear already exists
 		console.log($scope.allGearV2.findIndex( (gear) => gear.name === name));
 		$scope.allGearV2.push( {'name' : name} );
-		await $http.post('php/addGear.php?name='+name+'&cost='+cost+'&rangeId='+rangeId);
+		await $http.post('php/write/addGear.php?name='+name+'&cost='+cost+'&rangeId='+rangeId);
 		//TODO:
 		// get the gear id from the above call
 		// Add gear Abilities
@@ -181,7 +180,7 @@ app.controller('builderCtrl', function($scope, $http){
 	/* Gets all addonTypes from database
 	 */
 	async function getAddonTypesAsync() {
-		const response = await $http.post('php/getAddonTypes.php');
+		const response = await $http.post('php/read/getAddonTypes.php');
 		return response.data;
 	}
 	
@@ -198,7 +197,7 @@ app.controller('builderCtrl', function($scope, $http){
 	/* Gets all addons from database
 	 */
 	async function getAddonsAsync() {
-		const response = await $http.post('php/getAllAddons.php');
+		const response = await $http.post('php/read/getAllAddons.php');
 		return response.data;
 	}
 	
@@ -213,16 +212,16 @@ app.controller('builderCtrl', function($scope, $http){
 	
 	/* addNewAddon. Takes in the text, cost, typeid,
 	 * (1 for replace item, 2 for add models, etc),
-	 * Level id (1 for mode, 2 for unit),
 	 * item id to add, item id to remove, 
-	 * amount (if applicable), and number of times
+	 * amount (if applicable), the number of times
 	 * the addon can be taken of the addon
-	 * to add. Adds it to the database if
-	 * there isn't already an addon with that text. 
+	 * to add, and the id of the model to add, if needed.
+	 * Adds it to the database if there isn't already an 
+	 * addon with that text. 
 	*/
-	$scope.addNewAddon = async function(text, cost, typeId, levelId, addItemId, removeItemId, amount, maxTimesTaken) {
-		if(!text || !typeId || !levelId) { return; }
-		if(typeId === $scope.AddonTypesEnum.IncreaseNumberOfModels && !amount) { return; }
+	$scope.addNewAddon = async function(text, cost, typeId, addItemId, removeItemId, amount, maxTimesTaken, modelId) {
+		if(!text || !typeId) { return; }
+		if(typeId === $scope.AddonTypesEnum.IncreaseNumberOfModels && (!amount || !modelId)) { return; }
 		if(typeId === $scope.AddonTypesEnum.AddItem && !addItemId) { return; }
 		if(typeId === $scope.AddonTypesEnum.ReplaceItem && (!addItemId || !removeItemId)) { return; }
 		if(typeId === $scope.AddonTypesEnum.Direct && !cost) { return; }
@@ -239,7 +238,7 @@ app.controller('builderCtrl', function($scope, $http){
 		
 		$http({
 		  method: 'POST',
-		  url: 'php/addNewAddon.php?cost='+cost+'&typeId='+typeId+'&levelId='+levelId+'&addItemId='+addItemId+'&removeItemId='+removeItemId+'&amount='+amount+'&text='+text+'&times='+maxTimesTaken,
+		  url: 'php/write/addNewAddon.php?cost='+cost+'&typeId='+typeId+'&addItemId='+addItemId+'&removeItemId='+removeItemId+'&amount='+amount+'&text='+text+'&times='+maxTimesTaken+'&modelId='+modelId,
 		  data: JSON.stringify({text})
 		})
 		.then(async function (success) {
@@ -253,27 +252,10 @@ app.controller('builderCtrl', function($scope, $http){
 
 	}
 	
-	/* Gets all addonLevels from database
-	 */
-	async function getAddonLevelsAsync() {
-		const response = await $http.post('php/getAddonLevels.php');
-		return response.data;
-	}
-	
-	/* updateAddonLevelsAsync 
-	 * Gets all addon types from database
-	 * And modifies $scope to contain the data.
-	*/
-	async function updateAddonLevelsAsync() {
-		$scope.allAddonLevels = await getAddonLevelsAsync();
-		$scope.allAddonLevels.map( (level) => {level.name = level.name.charAt(0).toUpperCase() + level.name.slice(1)});
-		$scope.$apply();
-	}
-	
 	/* Gets all powers from database
 	 */
 	async function getPowersAsync() {
-		const response = await $http.post('php/getAllPowers.php');
+		const response = await $http.post('php/read/getAllPowers.php');
 		return response.data;
 	}
 	
@@ -294,7 +276,7 @@ app.controller('builderCtrl', function($scope, $http){
 		if(!name || !text) { return; }
 		if($scope.allPowersV2.findIndex( (power) => power.name === name) !== -1) { return; } // Power already exists
 		$scope.allPowersV2.push( {'name' : name} );
-		await $http.post('php/addPower.php?name='+name+'&text='+text);
+		await $http.post('php/write/addPower.php?name='+name+'&text='+text);
 		await updatePowersAsync();
 	}
 	
@@ -314,13 +296,12 @@ app.controller('builderCtrl', function($scope, $http){
 		const response = await $http.post('php/addUnit.php?name='+name+'&numModels='+numModels+'&cost='+cost+'&factionId='+factionId);
 		const newUnitId = response.data;
 		
-		await addUnitToGear(newUnitId, gearArr);
+		// await addUnitToGear(newUnitId, gearArr);
 		await mapUnitToAbility(newUnitId, abilArr);
 		await mapAddonToUnit(newUnitId, addonArr);
 		await addKnownPowers(newUnitId, powerArr);
 		await mapUnitToPowerSets(newUnitId, powerSets);
 	}
-	
 	
 	/* mapUnitToPowerSets. Takes in the unit id and 
 	 * array of powerSets, where a powerSet is an object
@@ -334,21 +315,21 @@ app.controller('builderCtrl', function($scope, $http){
 		
 		let promises = [];
 		powerSetArr.forEach((set) => {
-			promises.push($http.post('php/mapUnitToPowerSet.php?unitId='+unitId+'&setId='+set.from.setId+'&amount='+set.amount));
+			promises.push($http.post('php/write/mapUnitToPowerSet.php?unitId='+unitId+'&setId='+set.from.setId+'&amount='+set.amount));
 		});
 		await Promise.all(promises);
 	}
 	
-	/* addUnitToGear. Takes in the unit id and 
+	/* addGearToModel. Takes in the model id and 
 	 * array of gear to add. Adds each mapping 
 	 * to the databse
 	*/
-	async function addUnitToGear(unitId, gearArr) {
-		if(!unitId || !gearArr || !gearArr.length) { return; }
+	async function addGearToModel(modelId, gearArr) {
+		if(!modelId || !gearArr || !gearArr.length) { return; }
 		
 		let promises = [];
 		gearArr.forEach((gear) => {
-			promises.push($http.post('php/mapGearToUnit.php?unitId='+unitId+'&gearId='+gear.id));
+			promises.push($http.post('php/write/mapGearToModel.php?modelId='+modelId+'&gearId='+gear.id));
 		});
 		await Promise.all(promises);
 	}
@@ -362,12 +343,12 @@ app.controller('builderCtrl', function($scope, $http){
 		
 		let promises = [];
 		abilArr.forEach((ability) => {
-			promises.push($http.post('php/mapAbilityToUnit.php?unitId='+unitId+'&abilityId='+ability.id));
+			promises.push($http.post('php/write/mapAbilityToUnit.php?unitId='+unitId+'&abilityId='+ability.id));
 		});
 		await Promise.all(promises);
 	}
 
-	/* mapAddonToAbility. Takes in the unit id and 
+	/* mapAddonToUnit. Takes in the unit id and 
 	 * array of addons to add. Adds each mapping to
 	 * the databse
 	*/
@@ -376,7 +357,21 @@ app.controller('builderCtrl', function($scope, $http){
 		
 		let promises = [];
 		addonArr.forEach((addon) => {
-			promises.push($http.post('php/mapAddonToUnit.php?unitId='+unitId+'&addonId='+addon.id));
+			promises.push($http.post('php/write/mapAddonToUnit.php?unitId='+unitId+'&addonId='+addon.id));
+		});
+		await Promise.all(promises);
+	}
+	
+	/* mapAddonToModel. Takes in the model id and 
+	 * array of addons to add. Adds each mapping to
+	 * the databse
+	*/
+	async function mapAddonToModel(modelId, addonArr) {
+		if(!modelId || !addonArr || !addonArr.length) { return; }
+		
+		let promises = [];
+		addonArr.forEach((addon) => {
+			promises.push($http.post('php/write/mapAddonToModel.php?modelId='+modelId+'&addonId='+addon.id));
 		});
 		await Promise.all(promises);
 	}
@@ -399,7 +394,7 @@ app.controller('builderCtrl', function($scope, $http){
 	/* Gets all power sets from database
 	 */
 	async function getPowerSetsAsync() {
-		const response = await $http.post('php/getAllPowerSets.php');
+		const response = await $http.post('php/read/getAllPowerSets.php');
 		const sets = response.data;
 		sets.forEach( async (set) => {
 			set.powers = await getPowersInSetAsync(set.setId);
@@ -414,12 +409,32 @@ app.controller('builderCtrl', function($scope, $http){
 	async function updatePowerSetsAsync() {
 		$scope.allPowerSetsV2 = await getPowerSetsAsync();
 		$scope.$apply();
+	}	
+		
+	/* Gets all modelsfrom database
+	 */
+	async function getModelsAsync() {
+		const response = await $http.post('php/read/getAllModels.php');
+		const sets = response.data;
+		sets.forEach( async (set) => {
+			set.powers = await getPowersInSetAsync(set.setId);
+		});
+		return sets;
+	}
+	
+	/* updateModelsAsync 
+	 * Gets all power sets from database
+	 * And modifies $scope to contain the data.
+	*/
+	async function updateModelsAsync() {
+		$scope.allModels = await getModelsAsync();
+		$scope.$apply();
 	}
 	
 	/* Gets all powers in a set from database
 	 */
 	async function getPowersInSetAsync(setId) {
-		const response = await $http.post('php/getAllPowersInSet.php?setId='+setId);
+		const response = await $http.post('php/read/getAllPowersInSet.php?setId='+setId);
 		return response.data;
 	}
 	
@@ -431,12 +446,12 @@ app.controller('builderCtrl', function($scope, $http){
 		if(!name || !powerArr || !powerArr.length) { return; }
 		if($scope.allPowerSetsV2.findIndex( (set) => set.name === name) !== -1) { return; } // Power set already exists
 		$scope.allPowerSetsV2.push( {'name' : name, 'powers': powerArr} );
-		const response = await $http.post('php/addPowerSet.php?name='+name);
+		const response = await $http.post('php/write/addPowerSet.php?name='+name);
 		const newSetId = response.data;
 		
 		const promises = [];
 		powerArr.forEach((power) => {
-			promises.push($http.post('php/mapPowerToSet.php?setId='+newSetId+'&powerId='+power.id)); //TODO
+			promises.push($http.post('php/write/mapPowerToSet.php?setId='+newSetId+'&powerId='+power.id));
 		});
 		await Promise.all(promises);
 		await updatePowerSetsAsync();

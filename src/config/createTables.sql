@@ -42,7 +42,6 @@ create table if not exists addons (
 	itemIdToRemove int,
 	itemIdToAdd int,
 	amount int,
-	addonLevelId int, --Eventually remove this
 	times int default 1, --The max number of times an addon can be taken
 	modelIdToAdd int,
 	primary key (id)
@@ -142,7 +141,7 @@ create table if not exists power_table (
 
 --This table is used when a unit directly knows
 --A power
-create table if not exists model_to_known_powers (
+create table if not exists unit_to_known_powers (
 	id int not null auto_increment,
 	unitId int,
 	powerId int,
@@ -161,7 +160,7 @@ create table if not exists power_to_set (
 --This table is used when a unit knows a number of powers
 --Out of a set. Check the set against power_to_set 
 --And the number known is how many they can choose.
-create table if not exists model_to_options_powers (
+create table if not exists unit_to_options_powers (
 	id int not null auto_increment,
 	modelId int,
 	amount int,
