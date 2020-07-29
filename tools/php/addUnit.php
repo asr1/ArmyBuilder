@@ -8,7 +8,7 @@ $cost           = $_GET['cost'];
 $factionId      = $_GET['factionId'];
 
  
-$query =  $mysqli->prepare("insert into units (name, numberOfModels, cost, factionId) values (?, ?, ?, ?)");
+$query =  $mysqli->prepare("insert into units (name, numberOfModels, costPerModel, factionId) values (?, ?, ?, ?)");
 $query->bind_param("siii", $name, $numModels, $cost, $factionId);
 $query->execute();
 $result = $query->get_result();

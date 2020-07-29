@@ -123,7 +123,7 @@
 										<span>{{addon.text}}</span>
 										<span> Cost: {{calculateAddOnCost(addon, unit)}}</span>
 								</div>
-								<h6 ng-show="unit.powers" class="Subheading">Psychic Powers</h6>
+								<h6 ng-show="unit.powers.length" class="Subheading">Psychic Powers</h6>
 								<div class="level2Item" ng-repeat="power in unit.powers.known">
 									<span>
 										<span class="skillName">{{power.name}}: </span>

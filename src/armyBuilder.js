@@ -1072,11 +1072,8 @@ app.controller('builderCtrl', function($scope, $http){
 	* How many are to be in the sqad. Probably
 	* Can make it only call this if modelCount > 1.
 	*/
-	function getModelName(model) {
+	function getModelName(model) { //TODO handle mixed units better.
 		const numModelsInSquad = $scope.models[model.unitName].length;
-		console.log(numModelsInSquad);
-		console.log(model.name);
-		console.log("");
 		return model.name + ' ' + numModelsInSquad;
 		
 	}

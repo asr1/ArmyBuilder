@@ -280,7 +280,7 @@ app.controller('builderCtrl', function($scope, $http){
 		await updatePowersAsync();
 	}
 	
-	/* addUnit. Takes in the name, number of models,
+	/* addUnit. Takes in the name,
 	 * cost and factionid of the unit to add
 	 * Adds it to the database.
 	 * Then uses that id to associate abilites, 
@@ -291,17 +291,26 @@ app.controller('builderCtrl', function($scope, $http){
 	 * and models, the models to add.
 	 * These are used to populate the tables approprirately.
 	*/
-	$scope.addUnit = async function(name, numModels, cost, factionId,
+	$scope.addUnit = async function(name, cost, factionId,
 									abilArr, addonArr, powerArr, powerSets, models) {
-		if(!name || !numModels || !factionId || (!cost && cost !== 0) || !models || models.length == 0) { return; }
-		const response = await $http.post('php/addUnit.php?name='+name);
+		if(!name || !factionId || (!cost && cost !== 0) || !models || models.length == 0) { return; }
+		const numModels = $scope.getNumModels(models);
+		const response = await $http.post('php/addUnit.php?name='+name+'&numModels='+numModels+'&cost='+cost+'&factionId='+factionId);
 		const newUnitId = response.data;
 		
 		await mapUnitToAbility(newUnitId, abilArr);
 		await mapAddonToUnit(newUnitId, addonArr);
 		await addKnownPowers(newUnitId, powerArr);
 		await mapUnitToPowerSets(newUnitId, powerSets);
-		await mapModelsToUnit(newUnitId, model);
+		await mapModelsToUnit(newUnitId, models);
+	}
+	
+	/* Returns the total amount of models
+	 * given a set of models that have an
+	 * amount.
+ 	*/
+	$scope.getNumModels = function(models) {
+		return models.reduce( (currentValue, model) => currentValue + model.amount, 0);
 	}
 	
 	/* addModel. Takes in the name, number of models,
@@ -446,15 +455,11 @@ app.controller('builderCtrl', function($scope, $http){
 		$scope.$apply();
 	}	
 		
-	/* Gets all modelsfrom database
+	/* Gets all models from database
 	 */
 	async function getModelsAsync() {
 		const response = await $http.post('php/read/getAllModels.php');
-		const sets = response.data;
-		sets.forEach( async (set) => {
-			set.powers = await getPowersInSetAsync(set.setId);
-		});
-		return sets;
+		return response.data;
 	}
 	
 	/* updateModelsAsync 
