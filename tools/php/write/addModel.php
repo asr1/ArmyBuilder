@@ -1,20 +1,24 @@
 <?php
 include('../../../src/config/sql_config.php');
 
-$setId = $_GET['setId'];
 
-$query =  $mysqli->prepare(" select * from power_to_set left join powers on powers.id=power_to_set.powerId where power_to_set.setId = ?");
-$query->bind_param("i", $setId);
+$name           = $_GET['name'];
+
+ 
+$query =  $mysqli->prepare("insert into models (name) values (?)");
+$query->bind_param("s", $name);
 $query->execute();
 $result = $query->get_result();
 $arr = array();
  while ($obj=mysqli_fetch_object($result)){
       $arr[] = $obj;
-   }
+}
+$query->close();
 
 #JSON-encode the response (necessary for interaction with angular)
-$json_response = json_encode($arr);
-
+#Return the id of the recently created unit
+$last_id = $mysqli->insert_id;
+$json_response = json_encode($last_id);
 echo $json_response;
 mysqli_free_result($result);
 ?>

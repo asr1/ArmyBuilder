@@ -26,8 +26,44 @@
 
 <div class="col-md-12">
 	<div class="col-md-6">
+		<div class="banner">
+		
+			<div class="block">
+					<label class="title-label">Name:</label class="title-label">
+					<input ng-model="newModelName"></input>
+			</div>
+			<div class="block" ng-init="myModelGear=[]">	
+				<label class="title-label">Gear</label class="title-label">
+				<select
+						ng-model="gearForModel"
+						ng-options="gear as gear.name for gear in allGearV2"
+					>
+				</select>
+				<button ng-click="myModelGear.push(gearForModel)">Add gear</button>
+			</div>
+			
+			<div>
+				<p>You are adding <b>{{newModelName}}</b></p>
+				<p><b>{{newModelName}}</b> will have the following gear:</p>
+				<ul>
+					<li ng-repeat="gear in myModelGear track by $index">{{gear.name}}
+						<button ng-click="myModelGear.splice($index, 1)">X</button>
+					</li>
+				</ul>
+				<p>and will have the following add ons:</p>
+				<ul>
+					<li ng-repeat="addon in myModelAddOns track by $index">{{addon.text}}
+						<button ng-click="myModelAddOns.splice($index, 1)">X</button>
+					</li>
+				</ul>
+
+				<button ng-click="addModel(newModelName, myModelGear, myModelAddOns) ">Add model</button>
+			</div>
+		</div>
+	
 	
 	<div class="banner">
+		<span>Add new unit</Span>
 		<div class="block">
 				<label class="title-label">Game:</label class="title-label">
 				<select
@@ -53,36 +89,35 @@
 			<label class="title-label">Cost per model:</label class="title-label">
 			<input type="number" ng-model="newUnitCost"></input>
 		</div>
-		<div class="block">		
-			<label class="title-label">Number of models:</label class="title-label">
-			<input type="number" ng-model="numberOfModels"></input>
-		</div>
-		<div class="block" ng-init="myModelGear=[]">	
-			<label class="title-label">Gear</label class="title-label">
+		<div class="block" ng-init="myUnitModels=[]">	
+			<label class="title-label">Abilities</label class="title-label">
 			<select
-					ng-model="gearForNewUnit"
-					ng-options="gear as gear.name for gear in allGearV2"
+					ng-model="modelForNewUnit"
+					ng-options="model as model.name for model in allModels"
 				>
 			</select>
-			<button ng-click="myModelGear.push(gearForNewUnit)">Add gear</button>
+			<label class="title-label">How many to add?</label class="title-label">
+			<input ng-init="modelForNewUnit.amount = 1" style="width:40" ng-model="modelForNewUnit.amount" type="number" min="1" ></input>
+			<button ng-click="myUnitModels.push(modelForNewUnit)">Add models</button>
 		</div>
-		<div class="block" ng-init="myModelAbilities=[]">	
+
+		<div class="block" ng-init="myUnitAbilities=[]">	
 			<label class="title-label">Abilities</label class="title-label">
 			<select
 					ng-model="abilitiesForNewUnit"
 					ng-options="ability as ability.name for ability in allAbilitiesV2"
 				>
 			</select>
-			<button ng-click="myModelAbilities.push(abilitiesForNewUnit)">Add ability</button>
+			<button ng-click="myUnitAbilities.push(abilitiesForNewUnit)">Add ability</button>
 		</div>
-		<div class="block" ng-init="myModelAddOns=[]">	
+		<div class="block" ng-init="myUnitAddOns=[]">	
 			<label class="title-label">Add ons</label class="title-label">
 			<select
 					ng-model="addonsForNewUnit"
 					ng-options="addon as addon.text for addon in allAddonsV2"
 				>
 			</select>
-			<button ng-click="myModelAddOns.push(addonsForNewUnit)">Add add on</button>
+			<button ng-click="myUnitAddOns.push(addonsForNewUnit)">Add add on</button>
 		</div>
 		<div class="block" ng-init="myModelPowers=[]">	
 			<label class="title-label">Known powers</label class="title-label">
@@ -116,16 +151,25 @@
 					<button ng-click="myModelGear.splice($index, 1)">X</button>
 				</li>
 			</ul>
+			<p>and will have the following {{myUnitModels.length}} models:</p>
+			<ul>
+				<li ng-repeat="model in myUnitModels track by $index">{{model.name}}
+					<button ng-click="myUnitModels.splice($index, 1)">X</button>
+					<ul>With the following gear:
+						<li ng-repeat="modelItem in model.gear">{{modelItem.name}}(x{{{{modelItem.amount}})</li>
+					</ul>
+				</li>
+			</ul>
 			<p>and will have the following abilities:</p>
 			<ul>
-				<li ng-repeat="ability in myModelAbilities track by $index">{{ability.name}}
-					<button ng-click="myModelAbilities.splice($index, 1)">X</button>
+				<li ng-repeat="ability in myUnitAbilities track by $index">{{ability.name}}
+					<button ng-click="myUnitAbilities.splice($index, 1)">X</button>
 				</li>
 			</ul>
 			<p>and will have the following add ons:</p>
 			<ul>
-				<li ng-repeat="addon in myModelAddOns track by $index">{{addon.text}}
-					<button ng-click="myModelAddOns.splice($index, 1)">X</button>
+				<li ng-repeat="addon in myUnitAddOns track by $index">{{addon.text}}
+					<button ng-click="myUnitAddOns.splice($index, 1)">X</button>
 				</li>
 			</ul>
 			<p>and will have the following powers:</p>
@@ -140,8 +184,8 @@
 					<button ng-click="myModelSets.splice($index, 1)">X</button>
 				</li>
 			</ul>
-			<button ng-click="addUnit(newUnitName, numberOfModels, newUnitCost, factionForNewUnit.id,
-									  myModelGear, myModelAbilities, myModelAddOns, myModelPowers, myModelSets) ">Add unit</button>
+			<button ng-click="addUnit(newUnitName, myUnitModels.length, newUnitCost, factionForNewUnit.id,
+									  myUnitAbilities, myUnitAddOns, myModelPowers, myModelSets, myUnitModels) ">Add unit</button>
 		</div>
 	</div>
 	

@@ -1,5 +1,5 @@
 <?php
-include('../../src/config/sql_config.php');
+include('../../../src/config/sql_config.php');
 
 $unitId = $_GET['unitId'];
 $abilityId = $_GET['abilityId'];

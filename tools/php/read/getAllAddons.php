@@ -1,5 +1,5 @@
 <?php
-include('../../src/config/sql_config.php');
+include('../../../src/config/sql_config.php');
 
 $query =  $mysqli->prepare("select * from addons order by text");
 $query->execute();

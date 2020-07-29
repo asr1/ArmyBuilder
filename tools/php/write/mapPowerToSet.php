@@ -1,5 +1,5 @@
 <?php
-include('../../src/config/sql_config.php');
+include('../../../src/config/sql_config.php');
 
 $setId = $_GET['setId'];
 $powerId = $_GET['powerId'];

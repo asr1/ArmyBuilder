@@ -1,5 +1,5 @@
 <?php
-include('../../src/config/sql_config.php');
+include('../../../src/config/sql_config.php');
 
 $text           = $_GET['text'];
 $cost           = $_GET['cost'];

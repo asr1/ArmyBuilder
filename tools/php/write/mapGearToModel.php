@@ -1,5 +1,5 @@
 <?php
-include('../../src/config/sql_config.php');
+include('../../../src/config/sql_config.php');
 
 $modelId = $_GET['modelId'];
 $gearId = $_GET['gearId'];

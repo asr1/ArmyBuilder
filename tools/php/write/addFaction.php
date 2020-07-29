@@ -1,5 +1,5 @@
 <?php
-include('../../src/config/sql_config.php');
+include('../../../src/config/sql_config.php');
 
 $gameId = $_GET['gameId'];
 $name = $_GET['name'];

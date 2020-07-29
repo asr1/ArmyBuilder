@@ -283,24 +283,45 @@ app.controller('builderCtrl', function($scope, $http){
 	/* addUnit. Takes in the name, number of models,
 	 * cost and factionid of the unit to add
 	 * Adds it to the database.
-	 * Then uses that id to associate gear, abilites, 
+	 * Then uses that id to associate abilites, 
+	 * addons, powerSets, which is an arry of
+	 * objects with 2 properties; amount - the number
+	 * of powers a unit gets from a set, and from - the
+	 * set (including setId) that the unit chooses from,
+	 * and models, the models to add.
+	 * These are used to populate the tables approprirately.
+	*/
+	$scope.addUnit = async function(name, numModels, cost, factionId,
+									abilArr, addonArr, powerArr, powerSets, models) {
+		if(!name || !numModels || !factionId || (!cost && cost !== 0) || !models || models.length == 0) { return; }
+		const response = await $http.post('php/addUnit.php?name='+name);
+		const newUnitId = response.data;
+		
+		await mapUnitToAbility(newUnitId, abilArr);
+		await mapAddonToUnit(newUnitId, addonArr);
+		await addKnownPowers(newUnitId, powerArr);
+		await mapUnitToPowerSets(newUnitId, powerSets);
+		await mapModelsToUnit(newUnitId, model);
+	}
+	
+	/* addModel. Takes in the name, number of models,
+	 * cost and factionid of the unit to add
+	 * Adds it to the database.
+	 * Then uses that id to associate abilites, 
 	 * addons, and powerSets, which is an arry of
 	 * objects with 2 properties; amount - the number
 	 * of powers a unit gets from a set, and from - the
 	 * set (including setId) that the unit chooses from.
 	 * These are used to populate the tables approprirately.
 	*/
-	$scope.addUnit = async function(name, numModels, cost, factionId,
-									gearArr, abilArr, addonArr, powerArr, powerSets) {
-		if(!name || !numModels || !factionId || (!cost && cost !== 0)) { return; }
-		const response = await $http.post('php/addUnit.php?name='+name+'&numModels='+numModels+'&cost='+cost+'&factionId='+factionId);
-		const newUnitId = response.data;
+	$scope.addModel = async function(name, gearArr, addonArr) {
+		if(!name) { return; }
+		const response = await $http.post('php/write/addModel.php?name='+name);
+		const newModelId = response.data;
 		
-		// await addUnitToGear(newUnitId, gearArr);
-		await mapUnitToAbility(newUnitId, abilArr);
-		await mapAddonToUnit(newUnitId, addonArr);
-		await addKnownPowers(newUnitId, powerArr);
-		await mapUnitToPowerSets(newUnitId, powerSets);
+		await addGearToModel(newModelId, gearArr);
+		await mapAddonToUnit(newModelId, addonArr);
+		await updateModelsAsync();
 	}
 	
 	/* mapUnitToPowerSets. Takes in the unit id and 
@@ -316,6 +337,20 @@ app.controller('builderCtrl', function($scope, $http){
 		let promises = [];
 		powerSetArr.forEach((set) => {
 			promises.push($http.post('php/write/mapUnitToPowerSet.php?unitId='+unitId+'&setId='+set.from.setId+'&amount='+set.amount));
+		});
+		await Promise.all(promises);
+	}
+
+	/* mapModelsToUnit. Takes in the unit id and 
+	 * array of models and adds each mapping to
+	 * the databse.
+	*/
+	async function mapModelsToUnit(unitId, models) {
+		if(!unitId || !models || !models.length) { return; }
+		
+		let promises = [];
+		models.forEach((model) => {
+			promises.push($http.post('php/write/mapModelToUnit.php?unitId='+unitId+'&modelId='+model.id+'&modelCount='+model.amount));
 		});
 		await Promise.all(promises);
 	}
