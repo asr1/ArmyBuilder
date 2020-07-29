@@ -20,11 +20,11 @@ File upload
 \# Remove from army
 \# Allow adding the same unit twice - possible cloning issue. (issue in add spaces)
 \# Total cost
-Powers support
+\# Powers support
 	\# Known
-	Options
-		Need to retrieve them the same way we get them -- first the set name, then the options in the set.
-Mixed units (with 1 captain and 3 lieutenants, for example)
+	\# Options
+		\# Need to retrieve them the same way we get them -- first the set name, then the options in the set.
+\# Mixed units (with 1 captain and 3 lieutenants, for example)
 
 
 Tools/Builder ("Databuilder")
@@ -58,32 +58,33 @@ Tools/Builder ("Databuilder")
 			powers (known)
 			powers (options)
 	Add model
-		Addons
-		gear
+		\# Addons
+		\# gear
 	
 Data correction:
-	Intercessor squad should have 1 sergeant and 4 intercessors
-	Inceptor Squad should have 1 seargeant and 2 inceptors
-	Hellblaster squad should have 1 seargent and 4 hellblasters
+	\# Intercessor squad should have 1 sergeant and 4 intercessors
+	\# Inceptor Squad should have 1 seargeant and 2 inceptors
+	\# Hellblaster squad should have 1 seargent and 4 hellblasters
 	\# Lord of Contagion gear: plaguereaper not showing ability
-	Malignant Plaguecaster missing (not enough powers support)
-	Plague Marines missing (need mutex addon support)
-		Also need full mixed squad approach
+	\# Malignant Plaguecaster missing (not enough powers support)
+	Plague Marines need mutex addon support
+		\# Also need full mixed squad approach
 	
 bug where if click factions too quickly we get scope.$apply issue. Easy fix.
 \# Remove legacy code
 
 Address TODOs
+	especially in getModelName
 
 \# Fix old data in DB
 
-Change model to be base entity instead of unit
-Update models to be singular named
-Update mappings 
-Update stored procs
-rename stored procs
-Update armybuilder to work with new
-update databuilder to build new
+\# Change model to be base entity instead of unit
+\# Update models to be singular named
+\# Update mappings 
+\# Update stored procs
+\# rename stored procs
+\# Update armybuilder to work with new
+\# update databuilder to build new
 
 
 \# Fix unit addons -- don't know cost.
