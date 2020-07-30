@@ -117,6 +117,7 @@
 												id="{{getAddOnId(false, model.Name, $index)}}"
 												ng-model="checked" 
 												ng-click="setAddOnCost(checked, unit, addon, model, $index)"
+												ng-disabled="shouldDisableModelAddon(model, addon, checked)"
 												type="checkbox">
 											</input>
 										</span>

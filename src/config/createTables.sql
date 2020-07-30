@@ -44,6 +44,7 @@ create table if not exists addons (
 	amount int,
 	times int default 1, --The max number of times an addon can be taken
 	modelIdToAdd int,
+	maxTimesPerUnit int, -- the maximum number of times models in one unit can take this addon
 	primary key (id)
 );
 
@@ -191,4 +192,23 @@ create table if not exists unit_to_model(
     modelCount int, --How many copies of that model are in the unit
     primary key (id));
 
+/*Used when one addon automatically gives another.
+ * For example if a unit addon adds 4 of one model
+ * and one of another, have the "add 4" addon grant
+ * the add 1. Or have an "empty" parent addon called
+ * add 5 that just grants the 4 and the 1.
+ */
+create table if not exists addon_grants_addon(
+    id int not null auto_increment,
+    addonId int, --When I take this addon...
+    idOfAddonToGrant int, --I get this one for free
+    primary key (id));
 
+/* Used when a certain model-level addon requires
+ * that a unit-levle addon be taken first.
+*/
+create table if not exists addon_requires_addon(
+    id int not null auto_increment,
+    addonId int, -- I can't take this addon
+    requiresAddonId int, -- Unless I have this one
+    primary key (id));

@@ -448,6 +448,22 @@ app.controller('builderCtrl', function($scope, $http){
 		addPowerToUnit(unit, power, model, powerOptionIndex, checkboxIndex); // Necessary? Not in current use, possibly need to revert (7/27/2020)
 	}
 
+	/* shouldDisableModelAddon() determines if an
+	 * addon should be disabled at the model level.
+	 * Based on maxTimesPerUnit.
+	 */
+	$scope.shouldDisableModelAddon = function(model, addon, checked) {
+		if(checked) { return false; }
+		let shouldDisable = false;
+		if(!addon.maxTimesPerUnit) { return false; }
+		if(!$scope.enabledAddOns[model.unitName] || !$scope.enabledAddOns[model.unitName][addon.id]) {
+			return false;
+		}
+		shouldDisable = $scope.enabledAddOns[model.unitName][addon.id] >= addon.maxTimesPerUnit;
+		
+		return shouldDisable;
+	}
+
 	/* Should disable power. Together with setChosen power
 	 * determines if a checkbox should be disabled from the
 	 * HTML.
@@ -1003,11 +1019,14 @@ app.controller('builderCtrl', function($scope, $http){
 	function registerAddOnStatus(addOnId, isEnabled, unitName, model, idx){
 		let checkBoxid;
 		if(model) {
-			if(!$scope.enabledAddOns[model.Name]){
-				$scope.enabledAddOns[model.Name] = [];
+			if(!$scope.enabledAddOns[model.unitName]){
+				$scope.enabledAddOns[model.unitName] = [];
 			}
-			$scope.enabledAddOns[model.Name][addOnId] = isEnabled;
-			checkBoxid = $scope.getAddOnId(false, model.Name, idx);
+			if(!$scope.enabledAddOns[model.unitName][addOnId]) {
+				$scope.enabledAddOns[model.unitName][addOnId] = 0;
+			}
+			$scope.enabledAddOns[model.unitName][addOnId] += isEnabled ? 1 : -1;
+			checkBoxid = $scope.getAddOnId(false, model.name, idx);
 		}
 		else {
 			if(!$scope.enabledAddOns[unitName]){

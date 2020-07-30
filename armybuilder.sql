@@ -16,30 +16,6 @@
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
 --
--- Table structure for table `addon_level`
---
-
-DROP TABLE IF EXISTS `addon_level`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `addon_level` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `name` varchar(20) DEFAULT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `addon_level`
---
-
-LOCK TABLES `addon_level` WRITE;
-/*!40000 ALTER TABLE `addon_level` DISABLE KEYS */;
-INSERT INTO `addon_level` VALUES (1,'model'),(2,'unit');
-/*!40000 ALTER TABLE `addon_level` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
 -- Table structure for table `addon_mutexes`
 --
 
@@ -314,6 +290,155 @@ LOCK TABLES `gear_to_keywords` WRITE;
 UNLOCK TABLES;
 
 --
+-- Table structure for table `model_to_addon`
+--
+
+DROP TABLE IF EXISTS `model_to_addon`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `model_to_addon` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `modelId` int(11) DEFAULT NULL,
+  `addonId` int(11) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `model_to_addon`
+--
+
+LOCK TABLES `model_to_addon` WRITE;
+/*!40000 ALTER TABLE `model_to_addon` DISABLE KEYS */;
+INSERT INTO `model_to_addon` VALUES (1,2,1);
+/*!40000 ALTER TABLE `model_to_addon` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `model_to_gear`
+--
+
+DROP TABLE IF EXISTS `model_to_gear`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `model_to_gear` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `gearId` int(11) DEFAULT NULL,
+  `modelId` int(11) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=44 DEFAULT CHARSET=utf8mb4;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `model_to_gear`
+--
+
+LOCK TABLES `model_to_gear` WRITE;
+/*!40000 ALTER TABLE `model_to_gear` DISABLE KEYS */;
+INSERT INTO `model_to_gear` VALUES (1,5,1),(2,9,1),(3,2,2),(4,3,2),(5,6,2),(6,7,2),(7,3,3),(8,4,3),(9,6,3),(10,7,3),(11,3,17),(12,4,17),(13,6,17),(14,7,17),(15,1,18),(16,1,18),(17,8,16),(18,3,16),(19,6,16),(20,7,16),(21,13,7),(22,17,8),(23,16,8),(24,7,8),(25,15,8),(26,11,9),(27,11,9),(28,12,9),(29,18,10),(30,14,11),(31,3,11),(32,15,11),(33,7,11),(34,3,4),(35,4,4),(36,6,4),(37,7,4),(38,1,5),(39,1,5),(40,8,6),(41,3,6),(42,6,6),(43,7,6);
+/*!40000 ALTER TABLE `model_to_gear` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `model_to_known_powers`
+--
+
+DROP TABLE IF EXISTS `model_to_known_powers`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `model_to_known_powers` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `unitId` int(11) DEFAULT NULL,
+  `powerId` int(11) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `model_to_known_powers`
+--
+
+LOCK TABLES `model_to_known_powers` WRITE;
+/*!40000 ALTER TABLE `model_to_known_powers` DISABLE KEYS */;
+INSERT INTO `model_to_known_powers` VALUES (1,14,1);
+/*!40000 ALTER TABLE `model_to_known_powers` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `model_to_options_powers`
+--
+
+DROP TABLE IF EXISTS `model_to_options_powers`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `model_to_options_powers` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `unitId` int(11) DEFAULT NULL,
+  `amount` int(11) DEFAULT NULL,
+  `setId` int(11) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `model_to_options_powers`
+--
+
+LOCK TABLES `model_to_options_powers` WRITE;
+/*!40000 ALTER TABLE `model_to_options_powers` DISABLE KEYS */;
+INSERT INTO `model_to_options_powers` VALUES (1,14,2,1);
+/*!40000 ALTER TABLE `model_to_options_powers` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `models`
+--
+
+DROP TABLE IF EXISTS `models`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `models` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `name` varchar(50) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=19 DEFAULT CHARSET=utf8mb4;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `models`
+--
+
+LOCK TABLES `models` WRITE;
+/*!40000 ALTER TABLE `models` DISABLE KEYS */;
+INSERT INTO `models` VALUES (1,'Captain in Gravis Armour'),(2,'Primaris Lieutenant'),(3,'Primaris Ancient'),(4,'Intercessor'),(5,'Inceptor'),(6,'Hellblaster'),(7,'Lord of Contagion'),(8,'Noxious Blightbringer'),(9,'Foetid Bloat-Drone'),(10,'Poxwalker'),(11,'Malignant Plaguecaster'),(16,'Hellblaster Sergeant'),(17,'Intercessor Sergeant'),(18,'Inceptor Sergeant');
+/*!40000 ALTER TABLE `models` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `power_sets`
+--
+
+DROP TABLE IF EXISTS `power_sets`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `power_sets` (
+  `setId` int(11) NOT NULL AUTO_INCREMENT,
+  `setName` varchar(50) DEFAULT NULL,
+  PRIMARY KEY (`setId`)
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `power_sets`
+--
+
+LOCK TABLES `power_sets` WRITE;
+/*!40000 ALTER TABLE `power_sets` DISABLE KEYS */;
+INSERT INTO `power_sets` VALUES (1,'Contagion discipline');
+/*!40000 ALTER TABLE `power_sets` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `power_table`
 --
 
@@ -351,7 +476,7 @@ CREATE TABLE `power_to_set` (
   `powerId` int(11) DEFAULT NULL,
   `setId` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -360,6 +485,7 @@ CREATE TABLE `power_to_set` (
 
 LOCK TABLES `power_to_set` WRITE;
 /*!40000 ALTER TABLE `power_to_set` DISABLE KEYS */;
+INSERT INTO `power_to_set` VALUES (1,2,1),(2,3,1),(3,4,1);
 /*!40000 ALTER TABLE `power_to_set` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -426,7 +552,7 @@ CREATE TABLE `unit_to_ability` (
   `unitId` int(11) DEFAULT NULL,
   `unitAbilityId` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=25 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=27 DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -435,7 +561,7 @@ CREATE TABLE `unit_to_ability` (
 
 LOCK TABLES `unit_to_ability` WRITE;
 /*!40000 ALTER TABLE `unit_to_ability` DISABLE KEYS */;
-INSERT INTO `unit_to_ability` VALUES (1,1,1),(2,1,2),(3,1,3),(4,2,1),(5,2,3),(6,6,4),(7,6,1),(8,7,1),(9,8,1),(10,8,5),(11,8,6),(12,9,1),(13,10,7),(14,10,10),(15,10,11),(16,10,12),(17,11,14),(18,12,7),(19,12,8),(20,12,9),(21,13,7),(22,13,15),(23,13,16),(24,13,17);
+INSERT INTO `unit_to_ability` VALUES (1,1,1),(2,1,2),(3,1,3),(4,2,1),(5,2,3),(6,6,4),(7,6,1),(8,7,1),(9,8,1),(10,8,5),(11,8,6),(12,9,1),(13,10,7),(14,10,10),(15,10,11),(16,10,12),(17,11,14),(18,12,7),(19,12,8),(20,12,9),(21,13,7),(22,13,15),(23,13,16),(24,13,17),(25,14,7),(26,14,13);
 /*!40000 ALTER TABLE `unit_to_ability` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -460,82 +586,34 @@ CREATE TABLE `unit_to_addon` (
 
 LOCK TABLES `unit_to_addon` WRITE;
 /*!40000 ALTER TABLE `unit_to_addon` DISABLE KEYS */;
-INSERT INTO `unit_to_addon` VALUES (1,2,1),(2,2,2),(3,13,3);
+INSERT INTO `unit_to_addon` VALUES (2,2,2),(3,13,3);
 /*!40000 ALTER TABLE `unit_to_addon` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
--- Table structure for table `unit_to_gear`
+-- Table structure for table `unit_to_model`
 --
 
-DROP TABLE IF EXISTS `unit_to_gear`;
+DROP TABLE IF EXISTS `unit_to_model`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `unit_to_gear` (
+CREATE TABLE `unit_to_model` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `unitId` int(11) DEFAULT NULL,
-  `gearId` int(11) DEFAULT NULL,
+  `modelId` int(11) DEFAULT NULL,
+  `modelCount` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=30 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `unit_to_gear`
+-- Dumping data for table `unit_to_model`
 --
 
-LOCK TABLES `unit_to_gear` WRITE;
-/*!40000 ALTER TABLE `unit_to_gear` DISABLE KEYS */;
-INSERT INTO `unit_to_gear` VALUES (1,1,5),(2,1,9),(3,2,2),(4,2,3),(5,2,6),(6,2,7),(7,6,3),(8,6,4),(9,6,6),(10,6,7),(11,7,3),(12,7,4),(13,7,6),(14,7,7),(15,8,1),(16,8,1),(17,9,8),(18,9,3),(19,9,6),(20,9,7),(21,10,13),(22,11,17),(23,11,16),(24,11,7),(25,11,15),(26,12,11),(27,12,11),(28,12,12),(29,13,18);
-/*!40000 ALTER TABLE `unit_to_gear` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Table structure for table `unit_to_known_powers`
---
-
-DROP TABLE IF EXISTS `unit_to_known_powers`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `unit_to_known_powers` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `unitId` int(11) DEFAULT NULL,
-  `powerId` int(11) DEFAULT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `unit_to_known_powers`
---
-
-LOCK TABLES `unit_to_known_powers` WRITE;
-/*!40000 ALTER TABLE `unit_to_known_powers` DISABLE KEYS */;
-/*!40000 ALTER TABLE `unit_to_known_powers` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Table structure for table `unit_to_options_powers`
---
-
-DROP TABLE IF EXISTS `unit_to_options_powers`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `unit_to_options_powers` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `unitId` int(11) DEFAULT NULL,
-  `amount` int(11) DEFAULT NULL,
-  `setId` int(11) DEFAULT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `unit_to_options_powers`
---
-
-LOCK TABLES `unit_to_options_powers` WRITE;
-/*!40000 ALTER TABLE `unit_to_options_powers` DISABLE KEYS */;
-/*!40000 ALTER TABLE `unit_to_options_powers` ENABLE KEYS */;
+LOCK TABLES `unit_to_model` WRITE;
+/*!40000 ALTER TABLE `unit_to_model` DISABLE KEYS */;
+INSERT INTO `unit_to_model` VALUES (1,1,1,1),(2,2,2,1),(3,6,3,1),(4,7,17,1),(5,7,4,4),(6,8,5,2),(7,8,18,1),(8,9,6,4),(9,9,16,1),(10,10,7,1),(11,11,8,1),(12,12,9,1),(13,13,10,10),(14,14,11,1);
+/*!40000 ALTER TABLE `unit_to_model` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -548,11 +626,10 @@ DROP TABLE IF EXISTS `units`;
 CREATE TABLE `units` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(50) DEFAULT NULL,
-  `numberOfModels` int(11) DEFAULT NULL,
-  `cost` int(11) DEFAULT NULL,
   `factionId` int(11) DEFAULT NULL,
+  `costPerModel` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -561,7 +638,7 @@ CREATE TABLE `units` (
 
 LOCK TABLES `units` WRITE;
 /*!40000 ALTER TABLE `units` DISABLE KEYS */;
-INSERT INTO `units` VALUES (1,'Captain in Gravis Armour',1,98,2),(2,'Primaris Lieutenants',1,60,2),(6,'Primaris Ancient',1,63,2),(7,'Intercessor Squad',5,24,2),(8,'Inceptor Squad',3,39,2),(9,'Hellblaster Squad',5,23,2),(10,'Lord of Contagion',1,139,1),(11,'Noxious Blightbringer',1,64,1),(12,'Foetid Bloat-Drone',1,143,1),(13,'Poxwalkers',10,6,1);
+INSERT INTO `units` VALUES (1,'Captain in Gravis Armour',2,98),(2,'Primaris Lieutenants',2,60),(6,'Primaris Ancient',2,63),(7,'Intercessor Squad',2,24),(8,'Inceptor Squad',2,39),(9,'Hellblaster Squad',2,23),(10,'Lord of Contagion',1,139),(11,'Noxious Blightbringer',1,64),(12,'Foetid Bloat-Drone',1,143),(13,'Poxwalkers',1,6),(14,'Malignant Plaguecaster',1,95);
 /*!40000 ALTER TABLE `units` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -574,4 +651,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2020-07-24 20:10:46
+-- Dump completed on 2020-07-25 22:17:07

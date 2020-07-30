@@ -338,12 +338,16 @@
 								>
 							</select>
 						</div>
+						<div>
+							<label class="title-label">Is there a limit to the number of times this addon can be taken by models in one unit?</label>
+							<input type="number" ng-model="unitLimit"></input>
+						</div>
 					</div>
 					<div>
 							<label class="title-label">How many times can you take this addon?</label>
 							<input type="number" ng-model="newAddonTimes"></input>
 					</div>
-					<button ng-click="addNewAddon(newAddonText, newAddonCost, selectedAddonTypeId, addonItemToAdd, addonItemToRemove, newAddonAmount, newAddonTimes, addonModelIdToAdd)">Add</button>
+					<button ng-click="addNewAddon(newAddonText, newAddonCost, selectedAddonTypeId, addonItemToAdd, addonItemToRemove, newAddonAmount, newAddonTimes, addonModelIdToAdd, unitLimit)">Add</button>
 				</div>
 				<div>
 					<span>Existing addons:</span>

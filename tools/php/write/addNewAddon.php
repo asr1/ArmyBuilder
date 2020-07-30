@@ -9,10 +9,11 @@ $removeItemId   = $_GET['removeItemId'];
 $amount         = $_GET['amount'];
 $times         = $_GET['times'];
 $modelId         = $_GET['modelId'];
+$unitLimit         = $_GET['unitLimit'];
 
  
-$query =  $mysqli->prepare("insert into addons (text, cost, typeid, itemIdToAdd, itemIdToRemove, amount, times, modelIdToAdd) values (?, ?, ?, ?, ?, ?, ?, ?)");
-$query->bind_param("siiiiiiii", $text, $cost, $typeId, $addItemId, $removeItemId, $amount, $times, $modelId);
+$query =  $mysqli->prepare("insert into addons (text, cost, typeid, itemIdToAdd, itemIdToRemove, amount, times, modelIdToAdd, maxTimesPerUnit) values (?, ?, ?, ?, ?, ?, ?, ?, ?)");
+$query->bind_param("siiiiiiiii", $text, $cost, $typeId, $addItemId, $removeItemId, $amount, $times, $modelId, $unitLimit);
 $query->execute();
 $result = $query->get_result();
 $arr = array();
