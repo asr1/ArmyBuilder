@@ -23,8 +23,9 @@ $arr = array();
 $query->close();
 
 #JSON-encode the response (necessary for interaction with angular)
-$json_response = json_encode($arr);
-
+# $json_response = json_encode($arr);
+$last_id = $mysqli->insert_id;
+$json_response = json_encode($last_id);
 echo $json_response;
 mysqli_free_result($result);
 ?>

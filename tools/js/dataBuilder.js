@@ -210,18 +210,38 @@ app.controller('builderCtrl', function($scope, $http){
 		$scope.$apply();
 	}
 	
-	/* addNewAddon. Takes in the text, cost, typeid,
-	 * (1 for replace item, 2 for add models, etc),
-	 * item id to add, item id to remove, 
-	 * amount (if applicable), the number of times
-	 * the addon can be taken of the addon
-	 * to add, the id of the model to add, if needed,
-	 * and unitLimit, the max number of times an addon
-	 * can be taken by models in one unit.
-	 * Adds it to the database if there isn't already an 
-	 * addon with that text. 
+	/* addNewAddon. Creates a new addon and adds
+	 * it to the database if there isn't already
+	 * an addon with that text
+	 * text            - The text of the addon to add
+	 * cost            - The cost of the addon to add
+				Oftentimes 0 if it's inferred, like for 
+				replace weapon
+	 * typeid          - type id of addon (1 for replace
+				item, 2 for add models, etc)
+	 * addItemId       - id of the item to add
+	 * removeItemId    - id of the item to remove
+	 * amount          - if applicable, the number of models to add
+	 * maxTimesTaken   - the number of times
+				the addon can be taken. For example, add
+				between 1 and 20 tyranids. Defaults to 1
+	 * modelId         - if applicable, the modelId to be added
+	 * unitLimit       - the max number of times an addon can be taken
+				by models in one unit across all models. For example,
+				3 of your skitari can add omnispex
+	 * dependsOnArr    - array of addonIds. This addon can only be taken
+				by a model if the unit that the model belongs to has all 
+				the addons in this array
+	 * grantsArr       - array of addonIds. If this addon is taken, it 
+				gives all of these addons for free. Addons in the array
+				must be at the same level (unit or model) as this addon,
+				as they will apply to the same entity. Used for complex
+				addons that are better expressed as a combination of 
+				simple ones. For example, add one skitari ranger and 2
+				techpriests to this unit.
 	*/
-	$scope.addNewAddon = async function(text, cost, typeId, addItemId, removeItemId, amount, maxTimesTaken, modelId, unitLimit) {
+	$scope.addNewAddon = async function(text, cost, typeId, addItemId, removeItemId, amount, maxTimesTaken, modelId,
+										unitLimit, dependsOnArr, grantsArr) {
 		if(!text || !typeId) { return; }
 		if(typeId === $scope.AddonTypesEnum.IncreaseNumberOfModels && (!amount || !modelId)) { return; }
 		if(typeId === $scope.AddonTypesEnum.AddItem && !addItemId) { return; }
@@ -238,20 +258,21 @@ app.controller('builderCtrl', function($scope, $http){
 		if($scope.allAddonsV2.findIndex( (addon) => addon.text === text) !== -1) { return; } // addon already exists
 		$scope.allAddonsV2.push( {'text' : text} );
 		
-		$http({
-		  method: 'POST',
-		  url: 'php/write/addNewAddon.php?cost='+cost+'&typeId='+typeId+'&addItemId='+addItemId+'&removeItemId='+removeItemId+'&amount='+amount+'&text='+text+'&times='+maxTimesTaken+'&modelId='+modelId+'&unitLimit='+unitLimit,
-		  data: JSON.stringify({text})
-		})
-		.then(async function (success) {
-		  console.log("Success");
-		  console.log(success);
-		  await updateAddonsAsync();
-		}, function (error) {
-		  console.log(error);
-		});
+		const newAddonId = await $http.post('php/write/addNewAddon.php?cost='+cost+'&typeId='+typeId+'&addItemId='+addItemId+'&removeItemId='+removeItemId+'&amount='+amount+'&text='+text+'&times='+maxTimesTaken+'&modelId='+modelId+'&unitLimit='+unitLimit);
 		
+		let promises = [];
+		dependsOnArr.forEach((depAddonId) => {
+			promises.push($http.post('php/write/mapAddonReqs.php?addonId='+newAddonId+'&requiresId='+depAddonId));
+		});
+		await Promise.all(promises);
+		
+		promises = [];
+		grantsArr.forEach((grandAddonId) => {
+			promises.push($http.post('php/write/mapAddonGrants.php?addonId='+newAddonId+'&idOfAddonToGrant='+grandAddonId));
+		});
+		await Promise.all(promises);
 
+		await updateAddonsAsync();
 	}
 	
 	/* Gets all powers from database
@@ -297,7 +318,7 @@ app.controller('builderCtrl', function($scope, $http){
 									abilArr, addonArr, powerArr, powerSets, models) {
 		if(!name || !factionId || (!cost && cost !== 0) || !models || models.length == 0) { return; }
 		const numModels = $scope.getNumModels(models);
-		const response = await $http.post('php/addUnit.php?name='+name+'&numModels='+numModels+'&cost='+cost+'&factionId='+factionId);
+		const response = await $http.post('php/write/addUnit.php?name='+name+'&numModels='+numModels+'&cost='+cost+'&factionId='+factionId);
 		const newUnitId = response.data;
 		
 		await mapUnitToAbility(newUnitId, abilArr);

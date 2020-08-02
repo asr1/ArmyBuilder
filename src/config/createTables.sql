@@ -205,7 +205,7 @@ create table if not exists addon_grants_addon(
     primary key (id));
 
 /* Used when a certain model-level addon requires
- * that a unit-levle addon be taken first.
+ * that a unit-level addon be taken first.
 */
 create table if not exists addon_requires_addon(
     id int not null auto_increment,

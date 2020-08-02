@@ -342,12 +342,42 @@
 							<label class="title-label">Is there a limit to the number of times this addon can be taken by models in one unit?</label>
 							<input type="number" ng-model="unitLimit"></input>
 						</div>
+						<div ng-init="myAddonDependsOn=[]"> 
+							<label class="title-label">Does this addon depend on any other addons?</label>
+							<select
+								ng-model="addDependsOn"
+								ng-options="addon.id as addon.text for addon in allAddonsV2"
+								>
+							</select>
+							<button ng-click="myAddonDependsOn.push(addDependsOn)">Add add on</button>
+							<p>{{newAddonText}} will depend on the following addons:</p>
+							<ul>
+								<li ng-repeat="addon in myAddonDependsOn track by $index">{{addon.text}}
+									<button ng-click="myAddonDependsOn.splice($index, 1)">X</button>
+								</li>
+							</ul>
+						</div>
+						<div ng-init="myAddonGrants=[]"> 
+							<label class="title-label">Does this addon grant any other addons?</label>
+							<select
+								ng-model="addOnToGrant"
+								ng-options="addon.id as addon.text for addon in allAddonsV2"
+								>
+							</select>
+							<button ng-click="myAddonGrants.push(addOnToGrant)">Add add on</button>
+							<p>{{newAddonText}} will grant the following addons:</p>
+							<ul>
+								<li ng-repeat="addon in myAddonGrants track by $index">{{addon.text}}
+									<button ng-click="myAddonGrants.splice($index, 1)">X</button>
+								</li>
+							</ul>
+						</div>
 					</div>
 					<div>
 							<label class="title-label">How many times can you take this addon?</label>
 							<input type="number" ng-model="newAddonTimes"></input>
 					</div>
-					<button ng-click="addNewAddon(newAddonText, newAddonCost, selectedAddonTypeId, addonItemToAdd, addonItemToRemove, newAddonAmount, newAddonTimes, addonModelIdToAdd, unitLimit)">Add</button>
+					<button ng-click="addNewAddon(newAddonText, newAddonCost, selectedAddonTypeId, addonItemToAdd, addonItemToRemove, newAddonAmount, newAddonTimes, addonModelIdToAdd, unitLimit, myAddonDependsOn, myAddonGrants)">Add</button>
 				</div>
 				<div>
 					<span>Existing addons:</span>
