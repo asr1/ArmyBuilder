@@ -45,6 +45,7 @@ create table if not exists addons (
 	times int default 1, --The max number of times an addon can be taken
 	modelIdToAdd int,
 	maxTimesPerUnit int, -- the maximum number of times models in one unit can take this addon
+	itemSetId int, -- the maximum number of times models in one unit can take this addon
 	primary key (id)
 );
 
@@ -212,3 +213,19 @@ create table if not exists addon_requires_addon(
     addonId int, -- I can't take this addon
     requiresAddonId int, -- Unless I have this one
     primary key (id));
+	
+
+-- Used for addons that allow picking n 
+-- items from a set.
+ create table if not exists item_sets (
+    id int not null auto_increment,
+    name varchar(100),
+    primary key (id));
+
+--Map item to item_set
+create table if not exists item_to_set (
+	id int not null auto_increment,
+	itemId int,
+	setId int,
+	primary key (id)
+);

@@ -330,6 +330,24 @@
 								>
 							</select>
 						</div>
+						<div ng-show="selectedAddonTypeId === AddonTypesEnum.ReplaceItemFromSet">
+							<label class="title-label">Item to remove</label>
+							<select
+								ng-model="addonItemToRemove"
+								ng-options="item.id as item.name for item in allGearV2"
+								>
+							</select>
+							<label class="title-label">Item set to choose from</label>
+							<select
+								ng-model="addonItemSetToAddFrom"
+								ng-options="set.id as set.name for set in allItemSets"
+								>
+							</select>
+							<div>
+								<label class="title-label">Amount: how many to add from set?</label>
+								<input type="number" ng-model="amount"></input>
+							</div>
+						</div>
 						<div ng-show="selectedAddonTypeId === AddonTypesEnum.ReplaceItem || selectedAddonTypeId === AddonTypesEnum.AddItem">
 							<label class="title-label">Item to add</label>
 							<select
@@ -349,7 +367,7 @@
 								ng-options="addon.id as addon.text for addon in allAddonsV2"
 								>
 							</select>
-							<button ng-click="myAddonDependsOn.push(addDependsOn)">Add add on</button>
+							<button ng-click="myAddonDependsOn.push(addDependsOn)">Add dependency</button>
 							<p>{{newAddonText}} will depend on the following addons:</p>
 							<ul>
 								<li ng-repeat="addon in myAddonDependsOn track by $index">{{addon.text}}
@@ -364,7 +382,7 @@
 								ng-options="addon.id as addon.text for addon in allAddonsV2"
 								>
 							</select>
-							<button ng-click="myAddonGrants.push(addOnToGrant)">Add add on</button>
+							<button ng-click="myAddonGrants.push(addOnToGrant)">Add grant</button>
 							<p>{{newAddonText}} will grant the following addons:</p>
 							<ul>
 								<li ng-repeat="addon in myAddonGrants track by $index">{{addon.text}}
@@ -377,7 +395,7 @@
 							<label class="title-label">How many times can you take this addon?</label>
 							<input type="number" ng-model="newAddonTimes"></input>
 					</div>
-					<button ng-click="addNewAddon(newAddonText, newAddonCost, selectedAddonTypeId, addonItemToAdd, addonItemToRemove, newAddonAmount, newAddonTimes, addonModelIdToAdd, unitLimit, myAddonDependsOn, myAddonGrants)">Add</button>
+					<button ng-click="addNewAddon(newAddonText, newAddonCost, selectedAddonTypeId, addonItemToAdd, addonItemToRemove, newAddonAmount, newAddonTimes, addonModelIdToAdd, unitLimit, myAddonDependsOn, myAddonGrants, addonItemSetToAddFrom)">Submit</button>
 				</div>
 				<div>
 					<span>Existing addons:</span>
@@ -446,6 +464,92 @@
 					</ul>
 				</div>
 				<button ng-click="addNewPowerSet(newPowerSetName, powerSetPowers)">Add</button>
+			</div>
+		</div>
+		<!-- Item sets -->
+		<div name="add-item-set" ng-init="showItemSet=true" class="banner">
+			<span>Add new item set</Span><br>
+			<button ng-click="showItemSet = !showItemSet">{{showItemSet ? "hide" : "show"}}</button>
+			<div ng-show="showItemSet">
+				<div class="block" ng-init="itemSetItems=[]">	
+					<div>
+						<label class="title-label">Name</label>
+						<input type="text" ng-model="newItemSet"></input>
+					</div>
+					<label class="title-label">Items</label class="title-label">
+					<select
+							ng-model="itemForSet"
+							ng-options="item as item.name for item in allGearV2"
+						>
+					</select>
+					<button ng-click="itemSetItems.push(itemForSet)">Add item</button>
+				</div>
+				<p>{{newItemSet}} will have the following items:</p>
+				<ul>
+					<li ng-repeat="item in itemSetItems track by $index">{{item.name}}
+						<button ng-click="itemSetItems.splice($index, 1)">X</button>
+					</li>
+				</ul>
+				<div>
+					<span>Existing item Sets:</span>
+					<ul>
+						<li ng-repeat="set in allItemSets">{{set.name}}
+							<ul>
+								<li ng-repeat="item in set.items">{{item.name}}</li>
+							</ul>
+						</li>
+					</ul>
+				</div>
+				<button ng-click="addNewItemSet(newItemSet, itemSetItems)">Add</button>
+			</div>
+		</div>
+		<!-- Gear abilities -->
+		<div name="add-gear-ability" ng-init="showGearAbilities=false" class="banner">
+			<span>Add gear abilitiy</Span><br>
+			<button ng-click="showGearAbilities = !showGearAbilities">{{showGearAbilities ? "hide" : "show"}}</button>
+			<div ng-show="showGearAbilities">
+				<div class="block">	
+					<div>
+						<label class="title-label">Ability text</label>
+						<input type="text" ng-model="newGearAbilityText"></input>
+					</div>
+				</div>
+				<div>
+					<span>Existing gear abilities:</span>
+					<ul>
+						<li ng-repeat="ability in allGearAbilities">{{ability.text}}
+						</li>
+					</ul>
+				</div>
+				<button ng-click="addNewGearAbility(newGearAbilityText)">Add</button>
+			</div>
+		</div>
+		<!-- map Gear abilities -->
+		<div name="map-gear-ability" ng-init="showMapGearAbilities=false" class="banner">
+			<span>Map gear abilitiy</Span><br>
+			<button ng-click="showMapGearAbilities = !showMapGearAbilities">{{showMapGearAbilities ? "hide" : "show"}}</button>
+			<div ng-show="showMapGearAbilities">
+				<div class="block">	
+					<div>
+						<label class="title-label">Gear</label>
+						<select
+							ng-model="itemToMap"
+							ng-options="item as item.name for item in allGearV2"
+						>
+						</select>
+					</div>
+					<div>
+					<div>{{abilityToMap.text}}</div>
+						<label class="title-label">Ability</label>
+						<select
+							style="max-width:30%;"
+							ng-model="abilityToMap"
+							ng-options="ability as ability.text for ability in allGearAbilities"
+						>
+						</select>
+					</div>
+				</div>
+				<button ng-click="mapGearToAbility(itemToMap.id, abilityToMap.id)">Add</button>
 			</div>
 		</div>	
 	</div>

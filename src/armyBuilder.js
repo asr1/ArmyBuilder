@@ -12,7 +12,7 @@ app.controller('builderCtrl', function($scope, $http){
 	let cache = {}; // Cache for network calls to db
 	$scope.buffer = 5; //Padding for addSpaces
 	$scope.myArmyV2 = [];
-	const AddonTypesEnum = {ReplaceItem:1, IncreaseNumberOfModels:2, Direct: 3, AddItem: 4};
+	const AddonTypesEnum = {ReplaceItem:1, IncreaseNumberOfModels:2, Direct: 3, AddItem: 4, ReplaceItemFromSet: 5};
 
 	/*Initialize default game and factions.
 	 * Gets all games from the database,
