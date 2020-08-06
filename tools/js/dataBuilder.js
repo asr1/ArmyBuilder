@@ -18,8 +18,8 @@ app.controller('builderCtrl', function($scope, $http, dataAccess){
 	$scope.allModels = [];
 	$scope.allItemSets = [];
 	$scope.AddonTypesEnum = {ReplaceItem:1, IncreaseNumberOfModels:2, Direct: 3, AddItem: 4, ReplaceItemFromSet: 5};
-	
-	
+
+
 	/* Immediately invoked function
 	 * Initializes games and factions
 	 */
@@ -36,40 +36,25 @@ app.controller('builderCtrl', function($scope, $http, dataAccess){
 		await updateModelsAsync();
 		await updateGearAbilitiesAsync();
 	})();
-	
-	/* Gets all games from database
-	 */
-	async function getGamesAsync() {
-		const response = await $http.post('../src/php/getGames.php');
-		return response.data;
-	}
 
 	/* UpdategamesAsync 
 	 * Gets all games from database
 	 * And modifies $scope to contain updates.
 	*/
 	async function updateGamesAsync() {
-		$scope.allGamesV2 = await getGamesAsync();
+		$scope.allGamesV2 = await dataAccess.getGamesAsync();
 		$scope.$apply();
 	}
 
-	/* Gets all factions for a given gameid from database
-	 */
-	async function getFactionsForGame(gameId) {
-		if(!gameId) { return };
-		const response = await $http.post('../src/php/getFactionsForGame.php?gameId='+gameId);
-		return response.data;
-	}
-	
 	/* UpdateFactionsAsync 
 	 * Gets all games from database
 	 * And modifies $scope to contain updates.
 	*/
 	$scope.updateFactionsForGameAsync = async function(gameId) {
-		$scope.currentFactions = await getFactionsForGame(gameId);
+		$scope.currentFactions = await dataAccess.getFactionsForGame(gameId);
 		$scope.$apply();
 	}
-	
+
 	/* addNewGame. Takes in the name of 
 	 * the game to add. Adds it to the
 	 * database if there isn't already a 
@@ -97,22 +82,15 @@ app.controller('builderCtrl', function($scope, $http, dataAccess){
 		await $scope.updateFactionsForGameAsync(gameId);
 	}
 
-	/* Gets all abilities from database
-	 */
-	async function getAbilitiesAsync() {
-		const response = await $http.post('php/read/getAllAbilities.php');
-		return response.data;
-	}
-	
 	/* updateAbilitiesAsync 
 	 * Gets all abilities from database
 	 * And modifies $scope to contain the data.
 	*/
 	async function updateAbilitiesAsync() {
-		$scope.allAbilitiesV2 = await getAbilitiesAsync();
+		$scope.allAbilitiesV2 = await dataAccess.getAbilitiesAsync();
 		$scope.$apply();
 	}
-	
+
 	/* addNewAbility. Takes in the name of 
 	 * the ability  and the text of the ability 
 	 * to add. Adds it to the database if
@@ -145,57 +123,36 @@ app.controller('builderCtrl', function($scope, $http, dataAccess){
 		if(!gearid || !abilityid) { return; }
 		await $http.post('php/write/mapAbilityToGear.php?gearid='+gearid+'abilityid='+abilityid);
 	}
-	
-	/* Gets all gear from database
-	 */
-	async function getGearAsync() {
-		const response = await $http.post('../src/php/getAllGear.php');
-		return response.data;
-	}
-	
+
 	/* updateGearAsync 
 	 * Gets all gear from database
 	 * And modifies $scope to contain the data.
 	 * THen sorts the same
 	 */
 	async function updateGearAsync() {
-		$scope.allGearV2 = await getGearAsync();
+		$scope.allGearV2 = await dataAccess.getGearAsync();
 		$scope.allGearV2.sort((a,b) => a.name <= b.name ? -1 : 1);
 		$scope.$apply();
 	}
-	
-	/* Gets all gear ranges from database
-	 */
-	async function getGearRangesAsync() {
-		const response = await $http.post('php/read/getGearRanges.php');
-		return response.data;
-	}
-	
+
 	/* updateGearRangesAsync 
 	 * Gets all gear ranges from database
 	 * And modifies $scope to contain the data.
 	*/
 	async function updateGearRangesAsync() {
-		$scope.allGearRanges = await getGearRangesAsync();
+		$scope.allGearRanges = await dataAccess.getGearRangesAsync();
 		$scope.$apply();
 	}
-	
+
 	/* updateGearAbilitiesAsync 
 	 * Gets all gear abilities from database
 	 * And modifies $scope to contain the data.
 	*/
 	async function updateGearAbilitiesAsync() {
-		$scope.allGearAbilities = await getGearAbilitiesAsync();
+		$scope.allGearAbilities = await dataAccess.getGearAbilitiesAsync();
 		$scope.$apply();
 	}
-	
-	/* Gets all gear abilities from database
-	 */
-	async function getGearAbilitiesAsync() {
-		const response = await $http.post('php/read/getGearAbilities.php');
-		return response.data;
-	}
-	
+
 	/* addNewGear. Takes in the name, cost, and
 	 * rangeTypeId (1 for melee, 2 for ranged, etc)
 	 * to add. Adds it to the database if
@@ -207,47 +164,28 @@ app.controller('builderCtrl', function($scope, $http, dataAccess){
 		console.log($scope.allGearV2.findIndex( (gear) => gear.name === name));
 		$scope.allGearV2.push( {'name' : name} );
 		await $http.post('php/write/addGear.php?name='+name+'&cost='+cost+'&rangeId='+rangeId);
-		//TODO:
-		// get the gear id from the above call
-		// Add gear Abilities
-		// Add call to map gear ability to gear
-		// Same for gear keywords?? We don't use this on army builder (yet)
 		await updateGearAsync();
 	}
-	
-	/* Gets all addonTypes from database
-	 */
-	async function getAddonTypesAsync() {
-		const response = await $http.post('php/read/getAddonTypes.php');
-		return response.data;
-	}
-	
+
 	/* updateAddonTypesAsync 
 	 * Gets all addon types from database
 	 * And modifies $scope to contain the data.
 	*/
 	async function updateAddonTypesAsync() {
-		$scope.allAddonTypes = await getAddonTypesAsync();
+		$scope.allAddonTypes = await dataAccess.getAddonTypesAsync();
 		$scope.allAddonTypes.map( (type) => {type.name = type.name.charAt(0).toUpperCase() + type.name.slice(1)});
 		$scope.$apply();
 	}
-	
-	/* Gets all addons from database
-	 */
-	async function getAddonsAsync() {
-		const response = await $http.post('php/read/getAllAddons.php');
-		return response.data;
-	}
-	
+
 	/* updateAddonsAsync 
 	 * Gets all Addons from database
 	 * And modifies $scope to contain the data.
 	*/
 	async function updateAddonsAsync() {
-		$scope.allAddonsV2 = await getAddonsAsync();
+		$scope.allAddonsV2 = await dataAccess.getAddonsAsync();
 		$scope.$apply();
 	}
-	
+
 	/* addNewAddon. Creates a new addon and adds
 	 * it to the database if there isn't already
 	 * an addon with that text
@@ -288,24 +226,24 @@ app.controller('builderCtrl', function($scope, $http, dataAccess){
 		if(typeId === $scope.AddonTypesEnum.AddItem && !addItemId) { return; }
 		if(typeId === $scope.AddonTypesEnum.ReplaceItem && (!addItemId || !removeItemId)) { return; }
 		if(!maxTimesTaken) { maxTimesTaken = 1; }
-		
+
 		for(let i = 0; i < arguments.length; i++) {
 			if(!arguments[i]) {
 				arguments[i] = null;
 			}
 		}
-		
+
 		if($scope.allAddonsV2.findIndex( (addon) => addon.text === text) !== -1) { return; } // addon already exists
 		$scope.allAddonsV2.push( {'text' : text} );
-		
+
 		const newAddonId = await $http.post('php/write/addNewAddon.php?cost='+cost+'&typeId='+typeId+'&addItemId='+addItemId+'&removeItemId='+removeItemId+'&amount='+amount+'&text='+text+'&times='+maxTimesTaken+'&modelId='+modelId+'&unitLimit='+unitLimit+'&itemSetId='+addItemSet);
-		
+
 		let promises = [];
 		dependsOnArr.forEach((depAddonId) => {
 			promises.push($http.post('php/write/mapAddonReqs.php?addonId='+newAddonId+'&requiresId='+depAddonId));
 		});
 		await Promise.all(promises);
-		
+
 		promises = [];
 		grantsArr.forEach((grandAddonId) => {
 			promises.push($http.post('php/write/mapAddonGrants.php?addonId='+newAddonId+'&idOfAddonToGrant='+grandAddonId));
@@ -314,23 +252,16 @@ app.controller('builderCtrl', function($scope, $http, dataAccess){
 
 		await updateAddonsAsync();
 	}
-	
-	/* Gets all powers from database
-	 */
-	async function getPowersAsync() {
-		const response = await $http.post('php/read/getAllPowers.php');
-		return response.data;
-	}
-	
+
 	/* updatePowersAsync 
 	 * Gets all powers from database
 	 * And modifies $scope to contain the data.
 	*/
 	async function updatePowersAsync() {
-		$scope.allPowersV2 = await getPowersAsync();
+		$scope.allPowersV2 = await dataAccess.getPowersAsync();
 		$scope.$apply();
 	}
-	
+
 	/* addNewPower. Takes in the name and text
 	 * of the power to add. Adds it to the database 
 	 * if there isn't already a power with that name. 
@@ -342,7 +273,7 @@ app.controller('builderCtrl', function($scope, $http, dataAccess){
 		await $http.post('php/write/addPower.php?name='+name+'&text='+text);
 		await updatePowersAsync();
 	}
-	
+
 	/* addUnit. Takes in the name,
 	 * cost and factionid of the unit to add
 	 * Adds it to the database.
@@ -360,14 +291,14 @@ app.controller('builderCtrl', function($scope, $http, dataAccess){
 		const numModels = $scope.getNumModels(models);
 		const response = await $http.post('php/write/addUnit.php?name='+name+'&numModels='+numModels+'&cost='+cost+'&factionId='+factionId);
 		const newUnitId = response.data;
-		
+
 		await mapUnitToAbility(newUnitId, abilArr);
 		await mapAddonToUnit(newUnitId, addonArr);
 		await addKnownPowers(newUnitId, powerArr);
 		await mapUnitToPowerSets(newUnitId, powerSets);
 		await mapModelsToUnit(newUnitId, models);
 	}
-	
+
 	/* Returns the total amount of models
 	 * given a set of models that have an
 	 * amount.
@@ -375,7 +306,7 @@ app.controller('builderCtrl', function($scope, $http, dataAccess){
 	$scope.getNumModels = function(models) {
 		return models.reduce( (currentValue, model) => currentValue + model.amount, 0);
 	}
-	
+
 	/* addModel. Takes in the name, number of models,
 	 * cost and factionid of the unit to add
 	 * Adds it to the database.
@@ -390,12 +321,12 @@ app.controller('builderCtrl', function($scope, $http, dataAccess){
 		if(!name) { return; }
 		const response = await $http.post('php/write/addModel.php?name='+name);
 		const newModelId = response.data;
-		
+
 		await addGearToModel(newModelId, gearArr);
 		await mapAddonToUnit(newModelId, addonArr);
 		await updateModelsAsync();
 	}
-	
+
 	/* mapUnitToPowerSets. Takes in the unit id and 
 	 * array of powerSets, where a powerSet is an object
 	 * with 2 properties; amount - the number
@@ -405,7 +336,7 @@ app.controller('builderCtrl', function($scope, $http, dataAccess){
 	*/
 	async function mapUnitToPowerSets(unitId, powerSetArr) {
 		if(!unitId || !powerSetArr || !powerSetArr.length) { return; }
-		
+
 		let promises = [];
 		powerSetArr.forEach((set) => {
 			promises.push($http.post('php/write/mapUnitToPowerSet.php?unitId='+unitId+'&setId='+set.from.setId+'&amount='+set.amount));
@@ -419,21 +350,21 @@ app.controller('builderCtrl', function($scope, $http, dataAccess){
 	*/
 	async function mapModelsToUnit(unitId, models) {
 		if(!unitId || !models || !models.length) { return; }
-		
+
 		let promises = [];
 		models.forEach((model) => {
 			promises.push($http.post('php/write/mapModelToUnit.php?unitId='+unitId+'&modelId='+model.id+'&modelCount='+model.amount));
 		});
 		await Promise.all(promises);
 	}
-	
+
 	/* addGearToModel. Takes in the model id and 
 	 * array of gear to add. Adds each mapping 
 	 * to the databse
 	*/
 	async function addGearToModel(modelId, gearArr) {
 		if(!modelId || !gearArr || !gearArr.length) { return; }
-		
+
 		let promises = [];
 		gearArr.forEach((gear) => {
 			promises.push($http.post('php/write/mapGearToModel.php?modelId='+modelId+'&gearId='+gear.id));
@@ -447,7 +378,7 @@ app.controller('builderCtrl', function($scope, $http, dataAccess){
 	*/
 	async function mapUnitToAbility(unitId, abilArr) {
 		if(!unitId || !abilArr || !abilArr.length) { return; }
-		
+
 		let promises = [];
 		abilArr.forEach((ability) => {
 			promises.push($http.post('php/write/mapAbilityToUnit.php?unitId='+unitId+'&abilityId='+ability.id));
@@ -461,21 +392,21 @@ app.controller('builderCtrl', function($scope, $http, dataAccess){
 	*/
 	async function mapAddonToUnit(unitId, addonArr) {
 		if(!unitId || !addonArr || !addonArr.length) { return; }
-		
+
 		let promises = [];
 		addonArr.forEach((addon) => {
 			promises.push($http.post('php/write/mapAddonToUnit.php?unitId='+unitId+'&addonId='+addon.id));
 		});
 		await Promise.all(promises);
 	}
-	
+
 	/* mapAddonToModel. Takes in the model id and 
 	 * array of addons to add. Adds each mapping to
 	 * the databse
 	*/
 	async function mapAddonToModel(modelId, addonArr) {
 		if(!modelId || !addonArr || !addonArr.length) { return; }
-		
+
 		let promises = [];
 		addonArr.forEach((addon) => {
 			promises.push($http.post('php/write/mapAddonToModel.php?modelId='+modelId+'&addonId='+addon.id));
@@ -489,26 +420,14 @@ app.controller('builderCtrl', function($scope, $http, dataAccess){
 	*/
 	async function addKnownPowers(unitId, powerArr) {
 		if(!unitId || !powerArr || !powerArr.length) { return; }
-		
+
 		let promises = [];
 		powerArr.forEach((power) => {
 			promises.push($http.post('php/mapPowerToUnit.php?unitId='+unitId+'&powerId='+power.id));
 		});
 		await Promise.all(promises);
 	}
-	
-		
-	/* Gets all power sets from database
-	 */
-	async function getPowerSetsAsync() {
-		const response = await $http.post('php/read/getAllPowerSets.php');
-		const sets = response.data;
-		sets.forEach( async (set) => {
-			set.powers = await getPowersInSetAsync(set.setId);
-		});
-		return sets;
-	}
-	
+
 	/* updateItemSetsAsync 
 	 * Gets all item sets from database
 	 * And modifies $scope to contain the data.
@@ -516,72 +435,26 @@ app.controller('builderCtrl', function($scope, $http, dataAccess){
 	async function updateItemSetsAsync() {
 		$scope.allItemSets = await getItemSetsAsync();
 		$scope.$apply();
-	}	
-		
-	/* Gets all item sets from database
-	 */
-	async function getItemSetsAsync() {
-		const response = await $http.post('php/read/getAllItemSets.php');
-		const sets = response.data;
-		sets.forEach( async (set) => {
-			set.items = await getItemsInSetAsync(set.id);
-		});
-		return sets;
 	}
-	
+
 	/* updatePowerSetsAsync 
 	 * Gets all power sets from database
 	 * And modifies $scope to contain the data.
 	*/
 	async function updatePowerSetsAsync() {
-		$scope.allPowerSetsV2 = await getPowerSetsAsync();
+		$scope.allPowerSetsV2 = await dataAccess.getPowerSetsAsync();
 		$scope.$apply();
-	}	
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-	/* Gets all models from database
-	 */
-	async function getModelsAsync() {
-		const response = await $http.post('php/read/getAllModels.php');
-		return response.data;
 	}
-	
+
 	/* updateModelsAsync 
 	 * Gets all power sets from database
 	 * And modifies $scope to contain the data.
 	*/
 	async function updateModelsAsync() {
-		$scope.allModels = await getModelsAsync();
+		$scope.allModels = await dataAccess.getModelsAsync();
 		$scope.$apply();
 	}
-	
-	/* Gets all powers in a set from database
-	 */
-	async function getPowersInSetAsync(setId) {
-		const response = await $http.post('php/read/getAllPowersInSet.php?setId='+setId);
-		return response.data;
-	}	
-	
-	/* Gets all items in a set from database
-	 */
-	async function getItemsInSetAsync(setId) {
-		const response = await $http.post('php/read/getAllItemsInSet.php?setId='+setId);
-		return response.data;
-	}
-	
+
 	/* addNewPowerSet. Takes in the name and array of
 	 * of the powers to add. Adds it to the database 
 	 * if there isn't already a powerSet with that name. 
@@ -592,14 +465,14 @@ app.controller('builderCtrl', function($scope, $http, dataAccess){
 		$scope.allPowerSetsV2.push( {'name' : name, 'powers': powerArr} );
 		const response = await $http.post('php/write/addPowerSet.php?name='+name);
 		const newSetId = response.data;
-		
+
 		const promises = [];
 		powerArr.forEach((power) => {
 			promises.push($http.post('php/write/mapPowerToSet.php?setId='+newSetId+'&powerId='+power.id));
 		});
 		await Promise.all(promises);
 		await updatePowerSetsAsync();
-	}	
+	}
 
 	/* addNewItemSet. Takes in the name and array of
 	 * of the items to add. Adds it to the database 
@@ -622,5 +495,4 @@ app.controller('builderCtrl', function($scope, $http, dataAccess){
 		await Promise.all(promises);
 		await updateItemSetsAsync();
 	}
-
 });

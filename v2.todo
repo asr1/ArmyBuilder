@@ -4,23 +4,24 @@ todo fix existing item sets being empty.
 Arymbuilder
 	Addon Support
 			Multiple (can take this addon 20 times)
-
+			Prerequisite
+			Grants
 		Mutexes (Can take x or y)
 	File download
 	File upload
 
 Tools/Builder ("Databuilder")
 	Gear
-		Add gear Abilities
-		Add call to map gear ability to gear
-		Same for gear keywords?? We don't use this on army builder (yet)
+		\# Add gear Abilities
+		\# Add call to map gear ability to gear
+		Support for gear keywords? We don't use this on army builder (yet)
 	Add-ons
 		Mutexes
 	Powers
 		Powers with effect tables
 
-Data correction:
-	Plague Marines need mutex addon support
+\# Data correction:
+	\# Plague Marines need mutex addon support
 	
 bug where if click factions too quickly we get scope.$apply issue. Easy fix.
 
