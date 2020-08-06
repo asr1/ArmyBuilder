@@ -1,11 +1,10 @@
-let app = angular.module('armyBuilder', []);
+let app = angular.module('armyBuilder', ['armyDataAccessController']);
 app.config(['$compileProvider',
     function ($compileProvider) {
         $compileProvider.aHrefSanitizationWhitelist(/^\s*(https?|ftp|mailto|tel|file|blob):/);
 }]);
 
-app.controller('builderCtrl', function($scope, $http){
-	
+app.controller('builderCtrl', function($scope, $http, dataAccess){
 	$scope.allGamesV2 = [];
 	$scope.currentFactions = [];
 	$scope.allAbilitiesV2 = [];
