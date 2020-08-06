@@ -77,9 +77,9 @@ let dataAccess = angular.module('armyDataAccessController', []).service('dataAcc
 	this.getItemSetsAsync = async function() {
 		const response = await $http.post('php/read/getAllItemSets.php');
 		const sets = response.data;
-		sets.forEach( async (set) => {
-			set.items = await this.getItemsInSetAsync(set.id);
-		});
+		for(let index = 0; index < sets.length; index++){
+			sets[index].items = await this.getItemsInSetAsync(sets[index].id);
+		}
 		return sets;
 	}
 
@@ -102,9 +102,9 @@ let dataAccess = angular.module('armyDataAccessController', []).service('dataAcc
 	this.getPowerSetsAsync = async function() {
 		const response = await $http.post('php/read/getAllPowerSets.php');
 		const sets = response.data;
-		sets.forEach( async (set) => {
-			set.powers = await this.getPowersInSetAsync(set.setId);
-		});
+		for(let index = 0; index < sets.length; index++) {
+			sets[index].powers = await this.getPowersInSetAsync(sets[index].setId)
+		}
 		return sets;
 	}
 });

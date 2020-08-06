@@ -35,6 +35,7 @@ app.controller('builderCtrl', function($scope, $http, dataAccess){
 		await updatePowerSetsAsync();
 		await updateModelsAsync();
 		await updateGearAbilitiesAsync();
+		await updateItemSetsAsync();
 	})();
 
 	/* UpdategamesAsync 
@@ -433,7 +434,7 @@ app.controller('builderCtrl', function($scope, $http, dataAccess){
 	 * And modifies $scope to contain the data.
 	*/
 	async function updateItemSetsAsync() {
-		$scope.allItemSets = await getItemSetsAsync();
+		$scope.allItemSets = await dataAccess.getItemSetsAsync();
 		$scope.$apply();
 	}
 

@@ -3,7 +3,7 @@ include('../../../src/config/sql_config.php');
 
 $setId = $_GET['setId'];
 
-$query =  $mysqli->prepare(" select * from item_to_set left join gear on gear.id=item_to_set.id where item_to_set.id = ?");
+$query =  $mysqli->prepare(" select * from item_to_set left join gear on gear.id=item_to_set.itemId where item_to_set.setId = ?");
 $query->bind_param("i", $setId);
 $query->execute();
 $result = $query->get_result();
