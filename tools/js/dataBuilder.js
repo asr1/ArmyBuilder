@@ -341,7 +341,7 @@ app.controller('builderCtrl', function($scope, $http, dataAccess){
 		const newModelId = response.data;
 
 		await addGearToModel(newModelId, gearArr);
-		await mapAddonToUnit(newModelId, addonArr);
+		await mapAddonToModel(newModelId, addonArr);
 		await updateModelsAsync();
 	}
 

@@ -269,9 +269,6 @@ app.controller('builderCtrl', function($scope, $http){
 			storeToCache(cacheKey, response);
 		}
 		
-		console.log("");
-		console.log("Optional");
-		console.log(response);
 		return response;
 	}
 
@@ -418,7 +415,6 @@ app.controller('builderCtrl', function($scope, $http){
 				}
 				
 			});
-			console.log("Unit", unit);
 			
 			$scope.myArmyV2.push(cloneUnitV2(unit));
 			if(idx === units.length -1) {
@@ -933,7 +929,6 @@ app.controller('builderCtrl', function($scope, $http){
 	
 	//IN PROGRESS TODO
 	function cloneModel(model) {
-		console.log("model", model);
 		let copy = {};
 		copy.addons = model.addons.slice(0);
 		copy.baseName = model.baseName; // Necessary?
@@ -1074,7 +1069,6 @@ app.controller('builderCtrl', function($scope, $http){
 	
 	function addModelV2(model) {
 		let newModel = cloneModel(model);
-		console.log("burro", newModel);
 		$scope.models[newModel.unitName].push(newModel);
 		newModel.name = getModelName(model);
 		if (!$scope.$$phase) { // Anti-pattern. Means $scope.Apply() isn't high enough in call stack.

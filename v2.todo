@@ -21,11 +21,13 @@ Tools/Builder ("Databuilder")
 		Break addon into smaller components. This is the same problem we had with V1....
 	Powers
 		Powers with effect tables
+	Could even break new unit and new addon into smaller ones where we create and them map the addons.....
 
 
 Data correction:
 	\# Plague Marines need mutex addon support
 	Skitarii Vanguard -- if the unit numbers 10 models, one additional vanguard may replace their carbine with a special weapon. We don't currently have a good implementation for that.
+	\# Vanguard not showing addons at any level.
 	
 bug where if click factions too quickly we get scope.$apply issue. Easy fix.
 
