@@ -36,7 +36,7 @@ create table if not exists unit_to_ability (
 
 create table if not exists addons (
 	id int not null auto_increment,
-	text varchar(50),
+	text varchar(250),
 	cost int,
 	typeid int,
 	itemIdToRemove int,

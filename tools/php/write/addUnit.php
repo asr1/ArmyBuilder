@@ -1,5 +1,5 @@
 <?php
-include('../../src/config/sql_config.php');
+include('../../../src/config/sql_config.php');
 
 
 $name           = $_GET['name'];
@@ -7,8 +7,7 @@ $numModels      = $_GET['numModels'];
 $cost           = $_GET['cost'];
 $factionId      = $_GET['factionId'];
 
- 
-$query =  $mysqli->prepare("insert into units (name, numberOfModels, costPerModel, factionId) values (?, ?, ?, ?)");
+$query = $mysqli->prepare("insert into units (name, numberOfModels, costPerModel, factionId) values (?, ?, ?, ?)");
 $query->bind_param("siii", $name, $numModels, $cost, $factionId);
 $query->execute();
 $result = $query->get_result();
