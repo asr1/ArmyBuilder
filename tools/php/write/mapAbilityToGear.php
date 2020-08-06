@@ -4,7 +4,7 @@ include('../../../src/config/sql_config.php');
 $gearid = $_GET['gearid'];
 $abilityId = $_GET['abilityid'];
  
-$query =  $mysqli->prepare("insert into gear_to_abilities (gearId, abilitityId) values (?, ?)");
+$query =  $mysqli->prepare("insert into gear_to_abilities (gearId, abilityId) values (?, ?)");
 $query->bind_param("ii", $gearid, $abilityId);
 $query->execute();
 $result = $query->get_result();

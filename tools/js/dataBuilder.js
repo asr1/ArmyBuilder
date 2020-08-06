@@ -134,7 +134,7 @@ app.controller('builderCtrl', function($scope, $http, dataAccess){
 	*/
 	$scope.mapGearToAbility = async function(gearid, abilityid) {
 		if(!gearid || !abilityid) { return; }
-		await $http.post('php/write/mapAbilityToGear.php?gearid='+gearid+'abilityid='+abilityid);
+		await $http.post('php/write/mapAbilityToGear.php?gearid='+gearid+'&abilityid='+abilityid);
 	}
 
 	/* updateGearAsync 
