@@ -267,7 +267,7 @@ app.controller('builderCtrl', function($scope, $http, dataAccess){
 	* max 				- The maximum number of units required for an addon in case 3
 	*/
 	$scope.updateAddonRequirements = async function(addonId, requirementType, prereqAddonId, min, max){
-		await $http.post('php/write/mapAddonReqs.php?addonId='+addonId+'&requirementType='+requirementType+'&prereqAddonId='+prereqAddonId+'&min='+min+'&max='+max));
+		await $http.post('php/write/mapAddonReqs.php?addonId='+addonId+'&requirementType='+requirementType+'&prereqAddonId='+prereqAddonId+'&min='+min+'&max='+max);
 		await updateAddonsAsync();
 	}
 
