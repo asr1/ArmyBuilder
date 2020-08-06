@@ -1,13 +1,14 @@
 <?php
 include('../../src/config/sql_config.php');
 
-
 $addonId           = $_GET['addonId'];
-$requiresId      = $_GET['requiresId'];
-
+$requirementType   = $_GET['requirementType'];
+$prereqAddonId     = $_GET['prereqAddonId'];
+$min               = $_GET['min'];
+$max               = $_GET['max'];
  
-$query =  $mysqli->prepare("insert into addon_requires_addon (addonId, requiresAddonId) values (?, ?)");
-$query->bind_param("ii", $addonId, $requiresId);
+$query =  $mysqli->prepare("insert into addon_requires (addonId, requireType, requiresAddonId, min, max) values (?, ?, ?, ?, ?)");
+$query->bind_param("iiiii", $addonId, $requirementType, $prereqAddonId, $prereqAddonId, $min, $max);
 $query->execute();
 $result = $query->get_result();
 $arr = array();

@@ -208,12 +208,19 @@ create table if not exists addon_grants_addon(
 /* Used when a certain model-level addon requires
  * that a unit-level addon be taken first.
 */
-create table if not exists addon_requires_addon(
+create table if not exists addon_requires(
     id int not null auto_increment,
     addonId int, -- I can't take this addon
     requiresAddonId int, -- Unless I have this one
+	requireType int, -- see table addon_require_type
     primary key (id));
-	
+
+/* Used to determine addon requirement type
+*/
+create table if not exists addon_require_type(
+    id int not null auto_increment,
+    type varchar(100),
+    primary key (id));
 
 -- Used for addons that allow picking n 
 -- items from a set.

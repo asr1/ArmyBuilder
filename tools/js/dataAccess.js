@@ -107,4 +107,11 @@ let dataAccess = angular.module('armyDataAccessController', []).service('dataAcc
 		}
 		return sets;
 	}
+
+	/* Gets all requirement types from database
+	 */
+	this.getAddonRequirementTypes = async function() {
+		const response = await $http.post('php/read/getAllRequirementTypes.php');
+		return response.data;
+	}
 });

@@ -1,4 +1,4 @@
-todo fix existing item sets being empty.
+\# todo fix existing item sets being empty.
 
 
 Arymbuilder
@@ -17,6 +17,7 @@ Tools/Builder ("Databuilder")
 		Support for gear keywords? We don't use this on army builder (yet)
 	Add-ons
 		Mutexes
+		Break addon into smaller components. This is the same problem we had with V1....
 	Powers
 		Powers with effect tables
 

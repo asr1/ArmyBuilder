@@ -17,7 +17,9 @@ app.controller('builderCtrl', function($scope, $http, dataAccess){
 	$scope.allPowerSetsV2 = [];
 	$scope.allModels = [];
 	$scope.allItemSets = [];
+	$scope.addonRequirementTypes = [];
 	$scope.AddonTypesEnum = {ReplaceItem:1, IncreaseNumberOfModels:2, Direct: 3, AddItem: 4, ReplaceItemFromSet: 5};
+	$scope.AddonRequireTypesEnum = {ModelRequiresAddon:1, UnitRequiresAddon:2, NumberOfModelsInUnit: 3};
 
 
 	/* Immediately invoked function
@@ -36,6 +38,7 @@ app.controller('builderCtrl', function($scope, $http, dataAccess){
 		await updateModelsAsync();
 		await updateGearAbilitiesAsync();
 		await updateItemSetsAsync();
+		await updateAddonRequirementTypes();
 	})();
 
 	/* UpdategamesAsync 
@@ -89,6 +92,15 @@ app.controller('builderCtrl', function($scope, $http, dataAccess){
 	*/
 	async function updateAbilitiesAsync() {
 		$scope.allAbilitiesV2 = await dataAccess.getAbilitiesAsync();
+		$scope.$apply();
+	}
+
+	/* updateAddonRequirementTypes 
+	 * Gets all addon requirement types from database
+	 * And modifies $scope to contain the data.
+	*/
+	async function updateAddonRequirementTypes() {
+		$scope.addonRequirementTypes = await dataAccess.getAddonRequirementTypes();
 		$scope.$apply();
 	}
 
@@ -207,9 +219,6 @@ app.controller('builderCtrl', function($scope, $http, dataAccess){
 	 * unitLimit       - the max number of times an addon can be taken
 				by models in one unit across all models. For example,
 				3 of your skitari can add omnispex
-	 * dependsOnArr    - array of addonIds. This addon can only be taken
-				by a model if the unit that the model belongs to has all 
-				the addons in this array
 	 * grantsArr       - array of addonIds. If this addon is taken, it 
 				gives all of these addons for free. Addons in the array
 				must be at the same level (unit or model) as this addon,
@@ -219,9 +228,8 @@ app.controller('builderCtrl', function($scope, $http, dataAccess){
 				techpriests to this unit.
 	* addItemSet       - id of set that items can be added if replacing
 				one item with items from set (type 5).
-	*/
-	$scope.addNewAddon = async function(text, cost, typeId, addItemId, removeItemId, amount, maxTimesTaken, modelId,
-										unitLimit, dependsOnArr, grantsArr, addItemSet) {
+	*/ //TODO break this down into sub parts, grants should be a separate function
+	$scope.addNewAddon = async function(text, cost, typeId, addItemId, removeItemId, amount, maxTimesTaken, modelId, unitLimit, grantsArr, addItemSet) {
 		if(!text || !typeId) { return; }
 		if(typeId === $scope.AddonTypesEnum.IncreaseNumberOfModels && (!amount || !modelId)) { return; }
 		if(typeId === $scope.AddonTypesEnum.AddItem && !addItemId) { return; }
@@ -240,17 +248,26 @@ app.controller('builderCtrl', function($scope, $http, dataAccess){
 		const newAddonId = await $http.post('php/write/addNewAddon.php?cost='+cost+'&typeId='+typeId+'&addItemId='+addItemId+'&removeItemId='+removeItemId+'&amount='+amount+'&text='+text+'&times='+maxTimesTaken+'&modelId='+modelId+'&unitLimit='+unitLimit+'&itemSetId='+addItemSet);
 
 		let promises = [];
-		dependsOnArr.forEach((depAddonId) => {
-			promises.push($http.post('php/write/mapAddonReqs.php?addonId='+newAddonId+'&requiresId='+depAddonId));
-		});
-		await Promise.all(promises);
-
-		promises = [];
 		grantsArr.forEach((grandAddonId) => {
 			promises.push($http.post('php/write/mapAddonGrants.php?addonId='+newAddonId+'&idOfAddonToGrant='+grandAddonId));
 		});
 		await Promise.all(promises);
 
+		await updateAddonsAsync();
+	}
+
+	/* updateAddonRequirements - maps an addon to its prerequisites
+	 * addonId 			- The ID of the addon that has prerequisites
+	 * requirementType	= The addon_require_type. 
+			1 for the model with this addon needs to have this prereq addon.
+			2 for the unit that this model is part of needs this prereq addon.
+			3 for restrictions about the min or max number of models in this unit.
+	* prereqAddonId 	- The id of the addon that is a prereq in case 1 or 2
+	* min				- The minimum number of units required for an addon in case 3
+	* max 				- The maximum number of units required for an addon in case 3
+	*/
+	$scope.updateAddonRequirements = async function(addonId, requirementType, prereqAddonId, min, max){
+		await $http.post('php/write/mapAddonReqs.php?addonId='+addonId+'&requirementType='+requirementType+'&prereqAddonId='+prereqAddonId+'&min='+min+'&max='+max));
 		await updateAddonsAsync();
 	}
 

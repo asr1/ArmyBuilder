@@ -360,21 +360,6 @@
 							<label class="title-label">Is there a limit to the number of times this addon can be taken by models in one unit?</label>
 							<input type="number" ng-model="unitLimit"></input>
 						</div>
-						<div ng-init="myAddonDependsOn=[]"> 
-							<label class="title-label">Does this addon depend on any other addons?</label>
-							<select
-								ng-model="addDependsOn"
-								ng-options="addon.id as addon.text for addon in allAddonsV2"
-								>
-							</select>
-							<button ng-click="myAddonDependsOn.push(addDependsOn)">Add dependency</button>
-							<p>{{newAddonText}} will depend on the following addons:</p>
-							<ul>
-								<li ng-repeat="addon in myAddonDependsOn track by $index">{{addon.text}}
-									<button ng-click="myAddonDependsOn.splice($index, 1)">X</button>
-								</li>
-							</ul>
-						</div>
 						<div ng-init="myAddonGrants=[]"> 
 							<label class="title-label">Does this addon grant any other addons?</label>
 							<select
@@ -395,7 +380,7 @@
 							<label class="title-label">How many times can you take this addon?</label>
 							<input type="number" ng-model="newAddonTimes"></input>
 					</div>
-					<button ng-click="addNewAddon(newAddonText, newAddonCost, selectedAddonTypeId, addonItemToAdd, addonItemToRemove, newAddonAmount, newAddonTimes, addonModelIdToAdd, unitLimit, myAddonDependsOn, myAddonGrants, addonItemSetToAddFrom)">Submit</button>
+					<button ng-click="addNewAddon(newAddonText, newAddonCost, selectedAddonTypeId, addonItemToAdd, addonItemToRemove, newAddonAmount, newAddonTimes, addonModelIdToAdd, unitLimit, myAddonGrants, addonItemSetToAddFrom)">Submit</button>
 				</div>
 				<div>
 					<span>Existing addons:</span>
@@ -405,6 +390,65 @@
 				</div>
 			</div>
 		</div>
+		<!-- Addon depends on  -->
+		<div name="map-addon-requires" ng-init="showMapAddonRequires=true" class="banner">
+			<span>Addon Prerequisites</Span><br>
+			<button ng-click="showMapAddonRequires = !showMapAddonRequires">{{showMapAddonRequires ? "hide" : "show"}}</button>
+			<div ng-show="showMapAddonRequires">
+				<div ng-init="myAddonDependsOn=[]"> 
+					<div>
+						<label class="title-label">What addon has a requirement?</label>
+						<select
+							ng-model="mainAddon"
+							ng-options="addon as addon.text for addon in allAddonsV2"
+							>
+						</select>
+					</div>
+					<div>
+						<label class="title-label">What type of requirement is this?</label>
+						<select
+							ng-model="requirementTypeId"
+							ng-options="require.id as require.type for require in addonRequirementTypes"
+							>
+						</select>
+					</div>
+					<div ng-show="
+							requirementTypeId === AddonRequireTypesEnum.ModelRequiresAddon ||
+							requirementTypeId === AddonRequireTypesEnum.UnitRequiresAddon">
+						<label class="title-label">What addon needs to be taken first?</label>
+						<select
+							ng-model="addDependsOn"
+							ng-options="addon as addon.text for addon in allAddonsV2"
+							>
+						</select>
+						<button ng-click="myAddonDependsOn.push(addDependsOn)">Add dependency</button>
+						<p>{{mainAddon.text}} will depend on the following addons:</p>
+						<ul>
+							<li ng-repeat="addon in myAddonDependsOn track by $index">{{addon.text}}
+								<button ng-click="myAddonDependsOn.splice($index, 1)">X</button>
+							</li>
+						</ul>
+					</div>
+					<div ng-show="
+							requirementTypeId === AddonRequireTypesEnum.NumberOfModelsInUnit">
+						<div>
+							<label class="title-label">Minimum number of models in unit for this to be enabled?</label>
+							<input type="number" ng-model="min"></input>
+						</div>
+						<div>
+							<label class="title-label">Maximum number of models in unit for this to be enabled?</label>
+							<input type="number" ng-model="max"></input>
+						</div>
+					</div>
+					<button ng-click="updateAddonRequirements(mainAddon.id, requirementTypeId, addDependsOn, min, max)">Submit</button>
+				</div>
+
+			</div>
+		</div>
+		
+
+		
+		
 		<!-- Powers -->
 		<div name="add-powers" ng-init="showPowers=false" class="banner">
 			<span>Add new power</Span><br>
@@ -467,7 +511,7 @@
 			</div>
 		</div>
 		<!-- Item sets -->
-		<div name="add-item-set" ng-init="showItemSet=true" class="banner">
+		<div name="add-item-set" ng-init="showItemSet=false" class="banner">
 			<span>Add new item set</Span><br>
 			<button ng-click="showItemSet = !showItemSet">{{showItemSet ? "hide" : "show"}}</button>
 			<div ng-show="showItemSet">
