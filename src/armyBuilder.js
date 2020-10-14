@@ -13,6 +13,8 @@ app.controller('builderCtrl', function($scope, $http){
 	$scope.buffer = 5; //Padding for addSpaces
 	$scope.myArmyV2 = [];
 	const AddonTypesEnum = {ReplaceItem:1, IncreaseNumberOfModels:2, Direct: 3, AddItem: 4, ReplaceItemFromSet: 5};
+	$scope.AddonTypes = AddonTypesEnum;
+	$scope.itemSets = [];
 
 	/*Initialize default game and factions.
 	 * Gets all games from the database,
@@ -121,6 +123,27 @@ app.controller('builderCtrl', function($scope, $http){
 		return String.fromCharCode(160).repeat(num);
 	};
 	
+	/* Sets $scope.ItemsSets[setId] based on 
+	 * a network call. Done this way so the HTML 
+	 * will return data. Angular 1 HTML doesn't like async
+	 * functions here. It will show {} if we call directly,
+	 * Because HTML has no concept of await.
+	 */
+	$scope.PopulateItemsForSet = async function(setId, replacementItem){
+		// Could probably avoid a network call and check the itemSets array directly.
+		const cacheKey = generateCacheKey("getItemsBySet", [setId]);
+		response = getFromCache(cacheKey);
+
+		if(response === undefined) {
+			const webResponse = await $http.post('src/php/getItemsBySet.php?setId='+setId);
+			response = webResponse.data;
+			storeToCache(cacheKey, response);
+		}
+		$scope.itemSets[setId] = response;
+		replacementItem = response[0];
+		return response;
+	}
+	
 	/* Takes in a list of units. 
 	 * Returns the unit with the longest name.
 	 * Example: findUnitWithLongestName({name: 'Alex'},
@@ -211,7 +234,6 @@ app.controller('builderCtrl', function($scope, $http){
 			response = webResponse.data;
 			storeToCache(cacheKey, response);
 		}
-		console.log("aaaauro", response);
 		return response;
 	}
 
@@ -520,16 +542,50 @@ app.controller('builderCtrl', function($scope, $http){
 					response = addGear.cost - removeGear.cost;
 				break;
 				case AddonTypesEnum.IncreaseNumberOfModels:
-					console.log("Spleauk", addOn);
 					response = (unit.costPerModel + calculateModelGearCostV2(addOn.model.gear)) * addOn.amount;
 				break;
 				case AddonTypesEnum.AddItem:
-					response = getGearById(addOn.itemIdToRemove).cost;
+					response = getGearById(addOn.itemIdToAdd).cost;
+				break;
+				case AddonTypesEnum.ReplaceItemFromSet:
+					// console.log("calculating cost", addOn);
+					response = addOn.cost;
 				break;
 			}
 		}
 		return response;
 	}
+
+	/* Updates the cost of an addon based on selected
+	 * items to replcae. This is used for replaceItemFromSet
+	 * And assumes that the addon doesn't have a base cost.
+	 * This assumption is consistent with the rest of the design.
+	 * Also sets addon.itemToAdd to the id of replacementItem
+	 * This allows the setAddonCost() function to work as intended.
+	*/
+	$scope.updateItemCost = function(addon, replacementItem) {
+		if(addon.typeid === AddonTypesEnum.ReplaceItemFromSet) {
+			const payloadAddOn = {
+				'itemIdToAdd'    : replacementItem.id,
+				'itemIdToRemove' : addon.itemIdToRemove
+			};
+			// Add
+			if(addon.itemIdToRemove === 0) {
+				payloadAddOn['typeid'] = AddonTypesEnum.AddItem;
+			}
+			// Replace
+			else {
+				payloadAddOn['typeid'] = AddonTypesEnum.ReplaceItem;
+			}
+			addon.cost = $scope.calculateAddOnCost(payloadAddOn, {'id': undefined});
+			addon.itemIdToAdd = replacementItem.id;
+			
+		}
+		// console.log("");
+		// console.log("Addon", addon);
+		// console.log("replacement item", replacementItem);
+	}
+	
 
 	/* Generates the addon id. Used for reference when saving and loading.
 	 * Addon id is a combination of the unit or model, its name, and its
@@ -541,7 +597,8 @@ app.controller('builderCtrl', function($scope, $http){
 
 	/* Called when an addon is selected or deselected. 
 	 * Modifies the unit to perform the addon in question.
-	 */
+	 */ // TODO. I think this can be cleaned up and refactored. Is there a different between add and replace?
+	 // Same for in the replace from set.
 	$scope.setAddOnCost = function(isChecked, unit, addOn, model, idx) {
 		registerAddOnStatus(addOn.id, isChecked, unit.name, model, idx);
 		switch(addOn.typeid) {
@@ -561,10 +618,10 @@ app.controller('builderCtrl', function($scope, $http){
 			break;
 			case AddonTypesEnum.AddItem: 
 				if(isChecked) {
-					replaceItem(model, addOn.itemIdToRemove, addOn.itemIdToRemove, unit);
+					replaceItem(model, addOn.itemIdToRemove, addOn.itemIdToAdd, unit);
 				}
 				else {
-					replaceItem(model, addOn.itemIdToRemove, addOn.itemIdToRemove, unit);
+					replaceItem(model, addOn.itemIdToAdd, addOn.itemIdToRemove, unit);
 				}
 			break;
 			case AddonTypesEnum.IncreaseNumberOfModels:
@@ -573,6 +630,26 @@ app.controller('builderCtrl', function($scope, $http){
 				}
 				else {
 					increaseNumberOfModels(addOn.model, -addOn.amount);
+				}
+			break;
+			case AddonTypesEnum.ReplaceItemFromSet:
+				// Add
+				if(addOn.itemIdToRemove === 0) {
+					if(isChecked) {
+						replaceItem(model, addOn.itemIdToRemove, addOn.itemIdToAdd, unit);
+					}
+					else {
+						replaceItem(model, addOn.itemIdToAdd, addOn.itemIdToRemove, unit);
+					}
+				}
+				// Replace
+				else {
+					if(isChecked) {
+						replaceItem(model, addOn.itemIdToRemove, addOn.itemIdToAdd, unit);
+					}
+					else {
+						replaceItem(model, addOn.itemIdToAdd, addOn.itemIdToRemove, unit);
+					}
 				}
 			break;
 		}
@@ -836,7 +913,6 @@ app.controller('builderCtrl', function($scope, $http){
 
 			}
 		});
-		console.log("Dhurro", model);
 		if(amount > 0){
 			while(amount--)
 			{
@@ -865,16 +941,18 @@ app.controller('builderCtrl', function($scope, $http){
 			if(soldier.name == model.name) {// Find the right buckaroo
 				let toRemove = -1;
 				soldier.gear.forEach((item, idx) => {
-					if(item.id === oldItemId) {
+					if(item.id === oldItemId) { // ID or gearId?
 						toRemove = idx;
 					}
 				});
 				if(toRemove !== -1) {
 					soldier.gear.splice(toRemove, 1);
 				}
-				// Separate splice becuase this is used for add and remove
+				// Separate splice becuase this is used for both add and remove
 				const newItem = getGearById(newItemId);
-				soldier.gear.splice(toRemove, 0, newItem);
+				if(newItemId) {
+					soldier.gear.splice(toRemove, 0, newItem);
+				}
 			}
 		});
 	}
@@ -896,6 +974,8 @@ app.controller('builderCtrl', function($scope, $http){
 	 */
 	function calculateModelGearCostV2(gearArr) {
 		if(!gearArr || gearArr.length === 0) { return; }
+		// console.log("")
+		// console.log("calculate gear cost", gearArr);
 		return gearArr.reduce( (currentValue, gear) => currentValue + gear.cost, 0);
 	}
 

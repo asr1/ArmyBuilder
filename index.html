@@ -117,13 +117,25 @@
 												id="{{getAddOnId(false, model.Name, $index)}}"
 												ng-model="checked" 
 												ng-click="setAddOnCost(checked, unit, addon, model, $index)"
-												ng-disabled="shouldDisableModelAddon(model, addon, checked)"
+												ng-disabled="!replacementItem && shouldDisableModelAddon(model, addon, checked)"
 												type="checkbox">
 											</input>
 										</span>
 										<span>{{addon.text}}</span>
 										<span> Cost: {{calculateAddOnCost(addon, unit)}}</span>
+										<div ng-show="addon.typeid === AddonTypes.ReplaceItemFromSet" ng-init="PopulateItemsForSet(addon.itemSetId, replacementItem)">
+											<select
+												ng-disabled="checked"
+												ng-if="itemSets[addon.itemSetId].length"
+												ng-change="updateItemCost(addon, replacementItem)"
+												style="font-family:monospace; margin-left:2%"
+												ng-model="replacementItem"
+												data-ng-attr-size="{{itemSets[addon.itemSetId].length + 1}}"
+												ng-options="replacement.name for replacement in itemSets[addon.itemSetId]" required>
+												<option value="" selected="selected">Choose One</option>
+											</select>
 								</div>
+										</div>
 								<h6 ng-show="unit.powers.length" class="Subheading">Psychic Powers</h6>
 								<div class="level2Item" ng-repeat="power in unit.powers.known">
 									<span>

@@ -22,6 +22,7 @@ Tools/Builder ("Databuilder")
 	Powers
 		Powers with effect tables
 	Could even break new unit and new addon into smaller ones where we create and them map the addons.....
+	Ideally each of the addon sections would be its own angular component as well.
 
 
 Data correction:
