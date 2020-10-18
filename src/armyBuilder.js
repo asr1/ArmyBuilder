@@ -609,13 +609,6 @@ app.controller('builderCtrl', function($scope, $http){
 					$scope.addOnCosts[unit] -= addOn.cost;
 			break;
 			case AddonTypesEnum.ReplaceItem: 
-				if(isChecked) {
-					replaceItem(model, addOn.itemIdToRemove, addOn.itemIdToAdd, unit);
-				}
-				else {
-					replaceItem(model, addOn.itemIdToAdd, addOn.itemIdToRemove, unit);
-				}
-			break;
 			case AddonTypesEnum.AddItem: 
 				if(isChecked) {
 					replaceItem(model, addOn.itemIdToRemove, addOn.itemIdToAdd, unit);
@@ -633,23 +626,11 @@ app.controller('builderCtrl', function($scope, $http){
 				}
 			break;
 			case AddonTypesEnum.ReplaceItemFromSet:
-				// Add
-				if(addOn.itemIdToRemove === 0) {
-					if(isChecked) {
-						replaceItem(model, addOn.itemIdToRemove, addOn.itemIdToAdd, unit);
-					}
-					else {
-						replaceItem(model, addOn.itemIdToAdd, addOn.itemIdToRemove, unit);
-					}
+				if(isChecked) {
+					replaceItem(model, addOn.itemIdToRemove, addOn.itemIdToAdd, unit);
 				}
-				// Replace
 				else {
-					if(isChecked) {
-						replaceItem(model, addOn.itemIdToRemove, addOn.itemIdToAdd, unit);
-					}
-					else {
-						replaceItem(model, addOn.itemIdToAdd, addOn.itemIdToRemove, unit);
-					}
+					replaceItem(model, addOn.itemIdToAdd, addOn.itemIdToRemove, unit);
 				}
 			break;
 		}
