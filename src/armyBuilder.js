@@ -597,8 +597,7 @@ app.controller('builderCtrl', function($scope, $http){
 
 	/* Called when an addon is selected or deselected. 
 	 * Modifies the unit to perform the addon in question.
-	 */ // TODO. I think this can be cleaned up and refactored. Is there a different between add and replace?
-	 // Same for in the replace from set.
+	 */
 	$scope.setAddOnCost = function(isChecked, unit, addOn, model, idx) {
 		registerAddOnStatus(addOn.id, isChecked, unit.name, model, idx);
 		switch(addOn.typeid) {
