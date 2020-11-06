@@ -66,20 +66,29 @@ app.controller('builderCtrl', function($scope, $http){
 		$scope.$apply();
 	}
 
-	/* changeAddonTimes (unit, addon, timesTaken)
+	/* changeUnitAddonTimes (unit, addon, timesTaken)
 	 * Takes in the unit, the addon, and the  
 	 * number of times that unit will taken the
 	 * addon. Also applies the addon timesTaken
 	 * times, and increases the cost of the unit 
 	 * accordingly.
 	*/
-	$scope.changeAddonTimes = function (unit, addon, timesTaken) {
+	$scope.changeUnitAddonTimes = function (unit, addon, timesTaken) {
+		const curTimes = $scope.enabledAddOns[unit.name][addon.id];
+		const diff = timesTaken - curTimes;
+		// If we want to take this addon more times than we currently are, enable will be true.
+		const shouldEnable = diff > 0; 
+		let absDiff = Math.abs(diff);
+		
+		while(absDiff--) {
+			$scope.setAddOnCost(shouldEnable, unit, addon, null, null);
+		}
+		//function(isChecked, unit, addOn, model, idx) {
 		//TODO Can I just check $scope.enabledAddOns[unitName][addOnId] to see
 		// the current number of times it's been taken, and then generate a loop and call
 		// $scope.setAddOnCost() a number of times based on the difference?
 		// For a positive difference, call with enabled = true (or checked = true), for 
 		// A negative difference, call with enabled = false.
-		// That might work for units, but it may have problems at the model level
 	}
 
 	/* Takes in a list of units
@@ -603,7 +612,7 @@ app.controller('builderCtrl', function($scope, $http){
 	/* Called when an addon is selected or deselected. 
 	 * Modifies the unit to perform the addon in question.
 	 */
-	$scope.setAddOnCost = function(isChecked, unit, addOn, model, idx) {
+	$scope.setAddOnCost = function(isChecked, unit, addOn, model, idx) { // TODO remove idx
 		registerAddOnStatus(addOn.id, isChecked, unit.name, model, idx);
 		switch(addOn.typeid) {
 			case AddonTypesEnum.Direct: 
