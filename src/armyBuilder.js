@@ -74,6 +74,13 @@ app.controller('builderCtrl', function($scope, $http){
 	 * accordingly.
 	*/
 	$scope.changeUnitAddonTimes = function (unit, addon, timesTaken) {
+		if(!$scope.enabledAddOns[unit.name]){
+			$scope.enabledAddOns[unit.name] = [];
+		}
+		if(!$scope.enabledAddOns[unit.name][addon.id]) {
+			$scope.enabledAddOns[unit.name][addon.id] = 0;
+		}
+			
 		const curTimes = $scope.enabledAddOns[unit.name][addon.id];
 		const diff = timesTaken - curTimes;
 		// If we want to take this addon more times than we currently are, enable will be true.
@@ -81,14 +88,8 @@ app.controller('builderCtrl', function($scope, $http){
 		let absDiff = Math.abs(diff);
 		
 		while(absDiff--) {
-			$scope.setAddOnCost(shouldEnable, unit, addon, null, null);
+			$scope.setAddOnCost(shouldEnable, unit, addon, null);
 		}
-		//function(isChecked, unit, addOn, model, idx) {
-		//TODO Can I just check $scope.enabledAddOns[unitName][addOnId] to see
-		// the current number of times it's been taken, and then generate a loop and call
-		// $scope.setAddOnCost() a number of times based on the difference?
-		// For a positive difference, call with enabled = true (or checked = true), for 
-		// A negative difference, call with enabled = false.
 	}
 
 	/* Takes in a list of units
@@ -609,11 +610,28 @@ app.controller('builderCtrl', function($scope, $http){
 		return isUnitLevel ? name + ' unit add on&' + index : name + ' model add on&' + index;
 	}
 
+	/* Takes an addon for a given model.
+	 * Right now only used at the unit level.
+	 * Called when an addon is selected or deselected.
+	 * If the addon can be taken multiple times, take it
+	 * a number of times equal to the times its currently set to
+	 * Otherwise, just do it once like normal.
+	*/
+	$scope.takeAddon = function(isChecked, unit, addon, model) {
+		if(addon.times > 1) {
+			let times = isChecked ? addon.timesTaken : 0;
+			$scope.changeUnitAddonTimes(unit, addon, times) 
+		}
+		else {
+			$scope.setAddOnCost(isChecked, unit, addon, model);
+		}
+	}
+
 	/* Called when an addon is selected or deselected. 
 	 * Modifies the unit to perform the addon in question.
 	 */
-	$scope.setAddOnCost = function(isChecked, unit, addOn, model, idx) { // TODO remove idx
-		registerAddOnStatus(addOn.id, isChecked, unit.name, model, idx);
+	$scope.setAddOnCost = function(isChecked, unit, addOn, model) {
+		registerAddOnStatus(addOn.id, isChecked, unit.name, model);
 		switch(addOn.typeid) {
 			case AddonTypesEnum.Direct: 
 				isChecked ?

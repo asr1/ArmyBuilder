@@ -88,7 +88,7 @@
 											id="{{getAddOnId(true, unit.name, $index)}}"
 											ng-disabled="shouldDisableUnitAddOn(unit, addon)"
 											ng-model="checked"
-											ng-click="setAddOnCost(checked, unit, addon, null,$index)">
+											ng-click="takeAddon(checked, unit, addon, null,$index)">
 										</input>
 									</span>
 								</span>
@@ -96,7 +96,7 @@
 								<span> Cost: {{calculateAddOnCost(addon, unit)}}</span>
 								<div ng-show="checked && addon.times > 1">
 									<label>Times taken</label>
-									<input ng-init="timesTaken = 1" ng-change="changeUnitAddonTimes(unit, addon, timesTaken)" style="width:40" ng-model="timesTaken" type="number" max="{{addon.times}}" min="1" ></input> TODO IN PROGRESS
+									<input ng-init="addon.timesTaken = 1" ng-change="changeUnitAddonTimes(unit, addon, addon.timesTaken)" style="width:40" ng-model="addon.timesTaken" type="number" max="{{addon.times}}" min="1" ></input>
 								</div>
 							</span>
 						</div>
