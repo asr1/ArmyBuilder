@@ -74,7 +74,12 @@ app.controller('builderCtrl', function($scope, $http){
 	 * accordingly.
 	*/
 	$scope.changeAddonTimes = function (unit, addon, timesTaken) {
-		//TODO
+		//TODO Can I just check $scope.enabledAddOns[unitName][addOnId] to see
+		// the current number of times it's been taken, and then generate a loop and call
+		// $scope.setAddOnCost() a number of times based on the difference?
+		// For a positive difference, call with enabled = true (or checked = true), for 
+		// A negative difference, call with enabled = false.
+		// That might work for units, but it may have problems at the model level
 	}
 
 	/* Takes in a list of units
@@ -1071,6 +1076,13 @@ app.controller('builderCtrl', function($scope, $http){
 		return model;
 	}
 
+	/* Register if a unit or model has taken a given addon.
+	 * At the model level, this is used to limit addons that can only
+	 * be taken a set number of times across a unit (such as one model may 
+	 * exchange their blaster for a rifle). 
+	 * At the unit level, this is used to check for mutexes, e.g. addons that say
+	 * A unit may increase their count by 2 models or by 5 models.
+	*/
 	function registerAddOnStatus(addOnId, isEnabled, unitName, model, idx){
 		let checkBoxid;
 		if(model) {
@@ -1087,7 +1099,10 @@ app.controller('builderCtrl', function($scope, $http){
 			if(!$scope.enabledAddOns[unitName]){
 				$scope.enabledAddOns[unitName] = [];
 			}
-			$scope.enabledAddOns[unitName][addOnId] = isEnabled;
+			if(!$scope.enabledAddOns[unitName][addOnId]) {
+				$scope.enabledAddOns[unitName][addOnId] = 0;
+			}
+			$scope.enabledAddOns[unitName][addOnId] += isEnabled ? 1 : -1;
 			checkBoxid = $scope.getAddOnId(true, unitName, idx);
 		}
 		if(isEnabled){
