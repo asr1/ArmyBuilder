@@ -236,3 +236,33 @@ create table if not exists item_to_set (
 	setId int,
 	primary key (id)
 );
+
+-- Used to describe addon adjustment trigger types
+-- For example, number of models in unit.
+create table if not exists trigger_types (
+	id int not null auto_increment,
+	name varchar(100),
+	primary key(id)
+);
+
+-- How should an addon adjust at runtime?
+-- addon_id: Which addon should be affected?
+-- unit_id: Which unit should be affected? 
+--       This will be used in client code to register for change
+-- trigger_type: What will cause this condition (joined with trigger_types table)
+-- trigger_amount: How many of the trigger do we need to take effect 
+--      (e.g. a model needs 10 units before we make the adjustment
+-- effect_column: Which field of the addon should be modified?
+-- effect_amount: How much should this effect happen?
+--      (e.g. the addon can be taken 1 more time would have an effect_column of
+--      maxTimesPerUnit and an effect_amount of 1.
+create table if not exists addon_adjustments (
+	id int not null auto_increment,
+	addon_id int,
+	unit_id int,
+	trigger_type int,
+	trigger_amount int,
+	effect_column varchar(50),
+	effect_amount int,
+	primary key(id)
+);
