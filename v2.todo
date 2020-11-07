@@ -3,11 +3,11 @@
 
 Arymbuilder
 	Addon Support
-			Multiple (can take this addon 20 times)
+			\# Multiple (can take this addon 20 times)
+			\# Item from list
 			Prerequisite/requires
 			Grants
-			Item from list
-		Mutexes (Can take x or y)
+		Mutexes (Can take x or y, but not both)
 	File download
 	File upload
 
