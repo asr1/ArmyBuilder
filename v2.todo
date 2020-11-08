@@ -1,10 +1,6 @@
-\# todo fix existing item sets being empty.
-
 
 Arymbuilder
 	Addon Support
-			\# Multiple (can take this addon 20 times)
-			\# Item from list
 			Prerequisite/requires
 			Grants
 		Mutexes (Can take x or y, but not both)
@@ -13,8 +9,6 @@ Arymbuilder
 
 Tools/Builder ("Databuilder")
 	Gear
-		\# Add gear Abilities
-		\# Add call to map gear ability to gear
 		Support for gear keywords? We don't use this on army builder (yet)
 	Add-ons
 		Mutexes
@@ -23,23 +17,8 @@ Tools/Builder ("Databuilder")
 		Powers with effect tables
 	Could even break new unit and new addon into smaller ones where we create and them map the addons.....
 	Ideally each of the addon sections would be its own angular component as well.
+	Addon adjustments support
 
-
-Data correction:
-	\# Plague Marines need mutex addon support
-	\# Skitarii Vanguard -- if the unit numbers 10 models, one additional vanguard may replace their carbine with a special weapon. We don't currently have a good implementation for that.
-	
-		\# TODO:
-			\# 1. Make the tables as outlined in the sql file
-			\# 2. Make a sepearate addon_adjustments service and inject it into army builder
-			\# 3. Whenever a unit is added to the army, get all adjustments for that unit
-				\# (or possibly get all adjustments and check against our cache. Probably cheaper.)
-			\# 4. Register the trigger. If the adjustment is triggered by the model number increasing,
-				\# then wherever we add OR REMOVE a new model, we check if it set the trigger
-			\# 5. If the trigger is set, make the adjustment to the addon
-			\# 6. If the trigger is UNSET (by remove), undo the adjustment to the addon.
-	
-	\# Vanguard not showing addons at any level.
 	
 bug where if click factions too quickly we get scope.$apply issue. Easy fix.
 
