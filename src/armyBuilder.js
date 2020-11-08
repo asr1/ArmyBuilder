@@ -1,9 +1,9 @@
-let app = angular.module('armyBuilder', []);
+let app = angular.module('armyBuilder', ['AddonAdjustmentService']);
 app.config(['$compileProvider',
     function ($compileProvider) {
         $compileProvider.aHrefSanitizationWhitelist(/^\s*(https?|ftp|mailto|tel|file|blob):/);
 }]);
-app.controller('builderCtrl', function($scope, $http){
+app.controller('builderCtrl', function($scope, $http, adjustmentService){
 	const CURRENT_FILE_FORMAT_VERSION = 1.0
 	const HEADER_FIRST_LINE = "Army Builder";
 	
@@ -26,6 +26,8 @@ app.controller('builderCtrl', function($scope, $http){
 			$scope.games = data.data;
 			$scope.selectedGame = $scope.games[0];
 			$scope.updateavailableFactions($scope.selectedGame);
+			$scope.addonAdjustments = await adjustmentService.getAllAdjustmentsAsync();
+			console.log($scope.addonAdjustments);
 			
 			// Store all gear locally. When getting each individual gear,
 			// Issues arose because Angular tried to refresh before the

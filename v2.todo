@@ -31,7 +31,7 @@ Data correction:
 	
 		TODO:
 			\# 1. Make the tables as outlined in the sql file
-			2. Make a sepearate addon_adjustments service and inject it into army builder
+			\# 2. Make a sepearate addon_adjustments service and inject it into army builder
 			3. Whenever a unit is added to the army, get all adjustments for that unit
 				(or possibly get all adjustments and check against our cache. Probably cheaper.)
 			4. Register the trigger. If the adjustment is triggered by the model number increasing,
