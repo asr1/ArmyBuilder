@@ -657,6 +657,8 @@ app.controller('builderCtrl', function($scope, $http, adjustmentService){
 				else {
 					increaseNumberOfModels(addOn.model, -addOn.amount);
 				}
+				
+				adjustmentService.processAddon(unit, addOn, $scope.models[unit.name]);
 			break;
 			case AddonTypesEnum.ReplaceItemFromSet:
 				if(isChecked) {
@@ -924,7 +926,6 @@ app.controller('builderCtrl', function($scope, $http, adjustmentService){
 					elem.startingNumberOfModels = elem.numberOfModels;
 				}
 				elem.numberOfModels += amount;
-
 			}
 		});
 		if(amount > 0){
