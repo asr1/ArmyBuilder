@@ -15,6 +15,7 @@ app.controller('builderCtrl', function($scope, $http, adjustmentService){
 	const AddonTypesEnum = {ReplaceItem:1, IncreaseNumberOfModels:2, Direct: 3, AddItem: 4, ReplaceItemFromSet: 5, ReplaceMultipleItems: 6};
 	$scope.AddonTypes = AddonTypesEnum;
 	$scope.itemSets = [];
+	$scope.mutexes = [];
 
 	/*Initialize default game and factions.
 	 * Gets all games from the database,
@@ -27,7 +28,6 @@ app.controller('builderCtrl', function($scope, $http, adjustmentService){
 			$scope.selectedGame = $scope.games[0];
 			$scope.updateavailableFactions($scope.selectedGame);
 			$scope.addonAdjustments = await adjustmentService.getAllAdjustmentsAsync();
-			
 			
 			// Store all gear locally. When getting each individual gear,
 			// Issues arose because Angular tried to refresh before the
@@ -43,7 +43,14 @@ app.controller('builderCtrl', function($scope, $http, adjustmentService){
 				let setDetails = await $http.post('src/php/getItemsBySet.php?setId='+set.id);
 				$scope.itemSets[set.id] = setDetails.data;
 			});
-			console.log($scope.itemSets);
+			
+			const mutexResponse = await $http.post('src/php/getAllMutexes.php');
+			let mutexes = mutexResponse.data;
+			mutexes.forEach( (mutex) => {
+				if($scope.mutexes[mutex.firstId] === undefined) { $scope.mutexes[mutex.firstId] = []; }
+				$scope.mutexes[mutex.firstId].push(mutex.secondId);
+			});
+			
 		});
 	})();
 
@@ -519,14 +526,16 @@ app.controller('builderCtrl', function($scope, $http, adjustmentService){
 		return result;
 	}
 
+	/* Checkes addon mutexes. Updated for V2.
+	*/
 	$scope.shouldDisableUnitAddOn = function(unit, addon) {		
 		if(!$scope.enabledAddOns[unit.name]) {return false;}
-		if(!addon.Mutex) {
+		if(!$scope.mutexes[addon.id]) {
 			return false;
 		}
 		let shouldDisable = false;
 
-		addon.Mutex.forEach( (conflictId) => {
+		$scope.mutexes[addon.id].forEach( (conflictId) => {
 			if($scope.enabledAddOns[unit.name][conflictId]) {
 				shouldDisable = true;
 			}
