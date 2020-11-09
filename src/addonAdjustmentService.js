@@ -16,14 +16,7 @@ let adjustmentService = angular.module('AddonAdjustmentService', []).service('ad
 		let unitAddonAdjustments = this.allAdjustments.filter( (adjustment) => {
 			return adjustment.unit_id === unit.id;
 		});
-		
-		console.log("");
-		console.log("before");
-		console.log("Unit", unit);
-		console.log("addon", addon);
-		console.log("all adjusments", this.allAdjustments);
-		console.log("adjustments", unitAddonAdjustments);
-		
+
 		unitAddonAdjustments.forEach( (adjustment) => {
 			if(this.activeAdjustments[unit.name] === undefined) { this.activeAdjustments[unit.name] = []; }
 			

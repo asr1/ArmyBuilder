@@ -13,13 +13,17 @@ Tools/Builder ("Databuilder")
 	Add-ons
 		Mutexes
 		Break addon into smaller components. This is the same problem we had with V1....
+		Add support for replace 1 item with a list of items (Trade 1 gun for 2). I guess this would be replace Items.
+			I think everything would have to be an item set and I'd need a table of setIds and a table mapping items to sets.
+			And then I'd need new JS code to calculate trading multiple items.
 	Powers
 		Powers with effect tables
 	Could even break new unit and new addon into smaller ones where we create and them map the addons.....
 	Ideally each of the addon sections would be its own angular component as well.
 	Addon adjustments support
 
-	
+Add all of the gear abilities (and map them to the right weapons)
+
 bug where if click factions too quickly we get scope.$apply issue. Easy fix.
 
 Bug where occassionally we get a gear console error when adding our first adeptus mechanicus

@@ -45,7 +45,8 @@ create table if not exists addons (
 	times int default 1, --The max number of times an addon can be taken
 	modelIdToAdd int,
 	maxTimesPerUnit int, -- the maximum number of times models in one unit can take this addon
-	itemSetId int, -- the maximum number of times models in one unit can take this addon
+	itemSetId int, -- Used for add from set and replace multiple
+	loseItemSetId int, -- Used for replace multiple
 	primary key (id)
 );
 

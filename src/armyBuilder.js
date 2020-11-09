@@ -12,7 +12,7 @@ app.controller('builderCtrl', function($scope, $http, adjustmentService){
 	let cache = {}; // Cache for network calls to db
 	$scope.buffer = 5; //Padding for addSpaces
 	$scope.myArmyV2 = [];
-	const AddonTypesEnum = {ReplaceItem:1, IncreaseNumberOfModels:2, Direct: 3, AddItem: 4, ReplaceItemFromSet: 5};
+	const AddonTypesEnum = {ReplaceItem:1, IncreaseNumberOfModels:2, Direct: 3, AddItem: 4, ReplaceItemFromSet: 5, ReplaceMultipleItems: 6};
 	$scope.AddonTypes = AddonTypesEnum;
 	$scope.itemSets = [];
 
@@ -27,14 +27,23 @@ app.controller('builderCtrl', function($scope, $http, adjustmentService){
 			$scope.selectedGame = $scope.games[0];
 			$scope.updateavailableFactions($scope.selectedGame);
 			$scope.addonAdjustments = await adjustmentService.getAllAdjustmentsAsync();
-			console.log($scope.addonAdjustments);
+			
 			
 			// Store all gear locally. When getting each individual gear,
 			// Issues arose because Angular tried to refresh before the
-			// First async could resolve. Lack of proper mutexes demands
+			// First async could resolve. Lack of proper mutexes (in angularJS) demands
 			// This approach.
 			const gearResponse = await $http.post('src/php/getAllGear.php');
 			$scope.gear = gearResponse.data;
+			
+			//Similar approach for item sets;
+			const itemsetResponse = await $http.post('src/php/getAllItemSets.php');
+			let itemSets = itemsetResponse.data;
+			itemSets.forEach( async (set) => {
+				let setDetails = await $http.post('src/php/getItemsBySet.php?setId='+set.id);
+				$scope.itemSets[set.id] = setDetails.data;
+			});
+			console.log($scope.itemSets);
 		});
 	})();
 
@@ -565,8 +574,25 @@ app.controller('builderCtrl', function($scope, $http, adjustmentService){
 					response = getGearById(addOn.itemIdToAdd).cost;
 				break;
 				case AddonTypesEnum.ReplaceItemFromSet:
-					// console.log("calculating cost", addOn);
 					response = addOn.cost;
+				break;
+				case AddonTypesEnum.ReplaceMultipleItems:
+					let addGearCost = 0;
+					let removeGearCost = 0;
+					
+					
+					let addItems = $scope.itemSets[addOn.itemSetId];
+					let removeItems = $scope.itemSets[addOn.loseItemSetId];
+					
+					addItems.forEach( (item) => {
+						addGearCost += getGearById(item.itemId).cost
+					});
+					
+					removeItems.forEach( (item) => {
+						removeGearCost += getGearById(item.itemId).cost
+					});
+					
+					response = addGearCost - removeGearCost;
 				break;
 			}
 		}
@@ -598,9 +624,6 @@ app.controller('builderCtrl', function($scope, $http, adjustmentService){
 			addon.itemIdToAdd = replacementItem.id;
 			
 		}
-		// console.log("");
-		// console.log("Addon", addon);
-		// console.log("replacement item", replacementItem);
 	}
 	
 
@@ -666,6 +689,26 @@ app.controller('builderCtrl', function($scope, $http, adjustmentService){
 				}
 				else {
 					replaceItem(model, addOn.itemIdToAdd, addOn.itemIdToRemove, unit);
+				}
+			break;
+			case AddonTypesEnum.ReplaceMultipleItems:
+				let addItems = $scope.itemSets[addOn.itemSetId];
+				let removeItems = $scope.itemSets[addOn.loseItemSetId];
+				if(isChecked) {
+					removeItems.forEach( (item) => {
+						replaceItem(model, item.itemId, null, unit);
+					});
+					addItems.forEach( (item) => {
+						replaceItem(model, null, item.itemId, unit);
+					});
+				}
+				else {
+					removeItems.forEach( (item) => {
+						replaceItem(model, null, item.itemId, unit);
+					});
+					addItems.forEach( (item) => {
+						replaceItem(model, item.itemId, null, unit);
+					});
 				}
 			break;
 		}
