@@ -3,7 +3,6 @@ Arymbuilder
 	Addon Support
 			Prerequisite/requires
 			Grants
-		Mutexes (Can take x or y, but not both) (this needs to be supported. E.G. plague marines).
 	File download
 	File upload
 	Homebrew warning. Possible to get into an illegal state with addon adjustments. Could track that and list an ILLEGAL ARMY message.

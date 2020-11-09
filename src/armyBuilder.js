@@ -317,7 +317,6 @@ app.controller('builderCtrl', function($scope, $http, adjustmentService){
 			for(i = 0; i < setArr.length; i++){
 				webResponse  = await $http.post('src/php/getOptionalPowersForSet.php?setId='+setArr[i].setId);
 				console.log(webResponse);
-				console.log("Ding");
 				setArr[i].from = webResponse.data; 
 			}
 			response = setArr;
@@ -501,16 +500,25 @@ app.controller('builderCtrl', function($scope, $http, adjustmentService){
 
 	/* shouldDisableModelAddon() determines if an
 	 * addon should be disabled at the model level.
-	 * Based on maxTimesPerUnit.
+	 * Based on maxTimesPerUnit. And on mutexes.
 	 */
 	$scope.shouldDisableModelAddon = function(model, addon, checked) {
 		if(checked) { return false; }
 		let shouldDisable = false;
-		if(!addon.maxTimesPerUnit) { return false; }
-		if(!$scope.enabledAddOns[model.unitName] || !$scope.enabledAddOns[model.unitName][addon.id]) {
-			return false;
+		if(addon.maxTimesPerUnit) {
+			if(!$scope.enabledAddOns[model.unitName] || !$scope.enabledAddOns[model.unitName][addon.id]) {
+				shouldDisable = false;
+			} else {
+				shouldDisable = $scope.enabledAddOns[model.unitName][addon.id] >= addon.maxTimesPerUnit;
+			}
 		}
-		shouldDisable = $scope.enabledAddOns[model.unitName][addon.id] >= addon.maxTimesPerUnit;
+		if($scope.mutexes[addon.id]){
+			$scope.mutexes[addon.id].forEach( (conflictId) => {
+				if($scope.enabledAddOns[model.name] && $scope.enabledAddOns[model.name][conflictId]) {
+					shouldDisable = true;
+				}
+			});
+		}
 		
 		return shouldDisable;
 	}
@@ -1041,8 +1049,6 @@ app.controller('builderCtrl', function($scope, $http, adjustmentService){
 	 */
 	function calculateModelGearCostV2(gearArr) {
 		if(!gearArr || gearArr.length === 0) { return; }
-		// console.log("")
-		// console.log("calculate gear cost", gearArr);
 		return gearArr.reduce( (currentValue, gear) => currentValue + gear.cost, 0);
 	}
 
@@ -1168,6 +1174,7 @@ app.controller('builderCtrl', function($scope, $http, adjustmentService){
 	function registerAddOnStatus(addOnId, isEnabled, unitName, model, idx){
 		let checkBoxid;
 		if(model) {
+			// For max times
 			if(!$scope.enabledAddOns[model.unitName]){
 				$scope.enabledAddOns[model.unitName] = [];
 			}
@@ -1176,6 +1183,16 @@ app.controller('builderCtrl', function($scope, $http, adjustmentService){
 			}
 			$scope.enabledAddOns[model.unitName][addOnId] += isEnabled ? 1 : -1;
 			checkBoxid = $scope.getAddOnId(false, model.name, idx);
+			
+			// For mutex
+			if(!$scope.enabledAddOns[model.name]){
+				$scope.enabledAddOns[model.name] = [];
+			}
+			if(!$scope.enabledAddOns[model.name][addOnId]) {
+				$scope.enabledAddOns[model.name][addOnId] = 0;
+			}
+			$scope.enabledAddOns[model.name][addOnId] += isEnabled ? 1 : -1;
+			
 		}
 		else {
 			if(!$scope.enabledAddOns[unitName]){
